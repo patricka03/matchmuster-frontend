@@ -942,6 +942,7 @@
   display: block;
   margin-block-end: 10px;
 }
+
 /* ========================================
    TEAM PAGE
 ======================================== */
@@ -1201,6 +1202,32 @@
   .team-card-actions button {
     width: 100%;
   }
+}
+
+.team-card-badge {
+  display: flex;
+  width: 300px;
+  height: 400px;
+  margin: 0 auto 16px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background-color: #f8fafc;
+}
+
+.team-card-badge img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  object-fit: contain;
+}
+
+.team-card-badge span {
+  font-size: 44px;
+  line-height: 1;
 }
 
 /* ========================================
@@ -2819,6 +2846,169 @@
   display: flex;
   gap: 12px;
   padding-top: 8px;
+}
+
+.edit-team-badge-section {
+  padding-bottom: 32px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.edit-team-badge-heading {
+  margin-bottom: 24px;
+}
+
+.edit-team-badge-heading h2 {
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.edit-team-badge-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.edit-team-badge-content {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.edit-team-badge-preview {
+  display: flex;
+  flex-shrink: 0;
+  width: 130px;
+  height: 130px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #dbe3ec;
+  border-radius: 16px;
+  background-color: #f8fafc;
+}
+
+.edit-team-badge-preview img {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  object-fit: contain;
+}
+
+.edit-team-badge-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+}
+
+.edit-team-badge-placeholder span {
+  display: flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #334155;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.edit-team-badge-placeholder small {
+  font-size: 12px;
+}
+
+.edit-team-badge-form {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.edit-team-badge-form label {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.edit-team-badge-form input[type='file'] {
+  width: 100%;
+  color: #475569;
+  font-size: 14px;
+}
+
+.edit-team-badge-form input[type='file']::file-selector-button {
+  margin-right: 12px;
+  padding: 9px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: white;
+  color: #1e293b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.edit-team-badge-form input[type='file']::file-selector-button:hover {
+  background-color: #f8fafc;
+}
+
+.edit-team-badge-form > small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.upload-team-badge-button {
+  min-width: 135px;
+  margin-top: 4px;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 9px;
+  background-color: #0f172a;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.upload-team-badge-button:hover:not(:disabled) {
+  background-color: #1e293b;
+}
+
+.upload-team-badge-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.team-success {
+  margin: 0;
+  color: #15803d;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .edit-team-card {
+    padding: 22px;
+  }
+
+  .edit-team-badge-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .edit-team-badge-preview {
+    width: 110px;
+    height: 110px;
+  }
+
+  .upload-team-badge-button {
+    width: 100%;
+  }
 }
 
 .save-team-button,

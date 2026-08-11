@@ -268,7 +268,18 @@ function TeamPage() {
                   key={team.id}
                 >
                   <div className="team-card-content">
-                    <div className="card-icon">⚽</div>
+                    <div className="team-card-badge">
+                      {team.badge_url ? (
+                        <img
+                          src={team.badge_url}
+                          alt={`${team.name} badge`}
+                        />
+                      ) : (
+                        <span aria-label="Default football badge">
+                          ⚽
+                        </span>
+                      )}
+                    </div>
 
                     <p className="dashboard-label">
                       Your club

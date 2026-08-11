@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { Link, useNavigate, useParams, } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import './SendAvailabilityPage.css'
+import API_URL from '../config/api'
 
 function SendAvailabilityPage() {
   const { teamId, matchId } = useParams()

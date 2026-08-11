@@ -49,7 +49,7 @@ function SignupPage() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`${API_URL}/users/sign_in`, {
+      const response = await fetch(`${API_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

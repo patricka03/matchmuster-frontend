@@ -18,7 +18,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
-import '../components/navbar'
+import './navbar.css'
 
 function Navbar({
   teamId: suppliedTeamId,

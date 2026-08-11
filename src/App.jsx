@@ -44,8 +44,6 @@ function App() {
       <Route path="/signup" element={<SignupPage />} />
 
       <Route path="/developer/login" element={<DeveloperLoginPage />} />
-      <Route path="/developer/login" element={<DeveloperLoginPage />} />
-
       <Route path="/developer/dashboard" element={<DeveloperProtectedRoute> <DeveloperDashboardPage /> </DeveloperProtectedRoute>} />
 
       <Route path="/dashboard" element={<DashboardPage />} />

@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams, } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import './EditAvailabilityPage.css'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
-
+import './EditAvailabilityPage.css'
 
 function EditAvailabilityPage() {
   const navigate = useNavigate()
@@ -27,7 +30,7 @@ function EditAvailabilityPage() {
 
       try {
         const response = await fetch(
-          `${API_URL}/availabilities/${availability.id}`,
+          `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities/mine`,
           {
             headers: {
               Accept: 'application/json',
@@ -70,6 +73,11 @@ function EditAvailabilityPage() {
   async function handleSubmit(event) {
     event.preventDefault()
 
+    if (!availability) {
+      setErrorMessage('No availability response was found.')
+      return
+    }
+
     if (!selectedStatus) {
       setErrorMessage('Please select your availability.')
       return
@@ -87,7 +95,7 @@ function EditAvailabilityPage() {
 
     try {
       const response = await fetch(
-        `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities/${availability.id}`,
+        `${API_URL}/availabilities/${availability.id}`,
         {
           method: 'PATCH',
           headers: {
@@ -159,7 +167,10 @@ function EditAvailabilityPage() {
 
       <main className="edit-availability-page">
         <section className="edit-availability-container">
-          <BackButton to={`/teams/${teamId}/matches/${matchId}`} label="Back to match"/>
+          <BackButton
+            to={`/teams/${teamId}/matches/${matchId}`}
+            label="Back to match"
+          />
 
           <div className="edit-availability-heading">
             <p className="dashboard-label">
