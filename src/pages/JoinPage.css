@@ -1,0 +1,167 @@
+.join-team-card {
+  width: 100%;
+  max-width: 620px;
+  margin-top: 28px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.join-team-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.join-team-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.join-team-form label span {
+  color: #172033;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.join-team-form input,
+.join-team-form select {
+  width: 100%;
+  padding: 14px 16px;
+  color: #172033;
+  font-family: inherit;
+  font-size: 1rem;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.join-team-form input::placeholder {
+  color: #94a3b8;
+}
+
+.join-team-form input:focus,
+.join-team-form select:focus {
+  background: #ffffff;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.14);
+}
+
+.join-team-form input:disabled,
+.join-team-form select:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.join-team-help {
+  margin: -6px 0 0;
+  padding: 14px 16px;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  background: #f0fdf4;
+  border-left: 4px solid #22c55e;
+  border-radius: 8px;
+}
+
+.join-team-button,
+.join-team-card > button {
+  width: 100%;
+  padding: 14px 20px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  background: #16a34a;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.join-team-button:hover:not(:disabled),
+.join-team-card > button:hover {
+  background: #15803d;
+  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.24);
+  transform: translateY(-1px);
+}
+
+.join-team-button:active:not(:disabled),
+.join-team-card > button:active {
+  transform: translateY(0);
+}
+
+.join-team-button:focus-visible,
+.join-team-card > button:focus-visible {
+  outline: 3px solid rgba(22, 163, 74, 0.3);
+  outline-offset: 3px;
+}
+
+.join-team-button:disabled {
+  cursor: not-allowed;
+  background: #94a3b8;
+  box-shadow: none;
+  transform: none;
+}
+
+.join-team-card .card-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 20px;
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: #16a34a;
+  border-radius: 50%;
+  place-items: center;
+}
+
+.join-team-card h2 {
+  margin: 0 0 12px;
+  color: #172033;
+  font-size: 1.6rem;
+}
+
+.join-team-card > p {
+  margin: 0 0 18px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.join-team-success {
+  padding: 14px 16px;
+  color: #166534 !important;
+  font-weight: 700;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 10px;
+}
+
+@media (max-width: 640px) {
+  .join-team-card {
+    margin-top: 20px;
+    padding: 22px 18px;
+    border-radius: 14px;
+  }
+
+  .join-team-form {
+    gap: 20px;
+  }
+
+  .join-team-form input,
+  .join-team-form select {
+    font-size: 16px;
+  }
+}

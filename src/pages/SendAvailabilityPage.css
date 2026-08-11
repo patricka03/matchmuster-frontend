@@ -1,0 +1,184 @@
+.send-availability-page {
+  display: flex;
+  min-height: calc(100vh - 72px);
+  align-items: center;
+  padding: 50px 24px;
+  background-color: #f8fafc;
+}
+
+.send-availability-container {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.send-availability-card {
+  padding: 38px;
+  border: 1px solid #bbf7d0;
+  border-radius: 16px;
+  background-color: white;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+}
+
+.send-availability-icon {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 18px;
+  place-items: center;
+  border-radius: 50%;
+  background-color: #dcfce7;
+  font-size: 28px;
+}
+
+.send-availability-label {
+  margin: 0 0 7px;
+  color: #16a34a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+
+.send-availability-card h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 34px;
+}
+
+.send-availability-description {
+  margin: 12px auto 24px;
+  max-width: 480px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.send-availability-fixture {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background-color: #e2e8f0;
+  text-align: left;
+}
+
+.send-availability-fixture div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 18px;
+  background-color: #f8fafc;
+}
+
+.send-availability-fixture span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.send-availability-fixture strong {
+  color: #1e293b;
+  font-size: 13px;
+  text-align: right;
+}
+
+.send-availability-notice {
+  margin: 20px 0 0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.send-availability-actions {
+  display: flex;
+  justify-content: center;
+  gap: 11px;
+  margin-top: 27px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.send-availability-cancel,
+.send-availability-confirm {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.send-availability-cancel {
+  border: 1px solid #cbd5e1;
+  background-color: white;
+  color: #475569;
+  text-decoration: none;
+}
+
+.send-availability-cancel:hover {
+  background-color: #f8fafc;
+}
+
+.send-availability-confirm {
+  border: 0;
+  background-color: #16a34a;
+  color: white;
+  cursor: pointer;
+}
+
+.send-availability-confirm:hover:not(:disabled) {
+  background-color: #15803d;
+}
+
+.send-availability-confirm:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.send-availability-error,
+.send-availability-message {
+  padding: 22px;
+  border-radius: 11px;
+  background-color: white;
+  text-align: center;
+}
+
+.send-availability-error {
+  margin-bottom: 18px;
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+  .send-availability-page {
+    padding: 35px 16px;
+  }
+
+  .send-availability-card {
+    padding: 27px 21px;
+  }
+
+  .send-availability-card h1 {
+    font-size: 28px;
+  }
+
+  .send-availability-fixture div {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .send-availability-fixture strong {
+    text-align: left;
+  }
+
+  .send-availability-actions {
+    flex-direction: column-reverse;
+  }
+
+  .send-availability-cancel,
+  .send-availability-confirm {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}

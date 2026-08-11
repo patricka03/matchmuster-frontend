@@ -1,0 +1,138 @@
+.create-team-card {
+  width: 100%;
+  max-width: 680px;
+  margin-top: 28px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  box-sizing: border-box;
+}
+
+.create-team-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.create-team-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.create-team-form label span {
+  color: #172033;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.create-team-form input,
+.create-team-form textarea {
+  width: 100%;
+  padding: 14px 16px;
+  color: #172033;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.create-team-form textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.create-team-form input::placeholder,
+.create-team-form textarea::placeholder {
+  color: #94a3b8;
+}
+
+.create-team-form input:focus,
+.create-team-form textarea:focus {
+  background: #ffffff;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.14);
+}
+
+.create-team-form input:disabled,
+.create-team-form textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.create-team-help {
+  margin: -6px 0 0;
+  padding: 14px 16px;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  background: #f0fdf4;
+  border-left: 4px solid #22c55e;
+  border-radius: 8px;
+}
+
+.create-team-button {
+  width: 100%;
+  padding: 14px 20px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  background: #16a34a;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.create-team-button:hover:not(:disabled) {
+  background: #15803d;
+  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.24);
+  transform: translateY(-1px);
+}
+
+.create-team-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.create-team-button:focus-visible {
+  outline: 3px solid rgba(22, 163, 74, 0.3);
+  outline-offset: 3px;
+}
+
+.create-team-button:disabled {
+  cursor: not-allowed;
+  background: #94a3b8;
+  box-shadow: none;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .create-team-card {
+    margin-top: 20px;
+    padding: 22px 18px;
+    border-radius: 14px;
+  }
+
+  .create-team-form {
+    gap: 20px;
+  }
+
+  .create-team-form input,
+  .create-team-form textarea {
+    font-size: 16px;
+  }
+}

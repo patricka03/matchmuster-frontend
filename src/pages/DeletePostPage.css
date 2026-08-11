@@ -1,0 +1,60 @@
+.delete-post-page {
+  display: flex;
+  min-height: calc(100vh - 72px);
+  align-items: center;
+  padding: 50px 24px;
+  background-color: #f8fafc;
+}
+
+.delete-post-container {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.delete-post-card {
+  padding: 38px;
+  border: 1px solid #fecaca;
+  border-radius: 16px;
+  background-color: white;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+}
+
+.delete-post-icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 18px;
+  place-items: center;
+  border-radius: 50%;
+  background-color: #fee2e2;
+  color: #dc2626;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.delete-post-label {
+  margin: 0 0 7px;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+
+.delete-post-card h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 34px;
+}
+
+.delete-post-warning {
+  margin: 11px 0 22px;
+  color: #64748b;
+}
+
+.delete-post-preview {
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+ 

@@ -1,0 +1,1010 @@
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import Navbar from '../components/Navbar'
+import './EditProfilePage.css'
+import API_URL from '../config/api'
+
+const POSITIONS = ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'LW', 'RW', 'ST']
+
+function EditProfilePage() {
+  const navigate = useNavigate()
+
+  const [currentUser, setCurrentUser] = useState(null)
+  const [activeModal, setActiveModal] = useState(null)
+
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+  })
+
+  const [passwordData, setPasswordData] = useState({
+    current_password: '',
+    password: '',
+    password_confirmation: '',
+  })
+
+  const [preferredPosition, setPreferredPosition] = useState('')
+  const [selectedAvatar, setSelectedAvatar] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState('')
+
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSavingProfile, setIsSavingProfile] = useState(false)
+  const [isSavingPosition, setIsSavingPosition] = useState(false)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+
+  useEffect(() => {
+    async function loadProfile() {
+      const token = localStorage.getItem('token')
+
+      if (!token) {
+        clearSession()
+        return
+      }
+
+      try {
+        const response = await fetch( `${API_URL}/users/me`,
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: token,
+            },
+          },
+        )
+
+        const data = await readResponse(response)
+
+        if (response.status === 401) {
+          clearSession()
+          return
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            getErrorMessage(data, 'Unable to load your profile.'),
+          )
+        }
+
+        const user = data.user || data
+
+        setCurrentUser(user)
+        setFormData({
+          first_name: user.first_name || '',
+          last_name: user.last_name || '',
+          email: user.email || '',
+        })
+        setPreferredPosition(user.preferred_position || '')
+
+        localStorage.setItem('currentUser', JSON.stringify(user))
+      } catch (error) {
+        setErrorMessage(
+          error.message || 'Unable to load your profile.',
+        )
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadProfile()
+  }, [])
+
+  useEffect(() => {
+    if (!activeModal) return undefined
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') closeModal()
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [activeModal])
+
+  function clearSession() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('currentUser')
+    navigate('/login', { replace: true })
+  }
+
+  function openModal(modalName) {
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    if (modalName === 'details') {
+      setFormData({
+        first_name: currentUser?.first_name || '',
+        last_name: currentUser?.last_name || '',
+        email: currentUser?.email || '',
+      })
+    }
+
+    if (modalName === 'position') {
+      setPreferredPosition(currentUser?.preferred_position || '')
+    }
+
+    if (modalName === 'password') {
+      setPasswordData({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+      })
+    }
+
+    setActiveModal(modalName)
+  }
+
+  function closeModal() {
+    setActiveModal(null)
+    setErrorMessage('')
+  }
+
+  function handleChange(event) {
+    const { name, value } = event.target
+
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      [name]: value,
+    }))
+  }
+
+  function handlePasswordChange(event) {
+    const { name, value } = event.target
+
+    setPasswordData((currentPasswordData) => ({
+      ...currentPasswordData,
+      [name]: value,
+    }))
+  }
+
+  function handleAvatarChange(event) {
+    const file = event.target.files?.[0]
+
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMessage('Please select an image file.')
+      event.target.value = ''
+      return
+    }
+
+    const maximumFileSize = 10 * 1024 * 1024
+
+    if (file.size > maximumFileSize) {
+      setErrorMessage('Your image must be smaller than 10 MB.')
+      event.target.value = ''
+      return
+    }
+
+    setSelectedAvatar(file)
+
+    const reader = new FileReader()
+
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result)
+    }
+
+    reader.readAsDataURL(file)
+  }
+
+  async function handleAvatarUpload() {
+    if (!selectedAvatar || isUploadingAvatar) return
+
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+      clearSession()
+      return
+    }
+
+    setIsUploadingAvatar(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    const avatarData = new FormData()
+    avatarData.append('avatar', selectedAvatar)
+
+    try {
+      const response = await fetch(
+        `${API_URL}/users/avatar`,
+        {
+          method: 'PATCH',
+          headers: {
+            Accept: 'application/json',
+            Authorization: token,
+          },
+          body: avatarData,
+        },
+      )
+
+      const data = await readResponse(response)
+
+      if (response.status === 401) {
+        clearSession()
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          getErrorMessage(
+            data,
+            'Unable to update your profile picture.',
+          ),
+        )
+      }
+
+      const updatedUser = data.user || {
+        ...currentUser,
+        avatar_url: data.avatar_url,
+      }
+
+      setCurrentUser(updatedUser)
+      setSelectedAvatar(null)
+      setAvatarPreview('')
+
+      localStorage.setItem(
+        'currentUser',
+        JSON.stringify(updatedUser),
+      )
+
+      setSuccessMessage('Profile picture updated successfully.')
+    } catch (error) {
+      setErrorMessage(
+        error.message ||
+          'Unable to update your profile picture.',
+      )
+    } finally {
+      setIsUploadingAvatar(false)
+    }
+  }
+
+  async function handleProfileSubmit(event) {
+    event.preventDefault()
+
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+      clearSession()
+      return
+    }
+
+    setIsSavingProfile(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    try {
+      const response = await fetch(
+        `${API_URL}/users/profile`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: token,
+          },
+          body: JSON.stringify({
+            user: formData,
+          }),
+        },
+      )
+
+      const data = await readResponse(response)
+
+      if (response.status === 401) {
+        clearSession()
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          getErrorMessage(data, 'Unable to update your profile.'),
+        )
+      }
+
+      const updatedUser = data.user || data
+
+      setCurrentUser(updatedUser)
+      setFormData({
+        first_name: updatedUser.first_name || '',
+        last_name: updatedUser.last_name || '',
+        email: updatedUser.email || '',
+      })
+      setPreferredPosition(updatedUser.preferred_position || '')
+
+      localStorage.setItem(
+        'currentUser',
+        JSON.stringify(updatedUser),
+      )
+
+      setActiveModal(null)
+      setSuccessMessage('Profile updated successfully.')
+    } catch (error) {
+      setErrorMessage(
+        error.message || 'Unable to update your profile.',
+      )
+    } finally {
+      setIsSavingProfile(false)
+    }
+  }
+
+  async function handlePreferredPositionSubmit(event) {
+    event.preventDefault()
+
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+      clearSession()
+      return
+    }
+
+    setIsSavingPosition(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    try {
+      const response = await fetch(
+        `${API_URL}/users/preferred_position`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: token,
+          },
+          body: JSON.stringify({
+            team_membership: {
+              preferred_position: preferredPosition,
+            },
+          }),
+        },
+      )
+
+      const data = await readResponse(response)
+
+      if (response.status === 401) {
+        clearSession()
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          getErrorMessage(
+            data,
+            'Unable to update your preferred position.',
+          ),
+        )
+      }
+
+      const updatedUser = {
+        ...currentUser,
+        preferred_position: data.preferred_position,
+      }
+
+      setCurrentUser(updatedUser)
+      setPreferredPosition(data.preferred_position)
+
+      localStorage.setItem(
+        'currentUser',
+        JSON.stringify(updatedUser),
+      )
+
+      setActiveModal(null)
+      setSuccessMessage('Preferred position updated successfully.')
+    } catch (error) {
+      setErrorMessage(
+        error.message ||
+          'Unable to update your preferred position.',
+      )
+    } finally {
+      setIsSavingPosition(false)
+    }
+  }
+
+  async function handlePasswordSubmit(event) {
+    event.preventDefault()
+
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    if (
+      passwordData.password !== passwordData.password_confirmation
+    ) {
+      setErrorMessage('Your new passwords do not match.')
+      return
+    }
+
+    if (passwordData.password.length < 6) {
+      setErrorMessage(
+        'Your new password must contain at least 6 characters.',
+      )
+      return
+    }
+
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+      clearSession()
+      return
+    }
+
+    setIsChangingPassword(true)
+
+    try {
+      const response = await fetch(
+        `${API_URL}/users/change_password`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: token,
+          },
+          body: JSON.stringify({
+            user: passwordData,
+          }),
+        },
+      )
+
+      const data = await readResponse(response)
+
+      if (response.status === 401) {
+        clearSession()
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          getErrorMessage(data, 'Unable to change your password.'),
+        )
+      }
+
+      setPasswordData({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+      })
+      setActiveModal(null)
+      setSuccessMessage(
+        data.message ||
+          'Password updated successfully. Signing you out...',
+      )
+
+      localStorage.removeItem('token')
+      localStorage.removeItem('currentUser')
+
+      window.setTimeout(() => {
+        navigate('/login', { replace: true })
+      }, 1800)
+    } catch (error) {
+      setErrorMessage(
+        error.message || 'Unable to change your password.',
+      )
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+
+  function userInitials() {
+    const firstName = currentUser?.first_name || ''
+    const lastName = currentUser?.last_name || ''
+
+    return (
+      `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() ||
+      'U'
+    )
+  }
+
+  function fullName() {
+    return [currentUser?.first_name, currentUser?.last_name]
+      .filter(Boolean)
+      .join(' ')
+  }
+
+  if (isLoading) {
+    return (
+      <>
+        <Navbar />
+
+        <main className="edit-profile-page">
+          <p className="profile-loading">Loading your profile...</p>
+        </main>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Navbar currentUser={currentUser} />
+
+      <main className="edit-profile-page">
+        <section className="edit-profile-card">
+          <div className="edit-profile-heading">
+            <div>
+              <h1>Profile &amp; settings</h1>
+              <p>Manage your personal MatchMuster account.</p>
+            </div>
+
+            <Link className="profile-dashboard-link" to="/dashboard">
+              Back to dashboard
+            </Link>
+          </div>
+
+          {errorMessage && !activeModal && (
+            <p className="auth-error" role="alert">
+              {errorMessage}
+            </p>
+          )}
+
+          {successMessage && (
+            <p className="profile-success" role="status">
+              {successMessage}
+            </p>
+          )}
+
+          <section className="profile-overview">
+            <div className="profile-avatar-preview">
+              {avatarPreview || currentUser?.avatar_url ? (
+                <img
+                  src={avatarPreview || currentUser.avatar_url}
+                  alt={`${fullName() || 'User'} profile`}
+                />
+              ) : (
+                <span>{userInitials()}</span>
+              )}
+            </div>
+
+            <div className="profile-overview-details">
+              <h2>{fullName() || 'MatchMuster user'}</h2>
+              <p>{currentUser?.email}</p>
+              <span className="profile-account-badge">
+                {formatLabel(currentUser?.account_type)}
+              </span>
+            </div>
+          </section>
+
+          <section className="profile-picture-section">
+            <div>
+              <h2>Profile picture</h2>
+              <p>Choose an image under 10 MB.</p>
+            </div>
+
+            <div className="profile-picture-actions">
+              <label className="profile-file-label" htmlFor="profile-avatar">
+                Choose picture
+              </label>
+
+              <input
+                id="profile-avatar"
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+              />
+
+              <button
+                type="button"
+                className="profile-primary-button"
+                onClick={handleAvatarUpload}
+                disabled={!selectedAvatar || isUploadingAvatar}
+              >
+                {isUploadingAvatar ? 'Uploading...' : 'Upload'}
+              </button>
+            </div>
+          </section>
+
+          <section className="profile-settings-section">
+            <div className="profile-section-heading">
+              <h2>Account details</h2>
+              <p>Select an item to update it.</p>
+            </div>
+
+            <div className="profile-settings-list">
+              <div className="profile-setting-row">
+                <div>
+                  <span className="profile-setting-label">Personal details</span>
+                  <strong>{fullName() || 'Not provided'}</strong>
+                  <small>{currentUser?.email}</small>
+                </div>
+
+                <button
+                  type="button"
+                  className="profile-edit-button"
+                  onClick={() => openModal('details')}
+                >
+                  Edit
+                </button>
+              </div>
+
+              {currentUser?.account_type === 'player' && (
+                <div className="profile-setting-row">
+                  <div>
+                    <span className="profile-setting-label">
+                      Preferred position
+                    </span>
+                    <strong>
+                      {currentUser.preferred_position || 'Not selected'}
+                    </strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="profile-edit-button"
+                    onClick={() => openModal('position')}
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
+
+              <div className="profile-setting-row">
+                <div>
+                  <span className="profile-setting-label">Password</span>
+                  <strong>••••••••</strong>
+                  <small>Changing it will sign you out securely.</small>
+                </div>
+
+                <button
+                  type="button"
+                  className="profile-edit-button"
+                  onClick={() => openModal('password')}
+                >
+                  Change
+                </button>
+              </div>
+
+              <div className="profile-setting-row profile-setting-read-only">
+                <div>
+                  <span className="profile-setting-label">Account type</span>
+                  <strong>{formatLabel(currentUser?.account_type)}</strong>
+                  <small>This cannot be changed from profile settings.</small>
+                </div>
+
+                <span className="profile-read-only-badge">Read only</span>
+              </div>
+
+              {currentUser?.account_type === 'manager' && (
+                <div className="profile-setting-row profile-setting-read-only">
+                  <div>
+                    <span className="profile-setting-label">
+                      Manager verification
+                    </span>
+                    <strong>
+                      {formatLabel(
+                        currentUser.manager_verification_status,
+                      )}
+                    </strong>
+                    <small>
+                      Verification is controlled by MatchMuster.
+                    </small>
+                  </div>
+
+                  <span className="profile-read-only-badge">Read only</span>
+                </div>
+              )}
+            </div>
+          </section>
+        </section>
+
+        {activeModal === 'details' && (
+          <div
+            className="profile-modal-overlay"
+            role="presentation"
+            onMouseDown={closeModal}
+          >
+            <section
+              className="profile-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="details-modal-title"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <div className="profile-modal-heading">
+                <div>
+                  <h2 id="details-modal-title">Edit personal details</h2>
+                  <p>Update your name or email address.</p>
+                </div>
+
+                <button
+                  type="button"
+                  className="profile-modal-close"
+                  onClick={closeModal}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              {errorMessage && (
+                <p className="auth-error" role="alert">
+                  {errorMessage}
+                </p>
+              )}
+
+              <form
+                className="profile-modal-form"
+                onSubmit={handleProfileSubmit}
+              >
+                <div className="profile-form-row">
+                  <div className="profile-form-group">
+                    <label htmlFor="profile-first-name">First name</label>
+                    <input
+                      id="profile-first-name"
+                      name="first_name"
+                      type="text"
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="profile-form-group">
+                    <label htmlFor="profile-last-name">Last name</label>
+                    <input
+                      id="profile-last-name"
+                      name="last_name"
+                      type="text"
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="profile-form-group">
+                  <label htmlFor="profile-email">Email address</label>
+                  <input
+                    id="profile-email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="profile-modal-actions">
+                  <button
+                    type="button"
+                    className="profile-secondary-button"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="profile-primary-button"
+                    disabled={isSavingProfile}
+                  >
+                    {isSavingProfile ? 'Saving...' : 'Save changes'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
+        {activeModal === 'position' && (
+          <div
+            className="profile-modal-overlay"
+            role="presentation"
+            onMouseDown={closeModal}
+          >
+            <section
+              className="profile-modal profile-modal-small"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="position-modal-title"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <div className="profile-modal-heading">
+                <div>
+                  <h2 id="position-modal-title">Preferred position</h2>
+                  <p>Choose the position you prefer to play.</p>
+                </div>
+
+                <button
+                  type="button"
+                  className="profile-modal-close"
+                  onClick={closeModal}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              {errorMessage && (
+                <p className="auth-error" role="alert">
+                  {errorMessage}
+                </p>
+              )}
+
+              <form
+                className="profile-modal-form"
+                onSubmit={handlePreferredPositionSubmit}
+              >
+                <div className="profile-form-group">
+                  <label htmlFor="preferred-position">Position</label>
+                  <select
+                    id="preferred-position"
+                    value={preferredPosition}
+                    onChange={(event) =>
+                      setPreferredPosition(event.target.value)
+                    }
+                    required
+                  >
+                    <option value="" disabled>
+                      Select a position
+                    </option>
+
+                    {POSITIONS.map((position) => (
+                      <option key={position} value={position}>
+                        {position}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="profile-modal-actions">
+                  <button
+                    type="button"
+                    className="profile-secondary-button"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="profile-primary-button"
+                    disabled={isSavingPosition}
+                  >
+                    {isSavingPosition ? 'Saving...' : 'Save position'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
+        {activeModal === 'password' && (
+          <div
+            className="profile-modal-overlay"
+            role="presentation"
+            onMouseDown={closeModal}
+          >
+            <section
+              className="profile-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="password-modal-title"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <div className="profile-modal-heading">
+                <div>
+                  <h2 id="password-modal-title">Change password</h2>
+                  <p>You will need to log in again after saving.</p>
+                </div>
+
+                <button
+                  type="button"
+                  className="profile-modal-close"
+                  onClick={closeModal}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              {errorMessage && (
+                <p className="auth-error" role="alert">
+                  {errorMessage}
+                </p>
+              )}
+
+              <form
+                className="profile-modal-form"
+                onSubmit={handlePasswordSubmit}
+              >
+                <div className="profile-form-group">
+                  <label htmlFor="current-password">Current password</label>
+                  <input
+                    id="current-password"
+                    name="current_password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={passwordData.current_password}
+                    onChange={handlePasswordChange}
+                    required
+                  />
+                </div>
+
+                <div className="profile-form-group">
+                  <label htmlFor="new-password">New password</label>
+                  <input
+                    id="new-password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    minLength={6}
+                    value={passwordData.password}
+                    onChange={handlePasswordChange}
+                    required
+                  />
+                </div>
+
+                <div className="profile-form-group">
+                  <label htmlFor="password-confirmation">
+                    Confirm new password
+                  </label>
+                  <input
+                    id="password-confirmation"
+                    name="password_confirmation"
+                    type="password"
+                    autoComplete="new-password"
+                    minLength={6}
+                    value={passwordData.password_confirmation}
+                    onChange={handlePasswordChange}
+                    required
+                  />
+                </div>
+
+                <div className="profile-modal-actions">
+                  <button
+                    type="button"
+                    className="profile-secondary-button"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="profile-primary-button"
+                    disabled={isChangingPassword}
+                  >
+                    {isChangingPassword ? 'Changing...' : 'Change password'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+      </main>
+    </>
+  )
+}
+
+async function readResponse(response) {
+  const responseText = await response.text()
+
+  return responseText ? JSON.parse(responseText) : {}
+}
+
+function getErrorMessage(data, fallbackMessage) {
+  if (Array.isArray(data.errors)) {
+    return data.errors.join(', ')
+  }
+
+  return data.error || data.message || fallbackMessage
+}
+
+function formatLabel(value) {
+  if (!value) return 'Not available'
+
+  return value
+    .replaceAll('_', ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
+export default EditProfilePage

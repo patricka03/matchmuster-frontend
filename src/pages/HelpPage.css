@@ -1,0 +1,55 @@
+.help-card {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.help-card h2 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.help-card p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.support-box {
+  margin-top: 28px;
+  padding: 24px;
+  border-radius: 16px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.support-title {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
+
+.support-email {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #15803d;
+  text-decoration: none;
+}
+
+.support-email:hover {
+  text-decoration: underline;
+}
+
+.support-text {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.6;
+}
