@@ -62,7 +62,7 @@ type PlatformActivity = {
 
 type Decision = { manager: Manager; action: "approve" | "reject" } | null;
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const demoOverview: Overview = {
   total_users: 50,
