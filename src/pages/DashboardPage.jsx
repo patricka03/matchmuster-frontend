@@ -23,7 +23,6 @@ function DashboardPage() {
   const isPlayer = user?.account_type === 'player'
   const isManager = user?.account_type === 'manager'
 
-  // Existing approved logic
   const isApprovedPlayer =
     isPlayer && Boolean(teamId)
 
@@ -36,12 +35,11 @@ function DashboardPage() {
     user?.manager_verification_status === 'pending'
 
   const canViewPosts =
-    isApprovedPlayer || isApprovedManager
-
-  // PRE-TEAM FLOW
+    Boolean(teamId) &&
+    (isApprovedPlayer || isApprovedManager)
 
   // Players can join immediately.
-  // Managers can join once MatchMuster has approved their manager account.
+  // Managers can join once MatchMuster approves their account.
   const canJoinTeam =
     isPlayer || isApprovedManager
 
@@ -270,7 +268,6 @@ function DashboardPage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
-
           <div className="dashboard-welcome">
             <p className="dashboard-label">
               Your dashboard
@@ -283,11 +280,13 @@ function DashboardPage() {
             <p>
               {isPendingManager
                 ? 'Your manager account is awaiting approval.'
-                : hasNoTeamMembership
-                  ? 'Join your football team to get started.'
-                  : isPendingTeamApproval
-                    ? 'Your team request is awaiting approval.'
-                    : 'Manage your team, matches and players from one place.'}
+                : hasNoTeamMembership && isApprovedManager
+                  ? 'Create a new team or join an existing team to get started.'
+                  : hasNoTeamMembership
+                    ? 'Join your football team to get started.'
+                    : isPendingTeamApproval
+                      ? 'Your team request is awaiting approval.'
+                      : 'Manage your team, matches and players from one place.'}
             </p>
           </div>
 
@@ -301,7 +300,6 @@ function DashboardPage() {
           )}
 
           <section className="dashboard-grid">
-
             {/* PENDING MANAGER */}
             {isPendingManager && (
               <article className="dashboard-card pending-team-card">
@@ -323,8 +321,38 @@ function DashboardPage() {
               </article>
             )}
 
-            {/* NO TEAM — PLAYER OR APPROVED MANAGER */}
-            {hasNoTeamMembership && (
+            {/* APPROVED MANAGER — NO TEAM */}
+            {hasNoTeamMembership && isApprovedManager && (
+              <article className="dashboard-card">
+                <div className="card-icon">
+                  ⚽
+                </div>
+
+                <h2>Create or Join a Team</h2>
+
+                <p>
+                  Create a new football team or join an existing
+                  team using an invite code.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => navigate('/teams/new')}
+                >
+                  Create a Team
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => navigate('/teams/join')}
+                >
+                  Join a Team
+                </button>
+              </article>
+            )}
+
+            {/* PLAYER — NO TEAM */}
+            {hasNoTeamMembership && isPlayer && (
               <article className="dashboard-card">
                 <div className="card-icon">
                   👥
@@ -339,9 +367,7 @@ function DashboardPage() {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    navigate('/teams/join')
-                  }
+                  onClick={() => navigate('/teams/join')}
                 >
                   Join a Team
                 </button>
@@ -390,9 +416,7 @@ function DashboardPage() {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    navigate('/team')
-                  }
+                  onClick={() => navigate('/team')}
                 >
                   View{' '}
                   {isManager
@@ -402,7 +426,7 @@ function DashboardPage() {
               </article>
             )}
 
-            {/* Approved players only */}
+            {/* APPROVED PLAYERS ONLY */}
             {isApprovedPlayer && (
               <article className="dashboard-card">
                 <div className="card-icon">
@@ -424,7 +448,7 @@ function DashboardPage() {
               </article>
             )}
 
-            {/* Approved players and approved managers */}
+            {/* APPROVED TEAM MEMBERS ONLY */}
             {canViewPosts && (
               <article className="dashboard-card">
                 <div className="card-icon">
@@ -452,7 +476,7 @@ function DashboardPage() {
               </article>
             )}
 
-            {/* Approved players only */}
+            {/* APPROVED PLAYERS ONLY */}
             {isApprovedPlayer && (
               <article className="dashboard-card">
                 <div className="card-icon">
@@ -474,7 +498,7 @@ function DashboardPage() {
               </article>
             )}
 
-            {/* Approved managers with a team only */}
+            {/* APPROVED MANAGERS WITH A TEAM ONLY */}
             {isApprovedManager && teamId && (
               <article className="dashboard-card stripe-dashboard-card">
                 <div className="card-icon">
@@ -542,7 +566,6 @@ function DashboardPage() {
                 </button>
               </article>
             )}
-
           </section>
         </section>
       </main>

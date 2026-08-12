@@ -47,6 +47,109 @@
     background-color 0.2s ease;
 }
 
+.create-team-badge-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-team-badge-field > label span {
+  color: #172033;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.create-team-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.create-team-badge-preview {
+  display: flex;
+  flex: 0 0 108px;
+  width: 108px;
+  height: 108px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+}
+
+.create-team-badge-preview img {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  object-fit: contain;
+  box-sizing: border-box;
+}
+
+.create-team-badge-preview span {
+  font-size: 2rem;
+}
+
+.create-team-badge-controls {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.create-team-badge-controls input[type='file'] {
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.create-team-badge-controls input[type='file']::file-selector-button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  color: #172033;
+  font-family: inherit;
+  font-weight: 700;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.create-team-badge-controls small {
+  color: #64748b;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.remove-team-badge-button,
+.skip-team-badge-button {
+  padding: 0;
+  color: #475569;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.remove-team-badge-button:hover:not(:disabled),
+.skip-team-badge-button:hover:not(:disabled) {
+  color: #172033;
+  text-decoration: underline;
+}
+
+.skip-team-badge-button {
+  align-self: center;
+}
+
+.remove-team-badge-button:disabled,
+.skip-team-badge-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .create-team-form textarea {
   min-height: 130px;
   resize: vertical;
@@ -134,5 +237,20 @@
   .create-team-form input,
   .create-team-form textarea {
     font-size: 16px;
+  }
+
+  .create-team-badge-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .create-team-badge-preview {
+    flex-basis: 96px;
+    width: 96px;
+    height: 96px;
+  }
+
+  .create-team-badge-controls {
+    width: 100%;
   }
 }

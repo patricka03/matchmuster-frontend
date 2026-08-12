@@ -367,7 +367,8 @@ function TeamPage() {
 
               {isApprovedManager && (
                 <article className="team-details-card add-team-card">
-                  <div className="card-icon">＋</div>
+                  <div className="card-icon" type="button"
+                    onClick={() => navigate('/teams/new')}>＋</div>
 
                   <h2>Add another team</h2>
 
