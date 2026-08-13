@@ -183,7 +183,7 @@ function EditPostPage() {
       <main className="create-post-page">
         <section className="create-post-container">
           <Link
-            className="create-post-back-link"
+            className="app-back-button"
             to={`/teams/${teamId}/posts/${postId}`}
           >
             ← Back to post

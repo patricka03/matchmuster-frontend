@@ -15,11 +15,16 @@ function SignupPage() {
     password_confirmation: '',
   })
 
+  const [ageConfirmed, setAgeConfirmed] = useState(false)
+  const [legalAccepted, setLegalAccepted] = useState(false)
+
   const [errorMessage, setErrorMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [showPasswordConfirmation, setShowPasswordConfirmation] =
-    useState(false)
+  const [
+    showPasswordConfirmation,
+    setShowPasswordConfirmation,
+  ] = useState(false)
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -43,26 +48,58 @@ function SignupPage() {
     setErrorMessage('')
 
     if (!formData.account_type) {
-      setErrorMessage('Please choose whether you are a player or manager.')
+      setErrorMessage(
+        'Please choose whether you are a player or manager.',
+      )
+      return
+    }
+
+    if (!ageConfirmed) {
+      setErrorMessage(
+        'You must confirm that you are 18 years of age or older.',
+      )
+      return
+    }
+
+    if (!legalAccepted) {
+      setErrorMessage(
+        'You must agree to the Terms of Service before creating an account.',
+      )
+      return
+    }
+
+    if (
+      formData.password !==
+      formData.password_confirmation
+    ) {
+      setErrorMessage('Your passwords do not match.')
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`${API_URL}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
+      const response = await fetch(
+        `${API_URL}/users`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            user: formData,
+            age_confirmed: ageConfirmed,
+            terms_accepted: legalAccepted,
+          }),
         },
-        body: JSON.stringify({
-          user: formData,
-        }),
-      })
+      )
 
       const responseText = await response.text()
-      const data = responseText ? JSON.parse(responseText) : {}
+
+      const data = responseText
+        ? JSON.parse(responseText)
+        : {}
 
       if (!response.ok) {
         const errors = data.errors
@@ -71,14 +108,20 @@ function SignupPage() {
           throw new Error(errors.join(', '))
         }
 
-        if (errors && typeof errors === 'object') {
+        if (
+          errors &&
+          typeof errors === 'object'
+        ) {
           throw new Error(
             Object.entries(errors)
               .map(([field, messages]) => {
-                const fieldName = field.replaceAll('_', ' ')
-                const errorMessages = Array.isArray(messages)
-                  ? messages.join(', ')
-                  : messages
+                const fieldName =
+                  field.replaceAll('_', ' ')
+
+                const errorMessages =
+                  Array.isArray(messages)
+                    ? messages.join(', ')
+                    : messages
 
                 return `${fieldName} ${errorMessages}`
               })
@@ -86,17 +129,23 @@ function SignupPage() {
           )
         }
 
-        throw new Error(data.message || 'Account creation failed.')
+        throw new Error(
+          data.message ||
+            'Account creation failed.',
+        )
       }
 
       navigate('/login', {
         state: {
-          successMessage: 'Account created successfully. You can now log in.',
+          successMessage:
+            'Account created successfully. You can now log in.',
         },
       })
-
     } catch (error) {
-      setErrorMessage(error.message || 'Unable to create your account.')
+      setErrorMessage(
+        error.message ||
+          'Unable to create your account.',
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -105,7 +154,10 @@ function SignupPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link className="back-link" to="/">
+        <Link
+          className="app-back-button"
+          to="/"
+        >
           ← Back
         </Link>
 
@@ -126,56 +178,86 @@ function SignupPage() {
           <button
             type="button"
             className={`account-type-card ${
-              formData.account_type === 'manager' ? 'selected' : ''
+              formData.account_type === 'manager'
+                ? 'selected'
+                : ''
             }`}
-            onClick={() => handleAccountType('manager')}
+            onClick={() =>
+              handleAccountType('manager')
+            }
           >
-            <span className="account-type-icon">🧑‍💼</span>
+            <span className="account-type-icon">
+              🧑‍💼
+            </span>
 
             <span className="account-type-content">
               <strong>Manager</strong>
+
               <small>
-                Organise fixtures, manage players and run your team.
+                Organise fixtures, manage players
+                and run your team.
               </small>
             </span>
 
             <span className="account-type-check">
-              {formData.account_type === 'manager' ? '✓' : ''}
+              {formData.account_type ===
+              'manager'
+                ? '✓'
+                : ''}
             </span>
           </button>
 
           <button
             type="button"
             className={`account-type-card ${
-              formData.account_type === 'player' ? 'selected' : ''
+              formData.account_type === 'player'
+                ? 'selected'
+                : ''
             }`}
-            onClick={() => handleAccountType('player')}
+            onClick={() =>
+              handleAccountType('player')
+            }
           >
-            <span className="account-type-icon">⚽</span>
+            <span className="account-type-icon">
+              ⚽
+            </span>
 
             <span className="account-type-content">
               <strong>Player</strong>
+
               <small>
-                Join your team, manage availability and stay match-ready.
+                Join your team, manage availability
+                and stay match-ready.
               </small>
             </span>
 
             <span className="account-type-check">
-              {formData.account_type === 'player' ? '✓' : ''}
+              {formData.account_type ===
+              'player'
+                ? '✓'
+                : ''}
             </span>
           </button>
         </div>
 
         {errorMessage && (
-          <p className="auth-error" role="alert">
+          <p
+            className="auth-error"
+            role="alert"
+          >
             {errorMessage}
           </p>
         )}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form
+          className="auth-form"
+          onSubmit={handleSubmit}
+        >
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="first-name">First name</label>
+              <label htmlFor="first-name">
+                First name
+              </label>
 
               <input
                 id="first-name"
@@ -189,7 +271,9 @@ function SignupPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="last-name">Last name</label>
+              <label htmlFor="last-name">
+                Last name
+              </label>
 
               <input
                 id="last-name"
@@ -204,7 +288,9 @@ function SignupPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email address</label>
+            <label htmlFor="email">
+              Email address
+            </label>
 
             <input
               id="email"
@@ -218,13 +304,19 @@ function SignupPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">
+              Password
+            </label>
 
             <div className="password-input-wrapper">
               <input
                 id="password"
                 name="password"
-                type={showPassword ? 'text' : 'password'}
+                type={
+                  showPassword
+                    ? 'text'
+                    : 'password'
+                }
                 placeholder="Create a password"
                 value={formData.password}
                 onChange={handleChange}
@@ -234,9 +326,15 @@ function SignupPage() {
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() => setShowPassword((current) => !current)}
+                onClick={() =>
+                  setShowPassword(
+                    (current) => !current,
+                  )
+                }
               >
-                {showPassword ? 'Hide' : 'Show'}
+                {showPassword
+                  ? 'Hide'
+                  : 'Show'}
               </button>
             </div>
           </div>
@@ -250,9 +348,15 @@ function SignupPage() {
               <input
                 id="password-confirmation"
                 name="password_confirmation"
-                type={showPasswordConfirmation ? 'text' : 'password'}
+                type={
+                  showPasswordConfirmation
+                    ? 'text'
+                    : 'password'
+                }
                 placeholder="Enter your password again"
-                value={formData.password_confirmation}
+                value={
+                  formData.password_confirmation
+                }
                 onChange={handleChange}
                 required
               />
@@ -261,25 +365,108 @@ function SignupPage() {
                 type="button"
                 className="password-toggle"
                 onClick={() =>
-                  setShowPasswordConfirmation((current) => !current)
+                  setShowPasswordConfirmation(
+                    (current) => !current,
+                  )
                 }
               >
-                {showPasswordConfirmation ? 'Hide' : 'Show'}
+                {showPasswordConfirmation
+                  ? 'Hide'
+                  : 'Show'}
               </button>
             </div>
           </div>
 
+          {/* =====================================
+              LEGAL ACCEPTANCE
+          ===================================== */}
+
+          <section className="signup-legal-section">
+            <label className="signup-legal-option">
+              <input
+                type="checkbox"
+                checked={ageConfirmed}
+                onChange={(event) =>
+                  setAgeConfirmed(
+                    event.target.checked,
+                  )
+                }
+              />
+
+              <span>
+                <strong>
+                  I confirm that I am 18 years
+                  of age or older.
+                </strong>
+
+                <small>
+                  MatchMuster V1 is available
+                  only to adults aged 18+.
+                </small>
+              </span>
+            </label>
+
+            <label className="signup-legal-option">
+              <input
+                type="checkbox"
+                checked={legalAccepted}
+                onChange={(event) =>
+                  setLegalAccepted(
+                    event.target.checked,
+                  )
+                }
+              />
+
+              <span>
+                <strong>
+                  I agree to the{' '}
+                  <Link
+                    to="/legal/terms"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Terms of Service
+                  </Link>{' '}
+                  and acknowledge the{' '}
+                  <Link
+                    to="/legal/privacy"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </strong>
+
+                <small>
+                  These explain the rules for
+                  using MatchMuster and how your
+                  personal information is handled.
+                </small>
+              </span>
+            </label>
+          </section>
+
           <button
             className="create-account-button"
             type="submit"
-            disabled={isSubmitting}
+            disabled={
+              isSubmitting ||
+              !ageConfirmed ||
+              !legalAccepted
+            }
           >
-            {isSubmitting ? 'Creating account...' : 'Create Account'}
+            {isSubmitting
+              ? 'Creating account...'
+              : 'Create Account'}
           </button>
         </form>
 
         <p className="auth-footer">
-          Already have an account? <Link to="/login">Log In</Link>
+          Already have an account?{' '}
+          <Link to="/login">
+            Log In
+          </Link>
         </p>
       </section>
     </main>

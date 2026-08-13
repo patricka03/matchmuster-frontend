@@ -232,7 +232,7 @@ function TeamPage() {
       <main className="dashboard-page">
         <section className="dashboard-content">
           <button
-            className="back-button"
+            className="app-back-button"
             type="button"
             onClick={() => navigate('/dashboard')}
           >

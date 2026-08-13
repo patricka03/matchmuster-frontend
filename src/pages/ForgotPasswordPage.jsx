@@ -53,7 +53,7 @@ function ForgotPasswordPage() {
   return (
     <main className="forgot-password-page">
       <section className="forgot-password-card">
-        <Link className="forgot-back-link" to="/login">
+        <Link className="fapp-back-button" to="/login">
           ← Back to login
         </Link>
 

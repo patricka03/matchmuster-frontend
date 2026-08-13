@@ -47,7 +47,8 @@ function EditProfilePage() {
       }
 
       try {
-        const response = await fetch( `${API_URL}/users/me`,
+        const response = await fetch(
+          `${API_URL}/users/me`,
           {
             headers: {
               Accept: 'application/json',
@@ -72,14 +73,19 @@ function EditProfilePage() {
         const user = data.user || data
 
         setCurrentUser(user)
+
         setFormData({
           first_name: user.first_name || '',
           last_name: user.last_name || '',
           email: user.email || '',
         })
+
         setPreferredPosition(user.preferred_position || '')
 
-        localStorage.setItem('currentUser', JSON.stringify(user))
+        localStorage.setItem(
+          'currentUser',
+          JSON.stringify(user),
+        )
       } catch (error) {
         setErrorMessage(
           error.message || 'Unable to load your profile.',
@@ -96,10 +102,13 @@ function EditProfilePage() {
     if (!activeModal) return undefined
 
     function handleKeyDown(event) {
-      if (event.key === 'Escape') closeModal()
+      if (event.key === 'Escape') {
+        closeModal()
+      }
     }
 
     const previousOverflow = document.body.style.overflow
+
     document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', handleKeyDown)
 
@@ -112,6 +121,7 @@ function EditProfilePage() {
   function clearSession() {
     localStorage.removeItem('token')
     localStorage.removeItem('currentUser')
+
     navigate('/login', { replace: true })
   }
 
@@ -128,7 +138,9 @@ function EditProfilePage() {
     }
 
     if (modalName === 'position') {
-      setPreferredPosition(currentUser?.preferred_position || '')
+      setPreferredPosition(
+        currentUser?.preferred_position || '',
+      )
     }
 
     if (modalName === 'password') {
@@ -182,7 +194,10 @@ function EditProfilePage() {
     const maximumFileSize = 10 * 1024 * 1024
 
     if (file.size > maximumFileSize) {
-      setErrorMessage('Your image must be smaller than 10 MB.')
+      setErrorMessage(
+        'Your image must be smaller than 10 MB.',
+      )
+
       event.target.value = ''
       return
     }
@@ -199,7 +214,9 @@ function EditProfilePage() {
   }
 
   async function handleAvatarUpload() {
-    if (!selectedAvatar || isUploadingAvatar) return
+    if (!selectedAvatar || isUploadingAvatar) {
+      return
+    }
 
     const token = localStorage.getItem('token')
 
@@ -213,6 +230,7 @@ function EditProfilePage() {
     setSuccessMessage('')
 
     const avatarData = new FormData()
+
     avatarData.append('avatar', selectedAvatar)
 
     try {
@@ -244,10 +262,11 @@ function EditProfilePage() {
         )
       }
 
-      const updatedUser = data.user || {
-        ...currentUser,
-        avatar_url: data.avatar_url,
-      }
+      const updatedUser =
+        data.user || {
+          ...currentUser,
+          avatar_url: data.avatar_url,
+        }
 
       setCurrentUser(updatedUser)
       setSelectedAvatar(null)
@@ -258,7 +277,9 @@ function EditProfilePage() {
         JSON.stringify(updatedUser),
       )
 
-      setSuccessMessage('Profile picture updated successfully.')
+      setSuccessMessage(
+        'Profile picture updated successfully.',
+      )
     } catch (error) {
       setErrorMessage(
         error.message ||
@@ -308,19 +329,26 @@ function EditProfilePage() {
 
       if (!response.ok) {
         throw new Error(
-          getErrorMessage(data, 'Unable to update your profile.'),
+          getErrorMessage(
+            data,
+            'Unable to update your profile.',
+          ),
         )
       }
 
       const updatedUser = data.user || data
 
       setCurrentUser(updatedUser)
+
       setFormData({
         first_name: updatedUser.first_name || '',
         last_name: updatedUser.last_name || '',
         email: updatedUser.email || '',
       })
-      setPreferredPosition(updatedUser.preferred_position || '')
+
+      setPreferredPosition(
+        updatedUser.preferred_position || '',
+      )
 
       localStorage.setItem(
         'currentUser',
@@ -328,10 +356,14 @@ function EditProfilePage() {
       )
 
       setActiveModal(null)
-      setSuccessMessage('Profile updated successfully.')
+
+      setSuccessMessage(
+        'Profile updated successfully.',
+      )
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to update your profile.',
+        error.message ||
+          'Unable to update your profile.',
       )
     } finally {
       setIsSavingProfile(false)
@@ -388,11 +420,14 @@ function EditProfilePage() {
 
       const updatedUser = {
         ...currentUser,
-        preferred_position: data.preferred_position,
+        preferred_position:
+          data.preferred_position,
       }
 
       setCurrentUser(updatedUser)
-      setPreferredPosition(data.preferred_position)
+      setPreferredPosition(
+        data.preferred_position,
+      )
 
       localStorage.setItem(
         'currentUser',
@@ -400,7 +435,10 @@ function EditProfilePage() {
       )
 
       setActiveModal(null)
-      setSuccessMessage('Preferred position updated successfully.')
+
+      setSuccessMessage(
+        'Preferred position updated successfully.',
+      )
     } catch (error) {
       setErrorMessage(
         error.message ||
@@ -418,9 +456,13 @@ function EditProfilePage() {
     setSuccessMessage('')
 
     if (
-      passwordData.password !== passwordData.password_confirmation
+      passwordData.password !==
+      passwordData.password_confirmation
     ) {
-      setErrorMessage('Your new passwords do not match.')
+      setErrorMessage(
+        'Your new passwords do not match.',
+      )
+
       return
     }
 
@@ -428,6 +470,7 @@ function EditProfilePage() {
       setErrorMessage(
         'Your new password must contain at least 6 characters.',
       )
+
       return
     }
 
@@ -465,7 +508,10 @@ function EditProfilePage() {
 
       if (!response.ok) {
         throw new Error(
-          getErrorMessage(data, 'Unable to change your password.'),
+          getErrorMessage(
+            data,
+            'Unable to change your password.',
+          ),
         )
       }
 
@@ -474,7 +520,9 @@ function EditProfilePage() {
         password: '',
         password_confirmation: '',
       })
+
       setActiveModal(null)
+
       setSuccessMessage(
         data.message ||
           'Password updated successfully. Signing you out...',
@@ -488,7 +536,8 @@ function EditProfilePage() {
       }, 1800)
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to change your password.',
+        error.message ||
+          'Unable to change your password.',
       )
     } finally {
       setIsChangingPassword(false)
@@ -496,8 +545,11 @@ function EditProfilePage() {
   }
 
   function userInitials() {
-    const firstName = currentUser?.first_name || ''
-    const lastName = currentUser?.last_name || ''
+    const firstName =
+      currentUser?.first_name || ''
+
+    const lastName =
+      currentUser?.last_name || ''
 
     return (
       `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() ||
@@ -506,7 +558,10 @@ function EditProfilePage() {
   }
 
   function fullName() {
-    return [currentUser?.first_name, currentUser?.last_name]
+    return [
+      currentUser?.first_name,
+      currentUser?.last_name,
+    ]
       .filter(Boolean)
       .join(' ')
   }
@@ -517,7 +572,9 @@ function EditProfilePage() {
         <Navbar />
 
         <main className="edit-profile-page">
-          <p className="profile-loading">Loading your profile...</p>
+          <p className="profile-loading">
+            Loading your profile...
+          </p>
         </main>
       </>
     )
@@ -532,43 +589,70 @@ function EditProfilePage() {
           <div className="edit-profile-heading">
             <div>
               <h1>Profile &amp; settings</h1>
-              <p>Manage your personal MatchMuster account.</p>
+
+              <p>
+                Manage your personal MatchMuster account.
+              </p>
             </div>
 
-            <Link className="profile-dashboard-link" to="/dashboard">
+            <Link
+              className="profile-dashboard-link"
+              to="/dashboard"
+            >
               Back to dashboard
             </Link>
           </div>
 
           {errorMessage && !activeModal && (
-            <p className="auth-error" role="alert">
+            <p
+              className="auth-error"
+              role="alert"
+            >
               {errorMessage}
             </p>
           )}
 
           {successMessage && (
-            <p className="profile-success" role="status">
+            <p
+              className="profile-success"
+              role="status"
+            >
               {successMessage}
             </p>
           )}
 
           <section className="profile-overview">
             <div className="profile-avatar-preview">
-              {avatarPreview || currentUser?.avatar_url ? (
+              {avatarPreview ||
+              currentUser?.avatar_url ? (
                 <img
-                  src={avatarPreview || currentUser.avatar_url}
+                  src={
+                    avatarPreview ||
+                    currentUser.avatar_url
+                  }
                   alt={`${fullName() || 'User'} profile`}
                 />
               ) : (
-                <span>{userInitials()}</span>
+                <span>
+                  {userInitials()}
+                </span>
               )}
             </div>
 
             <div className="profile-overview-details">
-              <h2>{fullName() || 'MatchMuster user'}</h2>
-              <p>{currentUser?.email}</p>
+              <h2>
+                {fullName() ||
+                  'MatchMuster user'}
+              </h2>
+
+              <p>
+                {currentUser?.email}
+              </p>
+
               <span className="profile-account-badge">
-                {formatLabel(currentUser?.account_type)}
+                {formatLabel(
+                  currentUser?.account_type,
+                )}
               </span>
             </div>
           </section>
@@ -576,11 +660,17 @@ function EditProfilePage() {
           <section className="profile-picture-section">
             <div>
               <h2>Profile picture</h2>
-              <p>Choose an image under 10 MB.</p>
+
+              <p>
+                Choose an image under 10 MB.
+              </p>
             </div>
 
             <div className="profile-picture-actions">
-              <label className="profile-file-label" htmlFor="profile-avatar">
+              <label
+                className="profile-file-label"
+                htmlFor="profile-avatar"
+              >
                 Choose picture
               </label>
 
@@ -595,9 +685,14 @@ function EditProfilePage() {
                 type="button"
                 className="profile-primary-button"
                 onClick={handleAvatarUpload}
-                disabled={!selectedAvatar || isUploadingAvatar}
+                disabled={
+                  !selectedAvatar ||
+                  isUploadingAvatar
+                }
               >
-                {isUploadingAvatar ? 'Uploading...' : 'Upload'}
+                {isUploadingAvatar
+                  ? 'Uploading...'
+                  : 'Upload'}
               </button>
             </div>
           </section>
@@ -605,41 +700,60 @@ function EditProfilePage() {
           <section className="profile-settings-section">
             <div className="profile-section-heading">
               <h2>Account details</h2>
-              <p>Select an item to update it.</p>
+
+              <p>
+                Select an item to update it.
+              </p>
             </div>
 
             <div className="profile-settings-list">
               <div className="profile-setting-row">
                 <div>
-                  <span className="profile-setting-label">Personal details</span>
-                  <strong>{fullName() || 'Not provided'}</strong>
-                  <small>{currentUser?.email}</small>
+                  <span className="profile-setting-label">
+                    Personal details
+                  </span>
+
+                  <strong>
+                    {fullName() ||
+                      'Not provided'}
+                  </strong>
+
+                  <small>
+                    {currentUser?.email}
+                  </small>
                 </div>
 
                 <button
                   type="button"
                   className="profile-edit-button"
-                  onClick={() => openModal('details')}
+                  onClick={() =>
+                    openModal('details')
+                  }
                 >
                   Edit
                 </button>
               </div>
 
-              {currentUser?.account_type === 'player' && (
+              {currentUser?.account_type ===
+                'player' && (
                 <div className="profile-setting-row">
                   <div>
                     <span className="profile-setting-label">
                       Preferred position
                     </span>
+
                     <strong>
-                      {currentUser.preferred_position || 'Not selected'}
+                      {currentUser.preferred_position ||
+                        'Not selected'}
                     </strong>
                   </div>
 
                   <button
                     type="button"
                     className="profile-edit-button"
-                    onClick={() => openModal('position')}
+                    onClick={() =>
+                      openModal('position')
+                    }
                   >
                     Edit
                   </button>
@@ -648,15 +762,25 @@ function EditProfilePage() {
 
               <div className="profile-setting-row">
                 <div>
-                  <span className="profile-setting-label">Password</span>
-                  <strong>••••••••</strong>
-                  <small>Changing it will sign you out securely.</small>
+                  <span className="profile-setting-label">
+                    Password
+                  </span>
+
+                  <strong>
+                    ••••••••
+                  </strong>
+
+                  <small>
+                    Changing it will sign you out securely.
+                  </small>
                 </div>
 
                 <button
                   type="button"
                   className="profile-edit-button"
-                  onClick={() => openModal('password')}
+                  onClick={() =>
+                    openModal('password')
+                  }
                 >
                   Change
                 </button>
@@ -664,33 +788,91 @@ function EditProfilePage() {
 
               <div className="profile-setting-row profile-setting-read-only">
                 <div>
-                  <span className="profile-setting-label">Account type</span>
-                  <strong>{formatLabel(currentUser?.account_type)}</strong>
-                  <small>This cannot be changed from profile settings.</small>
+                  <span className="profile-setting-label">
+                    Account type
+                  </span>
+
+                  <strong>
+                    {formatLabel(
+                      currentUser?.account_type,
+                    )}
+                  </strong>
+
+                  <small>
+                    This cannot be changed from profile settings.
+                  </small>
                 </div>
 
-                <span className="profile-read-only-badge">Read only</span>
+                <span className="profile-read-only-badge">
+                  Read only
+                </span>
               </div>
 
-              {currentUser?.account_type === 'manager' && (
+              {currentUser?.account_type ===
+                'manager' && (
                 <div className="profile-setting-row profile-setting-read-only">
                   <div>
                     <span className="profile-setting-label">
                       Manager verification
                     </span>
+
                     <strong>
                       {formatLabel(
                         currentUser.manager_verification_status,
                       )}
                     </strong>
+
                     <small>
                       Verification is controlled by MatchMuster.
                     </small>
                   </div>
 
-                  <span className="profile-read-only-badge">Read only</span>
+                  <span className="profile-read-only-badge">
+                    Read only
+                  </span>
                 </div>
               )}
+            </div>
+          </section>
+
+          {/* =====================================
+              LEGAL & PRIVACY
+          ===================================== */}
+
+          <section className="profile-settings-section">
+            <div className="profile-section-heading">
+              <h2>
+                Legal &amp; privacy
+              </h2>
+
+              <p>
+                Review MatchMuster policies and privacy information.
+              </p>
+            </div>
+
+            <div className="profile-settings-list">
+              <div className="profile-setting-row">
+                <div>
+                  <span className="profile-setting-label">
+                    Legal &amp; privacy
+                  </span>
+
+                  <strong>
+                    Terms, privacy and community rules
+                  </strong>
+
+                  <small>
+                    Review the policies that apply when using MatchMuster.
+                  </small>
+                </div>
+
+                <Link
+                  className="profile-edit-button profile-setting-link"
+                  to="/legal"
+                >
+                  View
+                </Link>
+              </div>
             </div>
           </section>
         </section>
@@ -706,12 +888,19 @@ function EditProfilePage() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="details-modal-title"
-              onMouseDown={(event) => event.stopPropagation()}
+              onMouseDown={(event) =>
+                event.stopPropagation()
+              }
             >
               <div className="profile-modal-heading">
                 <div>
-                  <h2 id="details-modal-title">Edit personal details</h2>
-                  <p>Update your name or email address.</p>
+                  <h2 id="details-modal-title">
+                    Edit personal details
+                  </h2>
+
+                  <p>
+                    Update your name or email address.
+                  </p>
                 </div>
 
                 <button
@@ -725,35 +914,50 @@ function EditProfilePage() {
               </div>
 
               {errorMessage && (
-                <p className="auth-error" role="alert">
+                <p
+                  className="auth-error"
+                  role="alert"
+                >
                   {errorMessage}
                 </p>
               )}
 
               <form
                 className="profile-modal-form"
-                onSubmit={handleProfileSubmit}
+                onSubmit={
+                  handleProfileSubmit
+                }
               >
                 <div className="profile-form-row">
                   <div className="profile-form-group">
-                    <label htmlFor="profile-first-name">First name</label>
+                    <label htmlFor="profile-first-name">
+                      First name
+                    </label>
+
                     <input
                       id="profile-first-name"
                       name="first_name"
                       type="text"
-                      value={formData.first_name}
+                      value={
+                        formData.first_name
+                      }
                       onChange={handleChange}
                       required
                     />
                   </div>
 
                   <div className="profile-form-group">
-                    <label htmlFor="profile-last-name">Last name</label>
+                    <label htmlFor="profile-last-name">
+                      Last name
+                    </label>
+
                     <input
                       id="profile-last-name"
                       name="last_name"
                       type="text"
-                      value={formData.last_name}
+                      value={
+                        formData.last_name
+                      }
                       onChange={handleChange}
                       required
                     />
@@ -761,7 +965,10 @@ function EditProfilePage() {
                 </div>
 
                 <div className="profile-form-group">
-                  <label htmlFor="profile-email">Email address</label>
+                  <label htmlFor="profile-email">
+                    Email address
+                  </label>
+
                   <input
                     id="profile-email"
                     name="email"
@@ -784,9 +991,13 @@ function EditProfilePage() {
                   <button
                     type="submit"
                     className="profile-primary-button"
-                    disabled={isSavingProfile}
+                    disabled={
+                      isSavingProfile
+                    }
                   >
-                    {isSavingProfile ? 'Saving...' : 'Save changes'}
+                    {isSavingProfile
+                      ? 'Saving...'
+                      : 'Save changes'}
                   </button>
                 </div>
               </form>
@@ -805,12 +1016,19 @@ function EditProfilePage() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="position-modal-title"
-              onMouseDown={(event) => event.stopPropagation()}
+              onMouseDown={(event) =>
+                event.stopPropagation()
+              }
             >
               <div className="profile-modal-heading">
                 <div>
-                  <h2 id="position-modal-title">Preferred position</h2>
-                  <p>Choose the position you prefer to play.</p>
+                  <h2 id="position-modal-title">
+                    Preferred position
+                  </h2>
+
+                  <p>
+                    Choose the position you prefer to play.
+                  </p>
                 </div>
 
                 <button
@@ -824,34 +1042,52 @@ function EditProfilePage() {
               </div>
 
               {errorMessage && (
-                <p className="auth-error" role="alert">
+                <p
+                  className="auth-error"
+                  role="alert"
+                >
                   {errorMessage}
                 </p>
               )}
 
               <form
                 className="profile-modal-form"
-                onSubmit={handlePreferredPositionSubmit}
+                onSubmit={
+                  handlePreferredPositionSubmit
+                }
               >
                 <div className="profile-form-group">
-                  <label htmlFor="preferred-position">Position</label>
+                  <label htmlFor="preferred-position">
+                    Position
+                  </label>
+
                   <select
                     id="preferred-position"
                     value={preferredPosition}
                     onChange={(event) =>
-                      setPreferredPosition(event.target.value)
+                      setPreferredPosition(
+                        event.target.value,
+                      )
                     }
                     required
                   >
-                    <option value="" disabled>
+                    <option
+                      value=""
+                      disabled
+                    >
                       Select a position
                     </option>
 
-                    {POSITIONS.map((position) => (
-                      <option key={position} value={position}>
-                        {position}
-                      </option>
-                    ))}
+                    {POSITIONS.map(
+                      (position) => (
+                        <option
+                          key={position}
+                          value={position}
+                        >
+                          {position}
+                        </option>
+                      ),
+                    )}
                   </select>
                 </div>
 
@@ -867,9 +1103,13 @@ function EditProfilePage() {
                   <button
                     type="submit"
                     className="profile-primary-button"
-                    disabled={isSavingPosition}
+                    disabled={
+                      isSavingPosition
+                    }
                   >
-                    {isSavingPosition ? 'Saving...' : 'Save position'}
+                    {isSavingPosition
+                      ? 'Saving...'
+                      : 'Save position'}
                   </button>
                 </div>
               </form>
@@ -888,12 +1128,19 @@ function EditProfilePage() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="password-modal-title"
-              onMouseDown={(event) => event.stopPropagation()}
+              onMouseDown={(event) =>
+                event.stopPropagation()
+              }
             >
               <div className="profile-modal-heading">
                 <div>
-                  <h2 id="password-modal-title">Change password</h2>
-                  <p>You will need to log in again after saving.</p>
+                  <h2 id="password-modal-title">
+                    Change password
+                  </h2>
+
+                  <p>
+                    You will need to log in again after saving.
+                  </p>
                 </div>
 
                 <button
@@ -907,38 +1154,57 @@ function EditProfilePage() {
               </div>
 
               {errorMessage && (
-                <p className="auth-error" role="alert">
+                <p
+                  className="auth-error"
+                  role="alert"
+                >
                   {errorMessage}
                 </p>
               )}
 
               <form
                 className="profile-modal-form"
-                onSubmit={handlePasswordSubmit}
+                onSubmit={
+                  handlePasswordSubmit
+                }
               >
                 <div className="profile-form-group">
-                  <label htmlFor="current-password">Current password</label>
+                  <label htmlFor="current-password">
+                    Current password
+                  </label>
+
                   <input
                     id="current-password"
                     name="current_password"
                     type="password"
                     autoComplete="current-password"
-                    value={passwordData.current_password}
-                    onChange={handlePasswordChange}
+                    value={
+                      passwordData.current_password
+                    }
+                    onChange={
+                      handlePasswordChange
+                    }
                     required
                   />
                 </div>
 
                 <div className="profile-form-group">
-                  <label htmlFor="new-password">New password</label>
+                  <label htmlFor="new-password">
+                    New password
+                  </label>
+
                   <input
                     id="new-password"
                     name="password"
                     type="password"
                     autoComplete="new-password"
                     minLength={6}
-                    value={passwordData.password}
-                    onChange={handlePasswordChange}
+                    value={
+                      passwordData.password
+                    }
+                    onChange={
+                      handlePasswordChange
+                    }
                     required
                   />
                 </div>
@@ -947,14 +1213,19 @@ function EditProfilePage() {
                   <label htmlFor="password-confirmation">
                     Confirm new password
                   </label>
+
                   <input
                     id="password-confirmation"
                     name="password_confirmation"
                     type="password"
                     autoComplete="new-password"
                     minLength={6}
-                    value={passwordData.password_confirmation}
-                    onChange={handlePasswordChange}
+                    value={
+                      passwordData.password_confirmation
+                    }
+                    onChange={
+                      handlePasswordChange
+                    }
                     required
                   />
                 </div>
@@ -971,9 +1242,13 @@ function EditProfilePage() {
                   <button
                     type="submit"
                     className="profile-primary-button"
-                    disabled={isChangingPassword}
+                    disabled={
+                      isChangingPassword
+                    }
                   >
-                    {isChangingPassword ? 'Changing...' : 'Change password'}
+                    {isChangingPassword
+                      ? 'Changing...'
+                      : 'Change password'}
                   </button>
                 </div>
               </form>
@@ -986,25 +1261,41 @@ function EditProfilePage() {
 }
 
 async function readResponse(response) {
-  const responseText = await response.text()
+  const responseText =
+    await response.text()
 
-  return responseText ? JSON.parse(responseText) : {}
+  return responseText
+    ? JSON.parse(responseText)
+    : {}
 }
 
-function getErrorMessage(data, fallbackMessage) {
+function getErrorMessage(
+  data,
+  fallbackMessage,
+) {
   if (Array.isArray(data.errors)) {
     return data.errors.join(', ')
   }
 
-  return data.error || data.message || fallbackMessage
+  return (
+    data.error ||
+    data.message ||
+    fallbackMessage
+  )
 }
 
 function formatLabel(value) {
-  if (!value) return 'Not available'
+  if (!value) {
+    return 'Not available'
+  }
 
   return value
     .replaceAll('_', ' ')
-    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    .replace(
+      /\b\w/g,
+      (letter) =>
+        letter.toUpperCase(),
+    )
 }
 
 export default EditProfilePage

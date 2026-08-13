@@ -4,12 +4,16 @@ function BackButton({ to, label = 'Back' }) {
   const navigate = useNavigate()
 
   function handleBack() {
-    navigate(to)
+    if (to) {
+      navigate(to)
+    } else {
+      navigate(-1)
+    }
   }
 
   return (
     <button
-      className="back-button"
+      className="app-back-button"
       type="button"
       onClick={handleBack}
       aria-label={label}

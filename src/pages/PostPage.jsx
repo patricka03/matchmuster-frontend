@@ -212,7 +212,7 @@ function PostPage() {
       <main className="post-page">
         <section className="post-page-container">
           <Link
-            className="post-back-link"
+            className="app-back-button"
             to={`/teams/${teamId}/posts`}
           >
             ← Back to posts

@@ -78,7 +78,7 @@ function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link className="back-link" to="/">
+        <Link className="app-back-button" to="/">
           ← Back
         </Link>
 

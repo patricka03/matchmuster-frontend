@@ -19,6 +19,7 @@ function WelcomePage() {
         <p>
           Fixtures, availability, team updates and match payments.
         </p>
+
         <p>
           All in one place.
         </p>
@@ -35,6 +36,33 @@ function WelcomePage() {
             </Link>
           </p>
         </div>
+
+        <footer className="welcome-legal-footer">
+          <nav
+            className="welcome-legal-links"
+            aria-label="Legal information"
+          >
+            <Link to="/legal/terms">
+              Terms
+            </Link>
+
+            <span aria-hidden="true">•</span>
+
+            <Link to="/legal/privacy">
+              Privacy
+            </Link>
+
+            <span aria-hidden="true">•</span>
+
+            <Link to="/legal/community-guidelines">
+              Community Guidelines
+            </Link>
+          </nav>
+
+          <p>
+            © 2026 MatchMuster
+          </p>
+        </footer>
       </section>
     </main>
   )

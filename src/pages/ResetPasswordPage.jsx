@@ -97,7 +97,7 @@ function ResetPasswordPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link className="back-link" to="/login">
+        <Link className="app-back-button" to="/login">
           ← Back to login
         </Link>
 

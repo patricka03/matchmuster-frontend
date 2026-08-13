@@ -34,6 +34,8 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import DeveloperLoginPage from './pages/DeveloperLoginPage'
 import DeveloperDashboardPage from './pages/DeveloperDashboardPage'
 import DeveloperProtectedRoute from './components/DeveloperProtectedRoute'
+import LegalHubPage from './pages/legal/LegalHubPage'
+import LegalPage from './pages/legal/LegalPage'
 
 
 function App() {
@@ -50,6 +52,9 @@ function App() {
       <Route path="/profile/edit" element={<EditProfilePage />} />
       <Route path="/notifications" element={<NotificationsPage />} />
       <Route path="/help" element={<HelpPage />} />
+
+      <Route path="/legal" element={<LegalHubPage />} />
+      <Route path="/legal/:document" element={<LegalPage />} />
 
       <Route path="/team" element={<TeamPage />} />
       <Route path="/teams/join" element={<JoinPage />} />

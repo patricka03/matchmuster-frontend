@@ -66,6 +66,7 @@
   margin-top: 32px;
 }
 
+
 .signup-button {
   width: 100%;
   min-height: 52px;
@@ -93,6 +94,122 @@
 
 .signup-button:active {
   transform: translateY(0);
+}
+
+/* ========================================
+   SIGNUP LEGAL ACCEPTANCE
+======================================== */
+
+.signup-legal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.signup-legal-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px 16px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #fff8fb,
+    #f7faff
+  );
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.signup-legal-option:hover {
+  border-color: var(--color-brand-pink-border);
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.05);
+}
+
+/* IMPORTANT:
+   Override the normal .auth-form input styles
+*/
+
+.auth-form .signup-legal-option input[type='checkbox'] {
+  appearance: auto;
+
+  width: 18px;
+  min-width: 18px;
+
+  height: 18px;
+  min-height: 18px;
+
+  padding: 0;
+  margin: 2px 0 0;
+
+  flex: 0 0 18px;
+
+  border: initial;
+  border-radius: 4px;
+
+  box-shadow: none;
+
+  accent-color: var(--color-brand-pink);
+
+  cursor: pointer;
+}
+
+.auth-form .signup-legal-option input[type='checkbox']:focus {
+  box-shadow: none;
+}
+
+.signup-legal-option > span {
+  flex: 1;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.signup-legal-option strong {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.signup-legal-option small {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.signup-legal-option a {
+  color: var(--color-brand-blue-dark);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.signup-legal-option a:hover {
+  color: var(--color-brand-pink-dark);
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .signup-legal-option {
+    padding: 14px;
+  }
 }
 
 .login-prompt {
@@ -139,6 +256,58 @@
 
   .welcome-card > p {
     font-size: 15px;
+  }
+}
+
+/* ========================================
+   WELCOME PAGE LEGAL FOOTER
+======================================== */
+
+.welcome-legal-footer {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.welcome-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.welcome-legal-links a {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.welcome-legal-links a:hover {
+  color: var(--color-brand-pink-dark);
+  text-decoration: underline;
+}
+
+.welcome-legal-links span {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.welcome-legal-footer > p {
+  margin: 12px 0 0;
+  color: #94a3b8;
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .welcome-legal-links {
+    gap: 6px;
+  }
+
+  .welcome-legal-links a {
+    font-size: 11px;
   }
 }
 
@@ -3082,4 +3251,73 @@
   width: 64px;
   height: 64px;
   margin: 20px auto;
+}
+
+
+/* ========================================
+   GLOBAL MATCHMUSTER BACK BUTTON
+======================================== */
+
+.app-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  width: fit-content;
+  margin-bottom: 24px;
+  padding: 10px 16px;
+
+  border: 1px solid var(--color-brand-pink-border);
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #fff0f7,
+    #eff6ff
+  );
+
+  color: var(--color-brand-blue-dark);
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.06);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.app-back-button:hover {
+  transform: translateY(-1px);
+
+  border-color: var(--color-brand-pink);
+
+  color: var(--color-brand-pink-dark);
+
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+}
+
+.app-back-button:active {
+  transform: translateY(0);
+}
+
+.app-back-button:focus-visible {
+  outline: 3px solid rgba(79, 156, 255, 0.28);
+  outline-offset: 3px;
+}
+
+@media (max-width: 500px) {
+  .app-back-button {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
 }
