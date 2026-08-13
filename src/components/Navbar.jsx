@@ -276,13 +276,7 @@ function Navbar({
           aria-label="Go to MatchMuster dashboard"
           title="Dashboard"
         >
-          <span className="navbar-logo">
-            <ShieldCheck
-              size={24}
-              strokeWidth={2.4}
-              aria-hidden="true"
-            />
-          </span>
+          <div className="logo" >MM</div>
 
           <span className="navbar-brand-name">
             MatchMuster
