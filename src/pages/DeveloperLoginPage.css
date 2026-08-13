@@ -26,6 +26,10 @@
   background: var(--color-brand-gradient);
   color: #ffffff;
   font-weight: 800;
+  display: block;
+  object-fit: contain;
+  background: transparent;
+  border-radius: 0;
 }
 
 .developer-login-label {

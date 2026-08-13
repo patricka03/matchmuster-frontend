@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import API_URL from '../config/api'
+import matchMusterLogo from '../assets/matchmuster-logo.png'
 
 function LoginPage() {
   const location = useLocation()
@@ -81,7 +82,12 @@ function LoginPage() {
           ← Back
         </Link>
 
-        <div className="logo">MM</div>
+        <img
+          className="matchmuster-page-logo"
+          src={matchMusterLogo}
+          alt=""
+          aria-hidden="true"
+        />
 
         <h1>Welcome back</h1>
         <p>Sign in to your MatchMuster account.</p>

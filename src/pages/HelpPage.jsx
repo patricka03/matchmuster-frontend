@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import './HelpPage.css'
+import matchMusterLogo from '../assets/matchmuster-logo.png'
 
 function HelpPage() {
   return (
@@ -9,7 +10,12 @@ function HelpPage() {
           ← Back to login
         </Link>
 
-        <div className="logo">MM</div>
+        <img
+          className="matchmuster-page-logo"
+          src={matchMusterLogo}
+          alt=""
+          aria-hidden="true"
+        />
 
         <h1>Need help signing in?</h1>
 

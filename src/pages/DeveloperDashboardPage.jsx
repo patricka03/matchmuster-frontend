@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './DeveloperDashboardPage.css'
 import API_URL from '../config/api'
+import matchMusterLogo from '../assets/matchmuster-logo.png'
 
 function DeveloperDashboardPage() {
   const navigate = useNavigate()
@@ -395,7 +396,12 @@ function DeveloperDashboardPage() {
       <aside className="developer-sidebar">
         <div>
           <div className="developer-brand">
-            <div className="developer-brand-mark">MM</div>
+            <img
+              className="developer-brand-mark "
+              src={matchMusterLogo}
+              alt=""
+              aria-hidden="true"
+            />
 
             <div>
               <strong>MatchMuster</strong>

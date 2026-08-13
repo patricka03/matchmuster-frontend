@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './DeveloperLoginPage.css'
 import API_URL from '../config/api'
+import matchMusterLogo from '../assets/matchmuster-logo.png'
 
 function DeveloperLoginPage() {
   const navigate = useNavigate()
@@ -70,7 +71,12 @@ function DeveloperLoginPage() {
   return (
     <main className="developer-login-page">
       <section className="developer-login-card">
-        <div className="developer-login-logo">MM</div>
+        <img
+          className="developer-login-logo"
+          src={matchMusterLogo}
+          alt=""
+          aria-hidden="true"
+        />
 
         <p className="developer-login-label">
           PRIVATE CONTROL CENTRE

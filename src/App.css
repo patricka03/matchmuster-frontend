@@ -3068,3 +3068,18 @@
     width: 100%;
   }
 }
+
+.matchmuster-page-logo {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  object-fit: contain;
+}
+
+.auth-card .matchmuster-page-logo,
+.forgot-password-card .matchmuster-page-logo {
+  width: 64px;
+  height: 64px;
+  margin: 20px auto;
+}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './ForgotPasswordPage.css'
 import API_URL from '../config/api'
+import matchMusterLogo from '../assets/matchmuster-logo.png'
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -56,7 +57,12 @@ function ForgotPasswordPage() {
           ← Back to login
         </Link>
 
-        <div className="logo">MM</div>
+        <img
+          className="matchmuster-page-logo"
+          src={matchMusterLogo}
+          alt=""
+          aria-hidden="true"
+        />
 
         <h1>Forgot your password?</h1>
 

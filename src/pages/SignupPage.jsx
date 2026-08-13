@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import API_URL from '../config/api'
+import matchMusterLogo from '../assets/matchmuster-logo.png'
 
 function SignupPage() {
   const navigate = useNavigate()
@@ -108,7 +109,12 @@ function SignupPage() {
           ← Back
         </Link>
 
-        <div className="logo">MM</div>
+        <img
+          className="matchmuster-page-logo"
+          src={matchMusterLogo}
+          alt=""
+          aria-hidden="true"
+        />
 
         <h1>Create your account</h1>
 

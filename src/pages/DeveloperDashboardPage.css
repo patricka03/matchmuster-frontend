@@ -31,6 +31,10 @@
   background: #ffffff;
   color: var(--color-brand-pink);
   font-weight: 800;
+  display: block;
+  object-fit: contain;
+  background: transparent;
+  border-radius: 0;
 }
 
 .developer-brand strong,
