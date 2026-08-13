@@ -24,6 +24,9 @@ function EditProfilePage() {
     password_confirmation: '',
   })
 
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteConfirmed, setDeleteConfirmed] = useState(false)
+
   const [preferredPosition, setPreferredPosition] = useState('')
   const [selectedAvatar, setSelectedAvatar] = useState(null)
   const [avatarPreview, setAvatarPreview] = useState('')
@@ -33,6 +36,7 @@ function EditProfilePage() {
   const [isSavingPosition, setIsSavingPosition] = useState(false)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -66,7 +70,10 @@ function EditProfilePage() {
 
         if (!response.ok) {
           throw new Error(
-            getErrorMessage(data, 'Unable to load your profile.'),
+            getErrorMessage(
+              data,
+              'Unable to load your profile.',
+            ),
           )
         }
 
@@ -80,7 +87,9 @@ function EditProfilePage() {
           email: user.email || '',
         })
 
-        setPreferredPosition(user.preferred_position || '')
+        setPreferredPosition(
+          user.preferred_position || '',
+        )
 
         localStorage.setItem(
           'currentUser',
@@ -88,7 +97,8 @@ function EditProfilePage() {
         )
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to load your profile.',
+          error.message ||
+            'Unable to load your profile.',
         )
       } finally {
         setIsLoading(false)
@@ -107,14 +117,24 @@ function EditProfilePage() {
       }
     }
 
-    const previousOverflow = document.body.style.overflow
+    const previousOverflow =
+      document.body.style.overflow
 
     document.body.style.overflow = 'hidden'
-    document.addEventListener('keydown', handleKeyDown)
+
+    document.addEventListener(
+      'keydown',
+      handleKeyDown,
+    )
 
     return () => {
-      document.body.style.overflow = previousOverflow
-      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow =
+        previousOverflow
+
+      document.removeEventListener(
+        'keydown',
+        handleKeyDown,
+      )
     }
   }, [activeModal])
 
@@ -122,7 +142,9 @@ function EditProfilePage() {
     localStorage.removeItem('token')
     localStorage.removeItem('currentUser')
 
-    navigate('/login', { replace: true })
+    navigate('/login', {
+      replace: true,
+    })
   }
 
   function openModal(modalName) {
@@ -131,9 +153,12 @@ function EditProfilePage() {
 
     if (modalName === 'details') {
       setFormData({
-        first_name: currentUser?.first_name || '',
-        last_name: currentUser?.last_name || '',
-        email: currentUser?.email || '',
+        first_name:
+          currentUser?.first_name || '',
+        last_name:
+          currentUser?.last_name || '',
+        email:
+          currentUser?.email || '',
       })
     }
 
@@ -151,12 +176,21 @@ function EditProfilePage() {
       })
     }
 
+    if (modalName === 'delete-account') {
+      setDeletePassword('')
+      setDeleteConfirmed(false)
+    }
+
     setActiveModal(modalName)
   }
 
   function closeModal() {
+    if (isDeletingAccount) return
+
     setActiveModal(null)
     setErrorMessage('')
+    setDeletePassword('')
+    setDeleteConfirmed(false)
   }
 
   function handleChange(event) {
@@ -171,10 +205,12 @@ function EditProfilePage() {
   function handlePasswordChange(event) {
     const { name, value } = event.target
 
-    setPasswordData((currentPasswordData) => ({
-      ...currentPasswordData,
-      [name]: value,
-    }))
+    setPasswordData(
+      (currentPasswordData) => ({
+        ...currentPasswordData,
+        [name]: value,
+      }),
+    )
   }
 
   function handleAvatarChange(event) {
@@ -186,12 +222,16 @@ function EditProfilePage() {
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      setErrorMessage('Please select an image file.')
+      setErrorMessage(
+        'Please select an image file.',
+      )
+
       event.target.value = ''
       return
     }
 
-    const maximumFileSize = 10 * 1024 * 1024
+    const maximumFileSize =
+      10 * 1024 * 1024
 
     if (file.size > maximumFileSize) {
       setErrorMessage(
@@ -214,11 +254,15 @@ function EditProfilePage() {
   }
 
   async function handleAvatarUpload() {
-    if (!selectedAvatar || isUploadingAvatar) {
+    if (
+      !selectedAvatar ||
+      isUploadingAvatar
+    ) {
       return
     }
 
-    const token = localStorage.getItem('token')
+    const token =
+      localStorage.getItem('token')
 
     if (!token) {
       clearSession()
@@ -231,7 +275,10 @@ function EditProfilePage() {
 
     const avatarData = new FormData()
 
-    avatarData.append('avatar', selectedAvatar)
+    avatarData.append(
+      'avatar',
+      selectedAvatar,
+    )
 
     try {
       const response = await fetch(
@@ -246,7 +293,8 @@ function EditProfilePage() {
         },
       )
 
-      const data = await readResponse(response)
+      const data =
+        await readResponse(response)
 
       if (response.status === 401) {
         clearSession()
@@ -293,7 +341,8 @@ function EditProfilePage() {
   async function handleProfileSubmit(event) {
     event.preventDefault()
 
-    const token = localStorage.getItem('token')
+    const token =
+      localStorage.getItem('token')
 
     if (!token) {
       clearSession()
@@ -310,8 +359,10 @@ function EditProfilePage() {
         {
           method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
+            'Content-Type':
+              'application/json',
+            Accept:
+              'application/json',
             Authorization: token,
           },
           body: JSON.stringify({
@@ -320,7 +371,8 @@ function EditProfilePage() {
         },
       )
 
-      const data = await readResponse(response)
+      const data =
+        await readResponse(response)
 
       if (response.status === 401) {
         clearSession()
@@ -336,14 +388,18 @@ function EditProfilePage() {
         )
       }
 
-      const updatedUser = data.user || data
+      const updatedUser =
+        data.user || data
 
       setCurrentUser(updatedUser)
 
       setFormData({
-        first_name: updatedUser.first_name || '',
-        last_name: updatedUser.last_name || '',
-        email: updatedUser.email || '',
+        first_name:
+          updatedUser.first_name || '',
+        last_name:
+          updatedUser.last_name || '',
+        email:
+          updatedUser.email || '',
       })
 
       setPreferredPosition(
@@ -370,10 +426,13 @@ function EditProfilePage() {
     }
   }
 
-  async function handlePreferredPositionSubmit(event) {
+  async function handlePreferredPositionSubmit(
+    event,
+  ) {
     event.preventDefault()
 
-    const token = localStorage.getItem('token')
+    const token =
+      localStorage.getItem('token')
 
     if (!token) {
       clearSession()
@@ -390,19 +449,23 @@ function EditProfilePage() {
         {
           method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
+            'Content-Type':
+              'application/json',
+            Accept:
+              'application/json',
             Authorization: token,
           },
           body: JSON.stringify({
             team_membership: {
-              preferred_position: preferredPosition,
+              preferred_position:
+                preferredPosition,
             },
           }),
         },
       )
 
-      const data = await readResponse(response)
+      const data =
+        await readResponse(response)
 
       if (response.status === 401) {
         clearSession()
@@ -425,6 +488,7 @@ function EditProfilePage() {
       }
 
       setCurrentUser(updatedUser)
+
       setPreferredPosition(
         data.preferred_position,
       )
@@ -466,7 +530,9 @@ function EditProfilePage() {
       return
     }
 
-    if (passwordData.password.length < 6) {
+    if (
+      passwordData.password.length < 6
+    ) {
       setErrorMessage(
         'Your new password must contain at least 6 characters.',
       )
@@ -474,7 +540,8 @@ function EditProfilePage() {
       return
     }
 
-    const token = localStorage.getItem('token')
+    const token =
+      localStorage.getItem('token')
 
     if (!token) {
       clearSession()
@@ -489,8 +556,10 @@ function EditProfilePage() {
         {
           method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
+            'Content-Type':
+              'application/json',
+            Accept:
+              'application/json',
             Authorization: token,
           },
           body: JSON.stringify({
@@ -499,7 +568,8 @@ function EditProfilePage() {
         },
       )
 
-      const data = await readResponse(response)
+      const data =
+        await readResponse(response)
 
       if (response.status === 401) {
         clearSession()
@@ -529,10 +599,14 @@ function EditProfilePage() {
       )
 
       localStorage.removeItem('token')
-      localStorage.removeItem('currentUser')
+      localStorage.removeItem(
+        'currentUser',
+      )
 
       window.setTimeout(() => {
-        navigate('/login', { replace: true })
+        navigate('/login', {
+          replace: true,
+        })
       }, 1800)
     } catch (error) {
       setErrorMessage(
@@ -541,6 +615,109 @@ function EditProfilePage() {
       )
     } finally {
       setIsChangingPassword(false)
+    }
+  }
+
+  async function handleDeleteAccount(
+    event,
+  ) {
+    event.preventDefault()
+
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    if (!deletePassword.trim()) {
+      setErrorMessage(
+        'Enter your current password to delete your account.',
+      )
+
+      return
+    }
+
+    if (!deleteConfirmed) {
+      setErrorMessage(
+        'Please confirm that you understand account deletion is permanent.',
+      )
+
+      return
+    }
+
+    const token =
+      localStorage.getItem('token')
+
+    if (!token) {
+      clearSession()
+      return
+    }
+
+    setIsDeletingAccount(true)
+
+    try {
+      const response = await fetch(
+        `${API_URL}/users/account`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type':
+              'application/json',
+            Accept:
+              'application/json',
+            Authorization: token,
+          },
+          body: JSON.stringify({
+            current_password:
+              deletePassword,
+          }),
+        },
+      )
+
+      const data =
+        await readResponse(response)
+
+      if (response.status === 401) {
+        clearSession()
+        return
+      }
+
+      if (!response.ok) {
+        if (
+          response.status === 409 &&
+          data.teams?.length
+        ) {
+          throw new Error(
+            `${data.message || data.error} Team: ${data.teams.join(', ')}.`,
+          )
+        }
+
+        throw new Error(
+          getErrorMessage(
+            data,
+            'Unable to delete your account.',
+          ),
+        )
+      }
+
+      localStorage.removeItem('token')
+
+      localStorage.removeItem(
+        'currentUser',
+      )
+
+      navigate('/', {
+        replace: true,
+        state: {
+          successMessage:
+            data.message ||
+            'Your MatchMuster account has been deleted.',
+        },
+      })
+    } catch (error) {
+      setErrorMessage(
+        error.message ||
+          'Unable to delete your account.',
+      )
+    } finally {
+      setIsDeletingAccount(false)
     }
   }
 
@@ -588,29 +765,33 @@ function EditProfilePage() {
         <section className="edit-profile-card">
           <div className="edit-profile-heading">
             <div>
-              <h1>Profile &amp; settings</h1>
+              <h1>
+                Profile &amp; Settings
+              </h1>
 
               <p>
-                Manage your personal MatchMuster account.
+                Manage your personal
+                MatchMuster account.
               </p>
             </div>
 
             <Link
-              className="profile-dashboard-link"
+              className="app-back-button"
               to="/dashboard"
             >
-              Back to dashboard
+              ← Back to dashboard
             </Link>
           </div>
 
-          {errorMessage && !activeModal && (
-            <p
-              className="auth-error"
-              role="alert"
-            >
-              {errorMessage}
-            </p>
-          )}
+          {errorMessage &&
+            !activeModal && (
+              <p
+                className="auth-error"
+                role="alert"
+              >
+                {errorMessage}
+              </p>
+            )}
 
           {successMessage && (
             <p
@@ -630,7 +811,9 @@ function EditProfilePage() {
                     avatarPreview ||
                     currentUser.avatar_url
                   }
-                  alt={`${fullName() || 'User'} profile`}
+                  alt={`${
+                    fullName() || 'User'
+                  } profile`}
                 />
               ) : (
                 <span>
@@ -659,10 +842,13 @@ function EditProfilePage() {
 
           <section className="profile-picture-section">
             <div>
-              <h2>Profile picture</h2>
+              <h2>
+                Profile picture
+              </h2>
 
               <p>
-                Choose an image under 10 MB.
+                Choose an image under
+                10 MB.
               </p>
             </div>
 
@@ -678,13 +864,17 @@ function EditProfilePage() {
                 id="profile-avatar"
                 type="file"
                 accept="image/*"
-                onChange={handleAvatarChange}
+                onChange={
+                  handleAvatarChange
+                }
               />
 
               <button
                 type="button"
                 className="profile-primary-button"
-                onClick={handleAvatarUpload}
+                onClick={
+                  handleAvatarUpload
+                }
                 disabled={
                   !selectedAvatar ||
                   isUploadingAvatar
@@ -699,10 +889,13 @@ function EditProfilePage() {
 
           <section className="profile-settings-section">
             <div className="profile-section-heading">
-              <h2>Account details</h2>
+              <h2>
+                Account details
+              </h2>
 
               <p>
-                Select an item to update it.
+                Select an item to
+                update it.
               </p>
             </div>
 
@@ -752,7 +945,9 @@ function EditProfilePage() {
                     type="button"
                     className="profile-edit-button"
                     onClick={() =>
-                      openModal('position')
+                      openModal(
+                        'position',
+                      )
                     }
                   >
                     Edit
@@ -771,7 +966,9 @@ function EditProfilePage() {
                   </strong>
 
                   <small>
-                    Changing it will sign you out securely.
+                    Changing it will
+                    sign you out
+                    securely.
                   </small>
                 </div>
 
@@ -779,7 +976,9 @@ function EditProfilePage() {
                   type="button"
                   className="profile-edit-button"
                   onClick={() =>
-                    openModal('password')
+                    openModal(
+                      'password',
+                    )
                   }
                 >
                   Change
@@ -799,7 +998,9 @@ function EditProfilePage() {
                   </strong>
 
                   <small>
-                    This cannot be changed from profile settings.
+                    This cannot be
+                    changed from profile
+                    settings.
                   </small>
                 </div>
 
@@ -813,7 +1014,8 @@ function EditProfilePage() {
                 <div className="profile-setting-row profile-setting-read-only">
                   <div>
                     <span className="profile-setting-label">
-                      Manager verification
+                      Manager
+                      verification
                     </span>
 
                     <strong>
@@ -823,7 +1025,9 @@ function EditProfilePage() {
                     </strong>
 
                     <small>
-                      Verification is controlled by MatchMuster.
+                      Verification is
+                      controlled by
+                      MatchMuster.
                     </small>
                   </div>
 
@@ -846,7 +1050,9 @@ function EditProfilePage() {
               </h2>
 
               <p>
-                Review MatchMuster policies and privacy information.
+                Review MatchMuster
+                policies and privacy
+                information.
               </p>
             </div>
 
@@ -858,11 +1064,14 @@ function EditProfilePage() {
                   </span>
 
                   <strong>
-                    Terms, privacy and community rules
+                    Terms, privacy and
+                    community rules
                   </strong>
 
                   <small>
-                    Review the policies that apply when using MatchMuster.
+                    Review the policies
+                    that apply when using
+                    MatchMuster.
                   </small>
                 </div>
 
@@ -875,7 +1084,49 @@ function EditProfilePage() {
               </div>
             </div>
           </section>
+
+          {/* =====================================
+              DELETE ACCOUNT / DANGER ZONE
+          ===================================== */}
+
+          <section className="profile-danger-section">
+            <div className="profile-danger-heading">
+              <div>
+                {/* <span className="profile-danger-label">
+                  Danger zone
+                </span> */}
+
+                <h2>
+                  Delete account
+                </h2>
+
+                <p>
+                  Permanently close your
+                  MatchMuster account and
+                  remove your personal
+                  account information where
+                  applicable.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="profile-delete-button"
+                onClick={() =>
+                  openModal(
+                    'delete-account',
+                  )
+                }
+              >
+                Delete account
+              </button>
+            </div>
+          </section>
         </section>
+
+        {/* =====================================
+            PERSONAL DETAILS MODAL
+        ===================================== */}
 
         {activeModal === 'details' && (
           <div
@@ -899,7 +1150,8 @@ function EditProfilePage() {
                   </h2>
 
                   <p>
-                    Update your name or email address.
+                    Update your name or
+                    email address.
                   </p>
                 </div>
 
@@ -941,7 +1193,9 @@ function EditProfilePage() {
                       value={
                         formData.first_name
                       }
-                      onChange={handleChange}
+                      onChange={
+                        handleChange
+                      }
                       required
                     />
                   </div>
@@ -958,7 +1212,9 @@ function EditProfilePage() {
                       value={
                         formData.last_name
                       }
-                      onChange={handleChange}
+                      onChange={
+                        handleChange
+                      }
                       required
                     />
                   </div>
@@ -973,8 +1229,12 @@ function EditProfilePage() {
                     id="profile-email"
                     name="email"
                     type="email"
-                    value={formData.email}
-                    onChange={handleChange}
+                    value={
+                      formData.email
+                    }
+                    onChange={
+                      handleChange
+                    }
                     required
                   />
                 </div>
@@ -1005,7 +1265,12 @@ function EditProfilePage() {
           </div>
         )}
 
-        {activeModal === 'position' && (
+        {/* =====================================
+            POSITION MODAL
+        ===================================== */}
+
+        {activeModal ===
+          'position' && (
           <div
             className="profile-modal-overlay"
             role="presentation"
@@ -1027,7 +1292,8 @@ function EditProfilePage() {
                   </h2>
 
                   <p>
-                    Choose the position you prefer to play.
+                    Choose the position
+                    you prefer to play.
                   </p>
                 </div>
 
@@ -1063,10 +1329,13 @@ function EditProfilePage() {
 
                   <select
                     id="preferred-position"
-                    value={preferredPosition}
+                    value={
+                      preferredPosition
+                    }
                     onChange={(event) =>
                       setPreferredPosition(
-                        event.target.value,
+                        event.target
+                          .value,
                       )
                     }
                     required
@@ -1117,7 +1386,12 @@ function EditProfilePage() {
           </div>
         )}
 
-        {activeModal === 'password' && (
+        {/* =====================================
+            PASSWORD MODAL
+        ===================================== */}
+
+        {activeModal ===
+          'password' && (
           <div
             className="profile-modal-overlay"
             role="presentation"
@@ -1139,7 +1413,8 @@ function EditProfilePage() {
                   </h2>
 
                   <p>
-                    You will need to log in again after saving.
+                    You will need to log
+                    in again after saving.
                   </p>
                 </div>
 
@@ -1249,6 +1524,201 @@ function EditProfilePage() {
                     {isChangingPassword
                       ? 'Changing...'
                       : 'Change password'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
+        {/* =====================================
+            DELETE ACCOUNT MODAL
+        ===================================== */}
+
+        {activeModal ===
+          'delete-account' && (
+          <div
+            className="profile-modal-overlay"
+            role="presentation"
+            onMouseDown={closeModal}
+          >
+            <section
+              className="profile-modal profile-delete-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-account-modal-title"
+              onMouseDown={(event) =>
+                event.stopPropagation()
+              }
+            >
+              <div className="profile-modal-heading">
+                <div>
+                  <span className="profile-danger-label">
+                    Permanent action
+                  </span>
+
+                  <h2 id="delete-account-modal-title">
+                    Delete your account?
+                  </h2>
+
+                  <p>
+                    This will permanently
+                    close your MatchMuster
+                    account.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="profile-modal-close"
+                  onClick={closeModal}
+                  aria-label="Close"
+                  disabled={
+                    isDeletingAccount
+                  }
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="profile-delete-warning">
+                <strong>
+                  Before you continue
+                </strong>
+
+                <ul>
+                  <li>
+                    You will immediately
+                    lose access to your
+                    account.
+                  </li>
+
+                  <li>
+                    Your active team
+                    memberships will be
+                    removed.
+                  </li>
+
+                  <li>
+                    Your profile
+                    information and profile
+                    picture will be removed
+                    where applicable.
+                  </li>
+
+                  <li>
+                    Some limited payment,
+                    legal or security
+                    records may be retained
+                    where required.
+                  </li>
+                </ul>
+              </div>
+
+              {currentUser?.account_type ===
+                'manager' && (
+                <p className="profile-delete-manager-note">
+                  If you are the only
+                  approved manager of a
+                  team, MatchMuster will
+                  ask you to add another
+                  approved manager before
+                  the account can be
+                  deleted.
+                </p>
+              )}
+
+              {errorMessage && (
+                <p
+                  className="auth-error"
+                  role="alert"
+                >
+                  {errorMessage}
+                </p>
+              )}
+
+              <form
+                className="profile-modal-form"
+                onSubmit={
+                  handleDeleteAccount
+                }
+              >
+                <div className="profile-form-group">
+                  <label htmlFor="delete-account-password">
+                    Current password
+                  </label>
+
+                  <input
+                    id="delete-account-password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={
+                      deletePassword
+                    }
+                    onChange={(event) =>
+                      setDeletePassword(
+                        event.target
+                          .value,
+                      )
+                    }
+                    placeholder="Enter your password"
+                    required
+                  />
+
+                  <small>
+                    We ask for your
+                    password to make sure
+                    it is really you.
+                  </small>
+                </div>
+
+                <label className="profile-delete-confirmation">
+                  <input
+                    type="checkbox"
+                    checked={
+                      deleteConfirmed
+                    }
+                    onChange={(event) =>
+                      setDeleteConfirmed(
+                        event.target
+                          .checked,
+                      )
+                    }
+                  />
+
+                  <span>
+                    I understand that
+                    deleting my
+                    MatchMuster account is
+                    permanent and cannot
+                    be undone.
+                  </span>
+                </label>
+
+                <div className="profile-modal-actions">
+                  <button
+                    type="button"
+                    className="profile-secondary-button"
+                    onClick={closeModal}
+                    disabled={
+                      isDeletingAccount
+                    }
+                  >
+                    Keep my account
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="profile-delete-confirm-button"
+                    disabled={
+                      isDeletingAccount ||
+                      !deletePassword ||
+                      !deleteConfirmed
+                    }
+                  >
+                    {isDeletingAccount
+                      ? 'Deleting account...'
+                      : 'Delete my account'}
                   </button>
                 </div>
               </form>

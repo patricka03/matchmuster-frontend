@@ -260,7 +260,7 @@ export const legalDocuments = {
         title: '26. Contact MatchMuster',
         paragraphs: [
           'Questions about these Terms or MatchMuster can be sent to MatchMuster.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.',
           'Legal operator details will be added before commercial launch.'
         ]
@@ -288,8 +288,8 @@ export const legalDocuments = {
         paragraphs: [
           'For data-protection purposes, the organisation or individual operating MatchMuster is responsible for personal information processed through MatchMuster except where another organisation acts independently.',
           'Legal operator details will be added before commercial launch.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
-          'Privacy email: To be added before launch — intended address privacy@matchmuster.uk.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
+          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com',
           'Website: matchmuster.uk.'
         ]
       },
@@ -593,8 +593,8 @@ export const legalDocuments = {
         title: '28. Contact MatchMuster',
         paragraphs: [
           'Questions or requests concerning privacy can be sent to MatchMuster.',
-          'Privacy email: To be added before launch — intended address privacy@matchmuster.uk.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
+          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.',
           'Legal operator details will be added before commercial launch.'
         ]
@@ -869,7 +869,7 @@ export const legalDocuments = {
         title: '24. Contact MatchMuster',
         paragraphs: [
           'Questions or reports concerning these Guidelines can be sent to MatchMuster.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.'
         ]
       }
@@ -1176,7 +1176,7 @@ export const legalDocuments = {
         title: '31. Contact MatchMuster About Payments',
         paragraphs: [
           'Questions about subscription billing, refunds or payment functionality can be sent to MatchMuster.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.',
           'Users should never send their full card number or card security code by email.'
         ]
@@ -1408,8 +1408,8 @@ export const legalDocuments = {
         title: '24. Contact MatchMuster',
         paragraphs: [
           'Questions about location or ETA privacy can be sent to MatchMuster.',
-          'Privacy email: To be added before launch — intended address privacy@matchmuster.uk.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
+          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.'
         ]
       }
@@ -1608,8 +1608,8 @@ export const legalDocuments = {
         title: '21. Contact MatchMuster',
         paragraphs: [
           'Questions or concerns regarding age eligibility can be sent to MatchMuster.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
-          'Privacy email: To be added before launch — intended address privacy@matchmuster.uk.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
+          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.'
         ]
       }
@@ -1976,8 +1976,8 @@ export const legalDocuments = {
         title: '39. Contact MatchMuster',
         paragraphs: [
           'Questions about account deletion or retention can be sent to MatchMuster.',
-          'Privacy email: To be added before launch — intended address privacy@matchmuster.uk.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
+          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.'
         ]
       }
@@ -2431,7 +2431,7 @@ export const legalDocuments = {
         title: '43. Contact MatchMuster',
         paragraphs: [
           'Reports, appeals or complaints can be sent to MatchMuster through the reporting tools and support channels made available in the Service.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.',
           'Where someone is in immediate danger, contact the appropriate emergency services rather than relying solely on MatchMuster.'
         ]
@@ -2684,8 +2684,8 @@ export const legalDocuments = {
         title: '25. Contact MatchMuster',
         paragraphs: [
           'Questions about cookies or similar technologies can be sent to MatchMuster.',
-          'Privacy email: To be added before launch — intended address privacy@matchmuster.uk.',
-          'Support email: To be added before launch — intended address support@matchmuster.uk.',
+          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
+          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
           'Website: matchmuster.uk.'
         ]
       }

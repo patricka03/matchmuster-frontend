@@ -48,9 +48,9 @@ function HelpPage() {
 
           <a
             className="support-email"
-            href="mailto:support@matchmuster.uk"
+            href="mailto:matchmuster.dev@gmail.com"
           >
-            support@matchmuster.uk
+            matchmuster.dev@gmail.com
           </a>
 
           <p className="support-text">
