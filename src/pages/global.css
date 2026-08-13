@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #17231c;
-  --muted: #6d776f;
-  --line: #e2e7e3;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
   --paper: #ffffff;
-  --canvas: #f5f7f5;
-  --forest: #173d2a;
-  --forest-deep: #102b1e;
-  --lime: #c7f36a;
-  --lime-strong: #a8da46;
-  --red: #c94c4c;
-  --shadow: 0 12px 40px rgba(26, 45, 33, 0.07);
+  --canvas: #f8fbff;
+  --forest: #2563eb;
+  --forest-deep: #1e40af;
+  --lime: #ff0a78;
+  --lime-strong: #e6006e;
+  --red: #dc2626;
+  --shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
 }
 
 * {
@@ -41,7 +41,10 @@ button {
 
 .dashboard-shell {
   min-height: 100vh;
-  background: var(--canvas);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 10, 120, 0.08), transparent 28%),
+    radial-gradient(circle at 90% 8%, rgba(79, 156, 255, 0.12), transparent 30%),
+    var(--canvas);
 }
 
 .sidebar {
@@ -55,8 +58,8 @@ button {
   overflow-y: auto;
   color: #fff;
   background:
-    radial-gradient(circle at 95% 12%, rgba(199, 243, 106, 0.1), transparent 28%),
-    var(--forest-deep);
+    radial-gradient(circle at 90% 8%, rgba(255, 10, 120, 0.35), transparent 30%),
+    linear-gradient(180deg, #2563eb 0%, #354fbf 58%, #1e2d73 100%);
 }
 
 .brand-row {
@@ -73,8 +76,8 @@ button {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  color: var(--forest-deep);
-  background: var(--lime);
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff0a78, #4f9cff);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
@@ -138,14 +141,14 @@ button {
 }
 
 .nav-item-active {
-  color: var(--forest-deep);
-  background: var(--lime);
-  box-shadow: 0 8px 22px rgba(7, 22, 13, 0.25);
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff0a78, #4f9cff);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.24);
 }
 
 .nav-item-active:hover {
-  color: var(--forest-deep);
-  background: var(--lime);
+  color: #ffffff;
+  background: linear-gradient(135deg, #e6006e, #3185ea);
 }
 
 .nav-count {
@@ -163,7 +166,7 @@ button {
 
 .nav-item-active .nav-count {
   color: #fff;
-  background: var(--forest-deep);
+  background: #1e40af;
 }
 
 .sidebar-status {
@@ -186,12 +189,12 @@ button {
   overflow: hidden;
   border-radius: 12px;
   color: var(--lime);
-  background: rgba(199, 243, 106, 0.1);
+  background: rgba(255, 10, 120, 0.12);
 }
 
 .pitch-line {
   position: absolute;
-  border: 1px solid rgba(199, 243, 106, 0.18);
+  border: 1px solid rgba(255, 10, 120, 0.22);
   border-radius: 50%;
 }
 
@@ -230,7 +233,7 @@ button {
   height: 7px;
   border-radius: 50%;
   background: currentColor;
-  box-shadow: 0 0 0 4px rgba(199, 243, 106, 0.11);
+  box-shadow: 0 0 0 4px rgba(255, 10, 120, 0.12);
 }
 
 .developer-card {
@@ -318,7 +321,7 @@ button {
 }
 
 .topbar-wordmark {
-  color: #39443d;
+  color: var(--forest-deep);
   font-size: 12px;
   font-weight: 730;
   letter-spacing: 0.08em;
@@ -327,7 +330,7 @@ button {
 
 .topbar-wordmark span {
   margin-left: 7px;
-  color: #96a097;
+  color: #94a3b8;
   font-weight: 550;
 }
 
@@ -344,10 +347,10 @@ button {
   gap: 7px;
   min-height: 30px;
   padding: 0 11px;
-  border: 1px solid #d7e6d9;
+  border: 1px solid #bbf7d0;
   border-radius: 999px;
-  color: #267344;
-  background: #f2faf4;
+  color: #15803d;
+  background: #f0fdf4;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -368,7 +371,7 @@ button {
   background: #fff;
 }
 
-.refresh-button:hover { border-color: #bdc8c0; }
+.refresh-button:hover { border-color: #cbd5e1; }
 
 .spin { animation: spin 800ms linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -389,7 +392,7 @@ button {
 
 .eyebrow {
   margin: 0 0 8px;
-  color: #7b867d;
+  color: #ff0a78;
   font-size: 10px;
   font-weight: 720;
   letter-spacing: 0.12em;
@@ -435,22 +438,22 @@ button {
   background: #fff;
 }
 
-.button-light:hover { border-color: #bdc8c0; box-shadow: 0 5px 16px rgba(24, 45, 31, 0.06); }
+.button-light:hover { border-color: #cbd5e1; box-shadow: 0 5px 16px rgba(15, 39, 71, 0.06); }
 
 .button-dark {
   color: #fff;
   background: var(--forest-deep);
 }
 
-.button-dark:hover { background: #173d2a; }
+.button-dark:hover { background: #172033; }
 
 .button-primary {
-  color: var(--forest-deep);
-  background: var(--lime);
-  border-color: var(--lime-strong);
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #2563eb;
 }
 
-.button-primary:hover { background: #d3fa7f; }
+.button-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
 
 .button-danger {
   color: #fff;
@@ -467,7 +470,7 @@ button {
 .panel {
   border: 1px solid var(--line);
   background: var(--paper);
-  box-shadow: 0 1px 1px rgba(16, 43, 30, 0.02);
+  box-shadow: 0 1px 1px rgba(15, 39, 71, 0.02);
 }
 
 .metric-card {
@@ -486,14 +489,14 @@ button {
   border-radius: 10px;
 }
 
-.metric-green { color: #236d42; background: #e9f8ec; }
+.metric-green { color: #15803d; background: #f0fdf4; }
 .metric-blue { color: #34659b; background: #eaf2fb; }
 .metric-violet { color: #694e9e; background: #f0ebfb; }
 .metric-amber { color: #8a6820; background: #fbf4df; }
 
 .metric-label {
   margin-bottom: 3px;
-  color: #6e796f;
+  color: #64748b;
   font-size: 11px;
   font-weight: 620;
 }
@@ -507,7 +510,7 @@ button {
 
 .metric-card p {
   margin: 8px 0 0;
-  color: #8a948c;
+  color: #94a3b8;
   font-size: 10px;
   line-height: 1.4;
 }
@@ -518,9 +521,9 @@ button {
   gap: 14px;
   margin: 15px 0;
   padding: 16px 17px;
-  border: 1px solid #dce9bd;
+  border: 1px solid #fde68a;
   border-radius: 14px;
-  background: #f7fbe9;
+  background: #fffbeb;
 }
 
 .attention-icon {
@@ -530,8 +533,8 @@ button {
   width: 40px;
   height: 40px;
   border-radius: 11px;
-  color: #456018;
-  background: #e8f5b8;
+  color: #92400e;
+  background: #fef3c7;
 }
 
 .attention-banner > div:nth-child(2) {
@@ -539,7 +542,7 @@ button {
 }
 
 .attention-banner strong { font-size: 13px; }
-.attention-banner p { margin: 3px 0 0; color: #778066; font-size: 10px; }
+.attention-banner p { margin: 3px 0 0; color: #64748b; font-size: 10px; }
 
 .overview-grid {
   display: grid;
@@ -575,7 +578,7 @@ button {
   gap: 2px;
   padding: 6px;
   border: 0;
-  color: #5d685f;
+  color: #64748b;
   background: transparent;
   cursor: pointer;
   font-size: 10px;
@@ -611,10 +614,10 @@ button {
   place-items: center;
   width: 38px;
   height: 38px;
-  border: 1px solid #dce5de;
+  border: 1px solid #dbeafe;
   border-radius: 11px;
-  color: #315640;
-  background: #f0f5f1;
+  color: #334155;
+  background: #f8fafc;
   font-size: 10px;
   font-weight: 780;
 }
@@ -638,7 +641,7 @@ button {
 .manager-info span,
 .manager-date span {
   overflow: hidden;
-  color: #89928b;
+  color: #94a3b8;
   font-size: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -672,12 +675,12 @@ button {
 .decision-reject:hover { color: #a23d3d; border-color: #dfbebe; background: #fff5f5; }
 
 .decision-approve {
-  color: #285c3b;
-  border-color: #cfe1d2;
-  background: #f4faf5;
+  color: #166534;
+  border-color: #bbf7d0;
+  background: #f0fdf4;
 }
 
-.decision-approve:hover { color: #174b2c; border-color: #b7d6bd; background: #ebf7ed; }
+.decision-approve:hover { color: #15803d; border-color: #86efac; background: #dcfce7; }
 
 .activity-row {
   display: flex;
@@ -699,7 +702,7 @@ button {
   border-radius: 10px;
 }
 
-.activity-mint { color: #31784b; background: #eaf7ed; }
+.activity-mint { color: #15803d; background: #f0fdf4; }
 .activity-blue { color: #3f6591; background: #eaf2fa; }
 .activity-violet { color: #6a51a0; background: #f0ebfa; }
 .activity-amber { color: #8d691f; background: #fbf2d9; }
@@ -720,7 +723,7 @@ button {
 }
 
 .activity-copy span {
-  color: #919a93;
+  color: #94a3b8;
   font-size: 9px;
 }
 
@@ -747,8 +750,8 @@ button {
   height: 24px;
   margin-right: 6px;
   border-radius: 7px;
-  color: var(--forest-deep);
-  background: var(--lime);
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff0a78, #4f9cff);
   font-weight: 760;
 }
 
@@ -761,11 +764,11 @@ button {
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  color: #8a948c;
-  background: #fafbfa;
+  color: #94a3b8;
+  background: #f8fafc;
 }
 
-.search-box:focus-within { border-color: #aebbaf; background: #fff; box-shadow: 0 0 0 3px rgba(199, 243, 106, 0.16); }
+.search-box:focus-within { border-color: #4f9cff; background: #fff; box-shadow: 0 0 0 3px rgba(79, 156, 255, 0.16); }
 
 .search-box input {
   width: 100%;
@@ -782,7 +785,7 @@ button {
   display: grid;
   place-items: center;
   padding: 70px 20px;
-  color: #8b968d;
+  color: #94a3b8;
   text-align: center;
 }
 
@@ -797,9 +800,9 @@ button {
 }
 
 .recipient-pill {
-  color: #365c43;
-  border-color: #dae7dc;
-  background: #f2f8f3;
+  color: #3185ea;
+  border-color: #bfdbfe;
+  background: #eff6ff;
 }
 
 .update-form {
@@ -813,7 +816,7 @@ button {
   position: relative;
   display: grid;
   gap: 8px;
-  color: #4c584f;
+  color: #475569;
   font-size: 11px;
   font-weight: 650;
 }
@@ -822,11 +825,11 @@ button {
 .update-form textarea,
 .login-form input {
   width: 100%;
-  border: 1px solid #dce3de;
+  border: 1px solid #cbd5e1;
   border-radius: 10px;
   outline: 0;
   color: var(--ink);
-  background: #fafbfa;
+  background: #f8fafc;
   font-size: 12px;
   font-weight: 450;
   transition: 150ms ease;
@@ -845,16 +848,16 @@ button {
 .update-form input:focus,
 .update-form textarea:focus,
 .login-form input:focus {
-  border-color: #aebcaa;
+  border-color: #4f9cff;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(199, 243, 106, 0.17);
+  box-shadow: 0 0 0 3px rgba(79, 156, 255, 0.17);
 }
 
 .character-count {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  color: #a1aaa3;
+  color: #94a3b8;
   font-size: 9px;
   font-weight: 500;
 }
@@ -874,7 +877,7 @@ button {
   align-items: center;
   gap: 7px;
   margin: 0;
-  color: #828c84;
+  color: #64748b;
   font-size: 10px;
 }
 
@@ -891,8 +894,8 @@ button {
   width: 39px;
   height: 39px;
   border-radius: 11px;
-  color: #416323;
-  background: #eef7d1;
+  color: #e6006e;
+  background: #fff0f7;
 }
 
 .delivery-card h3 { margin: 16px 0 7px; font-size: 14px; }
@@ -908,7 +911,7 @@ button {
 }
 
 .delivery-stat strong { font-size: 26px; letter-spacing: -0.04em; }
-.delivery-stat span { color: #7e8980; font-size: 9px; }
+.delivery-stat span { color: #94a3b8; font-size: 9px; }
 
 .tip-card {
   display: flex;
@@ -937,14 +940,14 @@ button {
   padding: 0 11px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  color: #737e75;
+  color: #64748b;
   background: #fff;
   cursor: pointer;
   font-size: 9px;
   font-weight: 620;
 }
 
-.activity-filters button:hover { border-color: #c5d0c7; }
+.activity-filters button:hover { border-color: #bfdbfe; }
 .activity-filters .filter-active { color: #fff; border-color: var(--forest-deep); background: var(--forest-deep); }
 
 .activity-row-detailed {
@@ -958,8 +961,8 @@ button {
   margin-left: auto;
   padding: 5px 8px;
   border-radius: 7px;
-  color: #7f8981;
-  background: #f5f7f5;
+  color: #64748b;
+  background: #f8fafc;
   font-family: var(--font-geist-mono), monospace;
   font-size: 8px;
 }
@@ -978,7 +981,7 @@ button {
   inset: 0;
   width: 100%;
   border: 0;
-  background: rgba(8, 21, 14, 0.62);
+  background: rgba(15, 39, 71, 0.62);
   backdrop-filter: blur(5px);
   cursor: default;
 }
@@ -992,7 +995,7 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 18px;
   background: #fff;
-  box-shadow: 0 30px 90px rgba(4, 18, 10, 0.25);
+  box-shadow: 0 30px 90px rgba(15, 39, 71, 0.25);
 }
 
 .decision-modal h2,
@@ -1029,7 +1032,7 @@ button {
   border-radius: 13px;
 }
 
-.modal-icon-approve { color: #235f38; background: #e9f7ec; }
+.modal-icon-approve { color: #15803d; background: #f0fdf4; }
 .modal-icon-reject { color: #a33f3f; background: #fff0f0; }
 
 .modal-actions {
@@ -1063,7 +1066,7 @@ button {
   justify-content: center;
   gap: 7px;
   margin-top: 16px;
-  color: #7a857d;
+  color: #64748b;
   font-size: 9px;
 }
 
@@ -1082,7 +1085,7 @@ button {
   border-radius: 12px;
   color: #fff;
   background: var(--forest-deep);
-  box-shadow: 0 18px 55px rgba(10, 30, 17, 0.25);
+  box-shadow: 0 18px 55px rgba(15, 39, 71, 0.25);
   font-size: 11px;
   font-weight: 600;
   animation: toast-in 220ms ease-out;
@@ -1106,7 +1109,7 @@ button {
   .sidebar {
     width: min(290px, 86vw);
     transform: translateX(-105%);
-    box-shadow: 18px 0 50px rgba(8, 25, 15, 0.25);
+    box-shadow: 18px 0 50px rgba(15, 39, 71, 0.25);
     transition: transform 220ms ease;
   }
   .sidebar-open { transform: translateX(0); }
@@ -1117,7 +1120,7 @@ button {
     display: block;
     width: 100%;
     border: 0;
-    background: rgba(9, 25, 16, 0.52);
+    background: rgba(15, 39, 71, 0.52);
   }
   .mobile-close { display: grid; width: 34px; height: 34px; margin-left: auto; border-radius: 9px; color: rgba(255, 255, 255, 0.7); }
   .dashboard-main { margin-left: 0; }

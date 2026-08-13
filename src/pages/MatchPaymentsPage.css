@@ -64,7 +64,7 @@
   padding: 24px;
   border: 1px solid #bfdbfe;
   border-radius: 14px;
-  background-color: #eff6ff;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
 }
 
 .payment-request-form h2 {
@@ -347,10 +347,10 @@
   background:
     radial-gradient(
       circle at top right,
-      rgba(59, 130, 246, 0.35),
+      rgba(255, 10, 120, 0.3),
       transparent 38%
     ),
-    linear-gradient(135deg, #0f2747 0%, #123d70 100%);
+    linear-gradient(135deg, #2563eb 0%, #354fbf 58%, #0f2747 100%);
   border: 1px solid rgba(147, 197, 253, 0.18);
   border-radius: 18px;
   box-shadow: 0 12px 30px rgba(15, 39, 71, 0.16);
@@ -365,7 +365,7 @@
 
 .payment-collection-heading .dashboard-label {
   margin: 0 0 0.35rem;
-  color: #93c5fd;
+  color: #ffd1e5;
 }
 
 .payment-collection-heading h2 {
@@ -399,7 +399,7 @@
   display: block;
   height: 100%;
   min-width: 0;
-  background: linear-gradient(90deg, #38bdf8, #60a5fa);
+  background: linear-gradient(90deg, #ff0a78, #4f9cff);
   border-radius: inherit;
   transition: width 0.35s ease;
 }
@@ -479,7 +479,7 @@
   gap: 2rem;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #f8fbff, #eef6ff);
+  background: linear-gradient(135deg, #fff7fb, #eff6ff);
   border: 1px solid #bfdbfe;
   border-radius: 18px;
   box-shadow: 0 5px 18px rgba(15, 39, 71, 0.06);
@@ -487,6 +487,7 @@
 
 .payment-request-copy .dashboard-label {
   margin: 0 0 0.3rem;
+  color: var(--color-brand-pink);
 }
 
 .payment-request-copy h2 {
@@ -536,8 +537,8 @@
 }
 
 .payment-amount-input:focus-within {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+  border-color: var(--color-brand-blue);
+  box-shadow: 0 0 0 3px rgba(79, 156, 255, 0.16);
 }
 
 .payment-amount-input span {
@@ -614,6 +615,7 @@
 
 .payment-list-heading .dashboard-label {
   margin: 0 0 0.2rem;
+  color: var(--color-brand-pink);
 }
 
 .payment-list-heading h2 {
@@ -688,14 +690,14 @@
 }
 
 .payment-filter-tabs button.active {
-  color: #1d4ed8;
+  color: var(--color-brand-pink-dark);
   background: #ffffff;
   box-shadow: 0 2px 8px rgba(15, 39, 71, 0.09);
 }
 
 .payment-filter-tabs button.active span {
   color: #ffffff;
-  background: #2563eb;
+  background: var(--color-brand-gradient);
 }
 
 /* =========================================
@@ -773,7 +775,7 @@
   color: #ffffff;
   font-size: 1rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #2563eb, #0f2747);
+  background: var(--color-brand-gradient);
   border-radius: 13px;
   box-shadow: 0 4px 10px rgba(15, 39, 71, 0.17);
 }
@@ -959,7 +961,7 @@
 .payment-filter-tabs button:focus-visible,
 .clear-payment-filter-button:focus-visible,
 .pay-now-button:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.28);
+  outline: 3px solid rgba(79, 156, 255, 0.3);
   outline-offset: 2px;
 }
 

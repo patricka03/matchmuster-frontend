@@ -3,7 +3,7 @@
   min-height: calc(100vh - 72px);
   align-items: center;
   padding: 50px 24px;
-  background-color: #f8fafc;
+  background: var(--color-page-gradient);
 }
 
 .delete-post-container {
@@ -57,4 +57,113 @@
 .delete-post-preview {
   padding: 18px;
   border: 1px solid #e2e8f0;
- 
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fff7fb, #f4f9ff);
+  text-align: left;
+}
+
+.delete-post-preview strong {
+  color: #1e293b;
+  font-size: 16px;
+}
+
+.delete-post-preview p {
+  display: -webkit-box;
+  margin: 8px 0 0;
+  overflow: hidden;
+  color: #64748b;
+  line-height: 1.6;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.delete-post-notice {
+  margin: 20px 0 0;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.delete-post-actions {
+  display: flex;
+  justify-content: center;
+  gap: 11px;
+  margin-top: 27px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.delete-post-cancel,
+.delete-post-confirm {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.delete-post-cancel {
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #475569;
+  text-decoration: none;
+}
+
+.delete-post-cancel:hover {
+  background-color: #f8fafc;
+}
+
+.delete-post-confirm {
+  border: 0;
+  background-color: #dc2626;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.delete-post-confirm:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.delete-post-confirm:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.delete-post-error,
+.delete-post-message {
+  padding: 22px;
+  border-radius: 11px;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.delete-post-error {
+  margin-bottom: 18px;
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+  .delete-post-page {
+    padding: 35px 16px;
+  }
+
+  .delete-post-card {
+    padding: 27px 21px;
+  }
+
+  .delete-post-card h1 {
+    font-size: 28px;
+  }
+
+  .delete-post-actions {
+    flex-direction: column-reverse;
+  }
+
+  .delete-post-cancel,
+  .delete-post-confirm {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}

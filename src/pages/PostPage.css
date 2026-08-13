@@ -1,7 +1,7 @@
 .post-page {
   min-height: calc(100vh - 72px);
   padding: 42px 24px 80px;
-  background-color: #f8fafc;
+  background: var(--color-page-gradient);
 }
 
 .post-page-container {
@@ -13,14 +13,14 @@
 .post-back-link {
   display: inline-block;
   margin-bottom: 22px;
-  color: #15803d;
+  color: var(--color-brand-blue-dark);
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
 }
 
 .post-back-link:hover {
-  color: #166534;
+  color: var(--color-brand-pink-dark);
 }
 
 .post-details-card {
@@ -55,8 +55,8 @@
 }
 
 .post-details-type-announcement {
-  background-color: #dcfce7;
-  color: #15803d;
+  background-color: #fff0f7;
+  color: var(--color-brand-pink-dark);
 }
 
 .post-details-type-tactical {
@@ -90,13 +90,14 @@
 }
 
 .post-edit-link {
-  border: 1px solid #86efac;
-  background-color: #f0fdf4;
-  color: #15803d;
+  border: 1px solid var(--color-brand-blue-border);
+  background-color: #eff6ff;
+  color: var(--color-brand-blue-dark);
 }
 
 .post-edit-link:hover {
-  background-color: #dcfce7;
+  border-color: var(--color-brand-pink-border);
+  background-color: #fff0f7;
 }
 
 .post-delete-button {
@@ -137,7 +138,7 @@
 
 .post-author-details time::before {
   margin-right: 10px;
-  content: '•';
+  content: 'â€¢';
 }
 
 .post-content {
@@ -168,7 +169,7 @@
 
 .post-read-label {
   margin: 0 0 4px;
-  color: #16a34a;
+  color: var(--color-brand-pink);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 1.2px;
@@ -188,8 +189,8 @@
   padding: 0 8px;
   place-items: center;
   border-radius: 50%;
-  background-color: #dcfce7;
-  color: #15803d;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
+  color: var(--color-brand-blue-dark);
   font-size: 14px;
   font-weight: 800;
 }
@@ -217,7 +218,7 @@
   flex-shrink: 0;
   place-items: center;
   border-radius: 50%;
-  background-color: #16a34a;
+  background: var(--color-brand-gradient);
   color: white;
   font-weight: 800;
 }
@@ -243,8 +244,8 @@
   height: 26px;
   place-items: center;
   border-radius: 50%;
-  background-color: #dcfce7;
-  color: #15803d;
+  background-color: #eff6ff;
+  color: var(--color-brand-blue-dark);
   font-size: 13px;
   font-weight: 800;
 }

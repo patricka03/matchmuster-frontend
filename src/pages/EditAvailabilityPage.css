@@ -1,7 +1,7 @@
 .edit-availability-page {
   min-height: calc(100vh - 72px);
   padding: 48px 20px;
-  background: #f4f7fb;
+  background: var(--color-page-gradient);
 }
 
 .edit-availability-container {
@@ -59,12 +59,12 @@
 }
 
 .availability-option:hover {
-  border-color: #16a34a;
+  border-color: var(--color-brand-pink);
 }
 
 .availability-option-selected {
-  border-color: #16a34a;
-  background: #f0fdf4;
+  border-color: var(--color-brand-blue);
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
 }
 
 .availability-option input {
@@ -80,8 +80,8 @@
   flex-shrink: 0;
   place-items: center;
   border-radius: 50%;
-  background: #e9f7ee;
-  color: #15803d;
+  background: #fff0f7;
+  color: var(--color-brand-pink-dark);
   font-size: 1.3rem;
   font-weight: 800;
 }
@@ -125,7 +125,7 @@
 
 .edit-availability-submit {
   border: 0;
-  background: #16a34a;
+  background: #2563eb;
   color: #ffffff;
   cursor: pointer;
 }

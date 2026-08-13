@@ -34,7 +34,7 @@
   color: #172033;
   font-family: inherit;
   font-size: 1rem;
-  background: #f8fafc;
+  background: #f8fbff;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
   outline: none;
@@ -51,8 +51,8 @@
 .join-team-form input:focus,
 .join-team-form select:focus {
   background: #ffffff;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.14);
+  border-color: var(--color-brand-blue);
+  box-shadow: 0 0 0 4px rgba(79, 156, 255, 0.16);
 }
 
 .join-team-form input:disabled,
@@ -67,8 +67,8 @@
   color: #475569;
   font-size: 0.9rem;
   line-height: 1.5;
-  background: #f0fdf4;
-  border-left: 4px solid #22c55e;
+  background: linear-gradient(90deg, #fff0f7, #f4f9ff);
+  border-left: 4px solid var(--color-brand-pink);
   border-radius: 8px;
 }
 
@@ -80,7 +80,7 @@
   font-family: inherit;
   font-size: 1rem;
   font-weight: 700;
-  background: #16a34a;
+  background: #2563eb;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -92,8 +92,8 @@
 
 .join-team-button:hover:not(:disabled),
 .join-team-card > button:hover {
-  background: #15803d;
-  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.24);
+  background: #1d4ed8;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
   transform: translateY(-1px);
 }
 
@@ -104,7 +104,7 @@
 
 .join-team-button:focus-visible,
 .join-team-card > button:focus-visible {
-  outline: 3px solid rgba(22, 163, 74, 0.3);
+  outline: 3px solid rgba(79, 156, 255, 0.35);
   outline-offset: 3px;
 }
 
@@ -123,7 +123,7 @@
   color: #ffffff;
   font-size: 1.8rem;
   font-weight: 800;
-  background: #16a34a;
+  background: var(--color-brand-gradient);
   border-radius: 50%;
   place-items: center;
 }

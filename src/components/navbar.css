@@ -38,9 +38,9 @@
   height: 42px;
   place-items: center;
   border-radius: 12px;
-  background: linear-gradient(135deg, #22c55e, #15803d);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
-  box-shadow: 0 5px 12px rgba(22, 163, 74, 0.22);
+  box-shadow: 0 5px 12px rgba(37, 99, 235, 0.22);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -48,7 +48,7 @@
 
 .navbar-brand:hover .navbar-logo {
   transform: translateY(-1px);
-  box-shadow: 0 7px 16px rgba(22, 163, 74, 0.3);
+  box-shadow: 0 7px 16px rgba(37, 99, 235, 0.3);
 }
 
 .navbar-brand-name {
@@ -97,12 +97,12 @@
 .navbar-link:hover {
   transform: translateY(-1px);
   background-color: #f1f5f9;
-  color: #166534;
+  color: #1e40af;
 }
 
 .navbar-link-active {
-  background-color: #f0fdf4;
-  color: #15803d;
+  background-color: #eff6ff;
+  color: #1d4ed8;
 }
 
 .navbar-link-active svg {
@@ -156,6 +156,7 @@
   padding: 5px;
   border-radius: 9px;
   color: #334155;
+  text-decoration: none;
 }
 
 .navbar-user-avatar {
@@ -165,8 +166,8 @@
   flex-shrink: 0;
   place-items: center;
   border-radius: 50%;
-  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-  color: #166534;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1e40af;
   font-size: 13px;
   font-weight: 900;
 }
@@ -411,7 +412,7 @@
   height: 42px;
   place-items: center;
   border-radius: 11px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-size: 14px;
   font-weight: 900;
@@ -456,12 +457,12 @@
 
 .navbar-link:hover {
   background-color: #f1f5f9;
-  color: #166534;
+  color: #1e40af;
 }
 
 .navbar-link-active {
-  background-color: #f0fdf4;
-  color: #15803d;
+  background-color: #eff6ff;
+  color: #1d4ed8;
 }
 
 .navbar-notification-count {
@@ -505,8 +506,8 @@
   flex-shrink: 0;
   place-items: center;
   border-radius: 50%;
-  background-color: #dcfce7;
-  color: #166534;
+  background-color: #dbeafe;
+  color: #1e40af;
   font-size: 13px;
   font-weight: 800;
 }
@@ -679,4 +680,57 @@
   border-radius: 50%;
   object-fit: cover;
   object-position: center;
+}
+
+/* MatchMuster pink, blue and white brand treatment. */
+.navbar-logo {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 0;
+  background: transparent;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 8px rgba(79, 156, 255, 0.2));
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.navbar-brand:hover .navbar-logo {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: none;
+  filter: drop-shadow(0 7px 10px rgba(255, 10, 120, 0.24));
+}
+
+.navbar-brand-name {
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-pink),
+    var(--color-brand-blue)
+  );
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navbar-link:hover {
+  background-color: var(--color-brand-pink-soft);
+  color: var(--color-brand-pink-dark);
+}
+
+.navbar-link-active {
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-pink-soft),
+    var(--color-brand-blue-soft)
+  );
+  color: var(--color-brand-blue-dark);
+}
+
+@media (max-width: 450px) {
+  .navbar-logo {
+    width: 43px;
+    height: 43px;
+  }
 }

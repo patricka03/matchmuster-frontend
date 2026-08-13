@@ -8,7 +8,6 @@ import {
   LogOut,
   Menu,
   Settings,
-  ShieldCheck,
   Users,
   X,
 } from 'lucide-react'
@@ -18,6 +17,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
+import matchMusterLogo from '../assets/matchmuster-logo.png'
 import './navbar.css'
 
 function Navbar({
@@ -276,7 +276,12 @@ function Navbar({
           aria-label="Go to MatchMuster dashboard"
           title="Dashboard"
         >
-          <div className="logo" >MM</div>
+          <img
+            className="navbar-logo"
+            src={matchMusterLogo}
+            alt=""
+            aria-hidden="true"
+          />
 
           <span className="navbar-brand-name">
             MatchMuster
@@ -437,7 +442,8 @@ function Navbar({
                   flex: '0 0 40px',
                   overflow: 'hidden',
                   borderRadius: '50%',
-                  backgroundColor: '#3157d5',
+                  background:
+                    'linear-gradient(135deg, #ff0a78, #4f9cff)',
                   color: '#ffffff',
                   fontSize: '14px',
                   fontWeight: '700',

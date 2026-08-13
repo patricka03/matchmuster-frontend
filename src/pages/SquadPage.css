@@ -4,9 +4,9 @@
   gap: 12px;
   margin: 24px 0;
   padding: 20px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-brand-blue-border);
   border-radius: 14px;
-  background-color: white;
+  background: linear-gradient(135deg, #ffffff, #fff8fb);
 }
 
 .create-fixture-button,
@@ -19,22 +19,24 @@
 
 .create-fixture-button {
   border: none;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
 }
 
 .create-fixture-button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .upcoming-matches-button {
-  border: 1px solid #16a34a;
+  border: 1px solid var(--color-brand-blue);
   background-color: white;
-  color: #15803d;
+  color: var(--color-brand-blue-dark);
 }
 
 .upcoming-matches-button:hover {
-  background-color: #f0fdf4;
+  border-color: var(--color-brand-pink);
+  background-color: #fff0f7;
+  color: var(--color-brand-pink-dark);
 }
 
 .membership-badges {

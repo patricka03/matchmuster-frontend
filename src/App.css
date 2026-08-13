@@ -9,8 +9,9 @@
   justify-content: center;
   padding: 24px;
   background:
-    radial-gradient(circle at top, rgba(34, 197, 94, 0.14), transparent 35%),
-    #b1e5ae;
+    radial-gradient(circle at 20% 0%, rgba(255, 10, 120, 0.16), transparent 38%),
+    radial-gradient(circle at 85% 12%, rgba(79, 156, 255, 0.2), transparent 34%),
+    #f8fbff;
 }
 
 .welcome-card {
@@ -31,7 +32,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background: #16a34a;
+  background: var(--color-brand-gradient);
   color: white;
   font-size: 24px;
   font-weight: 800;
@@ -72,7 +73,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 14px;
-  background: #16a34a;
+  background: #2563eb;
   color: white;
   text-decoration: none;
   font-size: 16px;
@@ -81,13 +82,13 @@
     transform 0.2s ease,
     background 0.2s ease,
     box-shadow 0.2s ease;
-  box-shadow: 0 10px 24px rgba(22, 163, 74, 0.25);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
 }
 
 .signup-button:hover {
-  background: #15803d;
+  background: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(22, 163, 74, 0.3);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.3);
 }
 
 .signup-button:active {
@@ -101,7 +102,7 @@
 }
 
 .login-link {
-  color: #15803d;
+  color: var(--color-brand-pink-dark);
   font-weight: 700;
   text-decoration: none;
 }
@@ -153,8 +154,9 @@
   padding: 32px 20px;
 
   background:
-    radial-gradient(circle at top, rgba(34, 197, 94, 0.14), transparent 35%),
-    #b1e5ae;
+    radial-gradient(circle at 20% 0%, rgba(255, 10, 120, 0.16), transparent 38%),
+    radial-gradient(circle at 85% 12%, rgba(79, 156, 255, 0.2), transparent 34%),
+    #f8fbff;
 }
 
 .auth-card {
@@ -187,7 +189,7 @@
   justify-content: center;
   margin: 0 auto 18px;
   border-radius: 18px;
-  background-color: #16a34a;
+  background: var(--color-brand-gradient);
   color: white;
   font-size: 22px;
   font-weight: 800;
@@ -281,8 +283,8 @@
 
 .form-group input:focus,
 .auth-form input:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+  border-color: var(--color-brand-blue);
+  box-shadow: 0 0 0 3px rgba(79, 156, 255, 0.16);
 }
 
 /* PASSWORD */
@@ -302,7 +304,7 @@
   transform: translateY(-50%);
   border: none;
   background: transparent;
-  color: #15803d;
+  color: var(--color-brand-pink-dark);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -317,13 +319,13 @@
   margin-top: 4px;
   border: none;
   border-radius: 14px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
 
-  box-shadow: 0 10px 24px rgba(22, 163, 74, 0.22);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22);
 
   transition:
     background-color 0.2s ease,
@@ -333,9 +335,9 @@
 
 .auth-form button[type='submit']:hover:not(:disabled),
 .login-button:hover:not(:disabled) {
-  background-color: #15803d;
+  background-color: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(22, 163, 74, 0.28);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
 }
 
 .auth-form button[type='submit']:disabled,
@@ -353,7 +355,7 @@
 }
 
 .forgot-password a {
-  color: #15803d;
+  color: var(--color-brand-blue-dark);
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
@@ -373,7 +375,7 @@
 }
 
 .auth-footer a {
-  color: #15803d;
+  color: var(--color-brand-pink-dark);
   font-weight: 700;
   text-decoration: none;
 }
@@ -416,8 +418,9 @@
   padding: 32px 20px;
 
   background:
-    radial-gradient(circle at top, rgba(34, 197, 94, 0.14), transparent 35%),
-    #b1e5ae;
+    radial-gradient(circle at 20% 0%, rgba(255, 10, 120, 0.16), transparent 38%),
+    radial-gradient(circle at 85% 12%, rgba(79, 156, 255, 0.2), transparent 34%),
+    #f8fbff;
 }
 
 .auth-card {
@@ -450,7 +453,7 @@
   justify-content: center;
   margin: 0 auto 18px;
   border-radius: 18px;
-  background-color: #16a34a;
+  background: var(--color-brand-gradient);
   color: white;
   font-size: 22px;
   font-weight: 800;
@@ -499,14 +502,14 @@
 }
 
 .account-type-card:hover {
-  border-color: #86efac;
+  border-color: var(--color-brand-pink-border);
   transform: translateY(-1px);
 }
 
 .account-type-card.selected {
-  border-color: #16a34a;
-  background-color: #f0fdf4;
-  box-shadow: 0 8px 22px rgba(22, 163, 74, 0.12);
+  border-color: var(--color-brand-blue);
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
+  box-shadow: 0 8px 22px rgba(79, 156, 255, 0.14);
 }
 
 .account-type-icon {
@@ -522,7 +525,7 @@
 }
 
 .account-type-card.selected .account-type-icon {
-  background-color: #dcfce7;
+  background-color: #fff0f7;
 }
 
 .account-type-content {
@@ -550,7 +553,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: #16a34a;
+  color: var(--color-brand-pink);
   font-size: 18px;
   font-weight: 800;
 }
@@ -616,8 +619,8 @@
 }
 
 .form-group input:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 /* PASSWORD */
@@ -637,7 +640,7 @@
   transform: translateY(-50%);
   border: none;
   background: transparent;
-  color: #15803d;
+  color: #1d4ed8;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -651,13 +654,13 @@
   margin-top: 4px;
   border: none;
   border-radius: 14px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
 
-  box-shadow: 0 10px 24px rgba(22, 163, 74, 0.22);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22);
 
   transition:
     background-color 0.2s ease,
@@ -666,9 +669,9 @@
 }
 
 .create-account-button:hover:not(:disabled) {
-  background-color: #15803d;
+  background-color: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(22, 163, 74, 0.28);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
 }
 
 .create-account-button:disabled {
@@ -686,7 +689,7 @@
 }
 
 .auth-footer a {
-  color: #15803d;
+  color: #1d4ed8;
   font-weight: 700;
   text-decoration: none;
 }
@@ -732,7 +735,7 @@
 
 .dashboard-page {
   min-height: 100vh;
-  background-color: #f8fafc;
+  background: var(--color-page-gradient);
   color: #1f2937;
 }
 
@@ -761,7 +764,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 12px;
-  background-color: #16a34a;
+  background: var(--color-brand-gradient);
   color: white;
   font-size: 15px;
   font-weight: 700;
@@ -769,16 +772,16 @@
 
 .logout-button {
   padding: 10px 18px;
-  border: 1px solid #16a34a;
+  border: 1px solid #2563eb;
   border-radius: 8px;
   background-color: white;
-  color: #16a34a;
+  color: #2563eb;
   font-weight: 600;
   cursor: pointer;
 }
 
 .logout-button:hover {
-  background-color: #f0fdf4;
+  background-color: #eff6ff;
 }
 
 .dashboard-content {
@@ -798,7 +801,7 @@
 
 .dashboard-label {
   margin: 0 0 8px;
-  color: #16a34a;
+  color: var(--color-brand-pink);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -871,7 +874,7 @@
   align-items: center;
   margin-bottom: 18px;
   border-radius: 12px;
-  background-color: #f0fdf4;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
   font-size: 44px;
 }
 
@@ -892,7 +895,7 @@
   padding: 11px;
   border: none;
   border-radius: 8px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -900,7 +903,7 @@
 }
 
 .dashboard-card button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .dashboard-message {
@@ -992,14 +995,14 @@
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-weight: 600;
   cursor: pointer;
 }
 
 .empty-team-card button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .team-details-card {
@@ -1009,7 +1012,7 @@
   gap: 32px;
   padding: 28px;
   border: 1px solid #e2e8f0;
-  border-left: 5px solid #16a34a;
+  border-left: 5px solid var(--color-brand-pink);
   border-radius: 16px;
   background-color: white;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
@@ -1030,9 +1033,9 @@
 .invite-code {
   min-width: 180px;
   padding: 16px 20px;
-  border: 1px dashed #86efac;
+  border: 1px dashed var(--color-brand-pink-border);
   border-radius: 12px;
-  background-color: #f0fdf4;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
   text-align: center;
 }
 
@@ -1047,7 +1050,7 @@
 }
 
 .invite-code strong {
-  color: #166534;
+  color: var(--color-brand-blue-dark);
   font-size: 20px;
   letter-spacing: 1px;
 }
@@ -1115,17 +1118,17 @@
   margin-top: 22px;
   padding: 14px 16px;
   border-radius: 10px;
-  background-color: #f0fdf4;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
 }
 
 .invite-code span {
-  color: #166534;
+  color: var(--color-brand-pink-dark);
   font-size: 13px;
   font-weight: 700;
 }
 
 .invite-code strong {
-  color: #15803d;
+  color: var(--color-brand-blue-dark);
   letter-spacing: 1px;
 }
 
@@ -1148,14 +1151,14 @@
 
 .view-squad-button {
   border: none;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
 }
 
 .edit-team-button {
-  border: 1px solid #16a34a;
+  border: 1px solid #2563eb;
   background-color: white;
-  color: #15803d;
+  color: #1d4ed8;
 }
 
 .delete-team-button,
@@ -1179,14 +1182,14 @@
   align-items: center;
   justify-content: center;
   min-height: 280px;
-  border: 2px dashed #86efac;
+  border: 2px dashed var(--color-brand-pink-border);
   text-align: center;
 }
 
 .add-team-card button {
   margin-top: 20px;
   border: none;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
 }
 
@@ -1238,7 +1241,7 @@
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-weight: 600;
   white-space: nowrap;
@@ -1246,7 +1249,7 @@
 }
 
 .view-squad-button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .squad-section {
@@ -1282,8 +1285,8 @@
   min-width: 36px;
   padding: 7px 11px;
   border-radius: 999px;
-  background-color: #f0fdf4;
-  color: #166534;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
+  color: var(--color-brand-blue-dark);
   font-weight: 700;
   text-align: center;
 }
@@ -1319,8 +1322,8 @@
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  background-color: #dcfce7;
-  color: #166534;
+  background: var(--color-brand-gradient);
+  color: #ffffff;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -1358,8 +1361,8 @@
 }
 
 .manager-badge {
-  background-color: #dcfce7;
-  color: #166534;
+  background-color: #fff0f7;
+  color: var(--color-brand-pink-dark);
 }
 
 .membership-actions {
@@ -1377,13 +1380,13 @@
 }
 
 .approve-button {
-  border: 1px solid #16a34a;
-  background-color: #16a34a;
+  border: 1px solid #2563eb;
+  background-color: #2563eb;
   color: white;
 }
 
 .approve-button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .reject-button,
@@ -1473,7 +1476,7 @@
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-size: 14px;
   font-weight: 700;
@@ -1483,7 +1486,7 @@
 
 .create-match-button:hover,
 .empty-team-card button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .matches-list {
@@ -1513,7 +1516,7 @@
 }
 
 .match-date span {
-  color: #16a34a;
+  color: var(--color-brand-pink);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1546,8 +1549,8 @@
   display: inline-block;
   padding: 5px 10px;
   border-radius: 999px;
-  background-color: #dcfce7;
-  color: #166534;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
+  color: var(--color-brand-blue-dark);
   font-size: 12px;
   font-weight: 700;
   text-transform: capitalize;
@@ -1555,17 +1558,17 @@
 
 .view-match-button {
   padding: 10px 16px;
-  border: 1px solid #16a34a;
+  border: 1px solid #2563eb;
   border-radius: 8px;
   background-color: white;
-  color: #15803d;
+  color: #1d4ed8;
   font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
 }
 
 .view-match-button:hover {
-  background-color: #f0fdf4;
+  background-color: #eff6ff;
 }
 
 @media (max-width: 750px) {
@@ -1636,8 +1639,8 @@
 
 .match-form input:focus,
 .match-form select:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+  border-color: var(--color-brand-blue);
+  box-shadow: 0 0 0 3px rgba(79, 156, 255, 0.16);
 }
 
 .match-form-actions {
@@ -1712,7 +1715,7 @@
 .fixture-details-header {
   padding: 28px 30px;
   border-bottom: 1px solid #e2e8f0;
-  background: linear-gradient(135deg, #f0fdf4, #ffffff);
+  background: linear-gradient(135deg, #fff0f7, #eff6ff, #ffffff);
 }
 
 .fixture-details-header h2 {
@@ -1740,7 +1743,7 @@
 }
 
 .fixture-information-item span {
-  color: #16a34a;
+  color: var(--color-brand-pink);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.8px;
@@ -1786,17 +1789,17 @@
     display: inline-block;
     margin-top: 20px;
     padding: 10px 16px;
-    border: 1px solid #16a34a;
+    border: 1px solid #2563eb;
     border-radius: 8px;
     background-color: white;
-    color: #15803d;
+    color: #1d4ed8;
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
   }
 
   .edit-match-button:hover {
-    background-color: #f0fdf4;
+    background-color: #eff6ff;
   }
 
   .cancel-fixture-button {
@@ -1937,7 +1940,7 @@
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-size: 14px;
   font-weight: 700;
@@ -1945,7 +1948,7 @@
 }
 
 .view-availability-button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .availability-summary {
@@ -1977,8 +1980,8 @@
 }
 
 .availability-summary-card.available {
-  border-left: 5px solid #16a34a;
-  color: #166534;
+  border-left: 5px solid var(--color-brand-pink);
+  color: var(--color-brand-blue-dark);
 }
 
 .availability-summary-card.unavailable {
@@ -2025,8 +2028,8 @@
   height: 46px;
   flex-shrink: 0;
   border-radius: 50%;
-  background-color: #dcfce7;
-  color: #166534;
+  background: var(--color-brand-gradient);
+  color: #ffffff;
   font-size: 18px;
   font-weight: 800;
 }
@@ -2052,8 +2055,8 @@
 }
 
 .availability-status.available {
-  background-color: #dcfce7;
-  color: #166534;
+  background-color: #eff6ff;
+  color: var(--color-brand-blue-dark);
 }
 
 .availability-status.unavailable {
@@ -2133,7 +2136,7 @@
 }
 
 .squad-selection-summary strong {
-  color: #166534;
+  color: var(--color-brand-pink-dark);
   font-size: 25px;
 }
 
@@ -2154,7 +2157,7 @@
 }
 
 .squad-player-card.selected {
-  border-left: 5px solid #16a34a;
+  border-left: 5px solid var(--color-brand-pink);
 }
 
 .squad-player-heading {
@@ -2226,7 +2229,7 @@
 .squad-responsibilities input {
   width: 17px;
   height: 17px;
-  accent-color: #16a34a;
+  accent-color: var(--color-brand-pink);
 }
 
 .squad-player-actions {
@@ -2249,12 +2252,12 @@
 
 .save-squad-player-button {
   border: none;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
 }
 
 .save-squad-player-button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .remove-squad-player-button {
@@ -2320,10 +2323,10 @@
 .team-success {
   margin: 0 0 16px;
   padding: 12px 16px;
-  border: 1px solid #a7e3bd;
+  border: 1px solid #bbf7d0;
   border-radius: 10px;
-  background: #ecfdf3;
-  color: #166534;
+  background: #f0fdf4;
+  color: #15803d;
 }
 
 .availability-groups {
@@ -2456,7 +2459,7 @@
   height: 42px;
   place-items: center;
   border-radius: 11px;
-  background-color: #16a34a;
+  background-color: transparent;
   color: white;
   font-size: 14px;
   font-weight: 900;
@@ -2467,6 +2470,11 @@
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.5px;
+  background: var(--color-brand-gradient);
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .navbar-navigation {
@@ -2500,13 +2508,13 @@
 }
 
 .navbar-link:hover {
-  background-color: #f1f5f9;
-  color: #166534;
+  background-color: #fff0f7;
+  color: var(--color-brand-pink-dark);
 }
 
 .navbar-link-active {
-  background-color: #f0fdf4;
-  color: #15803d;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
+  color: var(--color-brand-blue-dark);
 }
 
 .navbar-notification-count {
@@ -2550,8 +2558,8 @@
   flex-shrink: 0;
   place-items: center;
   border-radius: 50%;
-  background-color: #dcfce7;
-  color: #166534;
+  background: var(--color-brand-gradient);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 800;
 }
@@ -2700,7 +2708,7 @@
 .send-availability-button {
   padding: 10px 15px;
   border-radius: 8px;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   font-size: 13px;
   font-weight: 700;
@@ -2708,7 +2716,7 @@
 }
 
 .send-availability-button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .fixture-description {
@@ -2734,7 +2742,7 @@
 }
 
 .back-button:hover {
-  color: #2563eb;
+  color: var(--color-brand-pink);
 }
 
 .back-button span {
@@ -2744,12 +2752,12 @@
 .create-team-dashboard-card {
   display: flex;
   flex-direction: column;
-  border-top: 4px solid #16a34a;
+  border-top: 4px solid var(--color-brand-pink);
 }
 
 .create-team-dashboard-card .card-icon {
-  color: #166534;
-  background-color: #dcfce7;
+  color: var(--color-brand-pink-dark);
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
 }
 
 .create-team-dashboard-card p {
@@ -2761,7 +2769,7 @@
 }
 
 .create-team-dashboard-card button:focus-visible {
-  outline: 3px solid rgba(22, 163, 74, 0.3);
+  outline: 3px solid rgba(79, 156, 255, 0.35);
   outline-offset: 3px;
 }
 
@@ -2826,8 +2834,8 @@
 
 .edit-team-form-group input:focus,
 .edit-team-form-group textarea:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+  border-color: var(--color-brand-blue);
+  box-shadow: 0 0 0 3px rgba(79, 156, 255, 0.16);
 }
 
 .edit-team-form-group input:disabled,
@@ -3022,12 +3030,12 @@
 
 .save-team-button {
   border: none;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
 }
 
 .save-team-button:hover {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .cancel-edit-team-button {

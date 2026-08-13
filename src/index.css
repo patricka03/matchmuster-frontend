@@ -1,3 +1,27 @@
+:root {
+  --color-brand-pink: #ff0a78;
+  --color-brand-pink-dark: #e6006e;
+  --color-brand-pink-soft: #fff0f7;
+  --color-brand-blue: #4f9cff;
+  --color-brand-blue-dark: #3185ea;
+  --color-brand-blue-soft: #eff6ff;
+  --color-brand-pink-border: #ffc1db;
+  --color-brand-blue-border: #bfdbfe;
+  --color-brand-gradient: linear-gradient(135deg, #ff0a78, #4f9cff);
+  --color-page-gradient: linear-gradient(135deg, #fff7fb 0%, #f4f9ff 100%);
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-dark: #1e40af;
+  --color-primary-soft: #eff6ff;
+  --color-primary-muted: #dbeafe;
+  --color-primary-border: #bfdbfe;
+  --color-page: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,8 +31,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: Arial, sans-serif;
-  background-color: #ffffff;
-  color: #1f2937;
+  background-color: var(--color-page);
+  color: var(--color-text);
 }
 
 button,

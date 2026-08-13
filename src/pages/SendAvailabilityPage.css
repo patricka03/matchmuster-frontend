@@ -3,7 +3,7 @@
   min-height: calc(100vh - 72px);
   align-items: center;
   padding: 50px 24px;
-  background-color: #f8fafc;
+  background: var(--color-page-gradient);
 }
 
 .send-availability-container {
@@ -14,7 +14,7 @@
 
 .send-availability-card {
   padding: 38px;
-  border: 1px solid #bbf7d0;
+  border: 1px solid var(--color-brand-blue-border);
   border-radius: 16px;
   background-color: white;
   text-align: center;
@@ -28,13 +28,13 @@
   margin: 0 auto 18px;
   place-items: center;
   border-radius: 50%;
-  background-color: #dcfce7;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
   font-size: 28px;
 }
 
 .send-availability-label {
   margin: 0 0 7px;
-  color: #16a34a;
+  color: var(--color-brand-pink);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 1.3px;
@@ -120,13 +120,13 @@
 
 .send-availability-confirm {
   border: 0;
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
   cursor: pointer;
 }
 
 .send-availability-confirm:hover:not(:disabled) {
-  background-color: #15803d;
+  background-color: #1d4ed8;
 }
 
 .send-availability-confirm:disabled {
