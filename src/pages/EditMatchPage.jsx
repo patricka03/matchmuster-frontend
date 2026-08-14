@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { SearchBox } from '@mapbox/search-js-react'
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+const MAPBOX_TOKEN =
+  import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
 function EditMatchPage() {
   const navigate = useNavigate()
@@ -16,6 +20,8 @@ function EditMatchPage() {
     opponent: '',
     match_type: 'league',
     location: '',
+    latitude: null,
+    longitude: null,
     kickoff_time: '',
     description: '',
   })
@@ -24,9 +30,14 @@ function EditMatchPage() {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessages, setErrorMessages] = useState([])
 
+  // ========================================
+  // LOAD MATCH
+  // ========================================
+
   useEffect(() => {
     async function fetchMatch() {
-      const token = localStorage.getItem('token')
+      const token =
+        localStorage.getItem('token')
 
       if (!token) {
         navigate('/login')
@@ -52,7 +63,8 @@ function EditMatchPage() {
           return
         }
 
-        const data = await response.json()
+        const data =
+          await response.json()
 
         if (!response.ok) {
           setErrorMessages([
@@ -64,19 +76,34 @@ function EditMatchPage() {
         }
 
         setFormData({
-          opponent: data.opponent || '',
-          match_type: data.match_type || 'league',
-          location: data.location || '',
+          opponent:
+            data.opponent || '',
 
-          // API gives us the UTC timestamp.
-          // Convert it back into the user's
-          // local timezone for datetime-local.
+          match_type:
+            data.match_type || 'league',
+
+          location:
+            data.location || '',
+
+          latitude:
+            data.latitude !== null &&
+            data.latitude !== undefined
+              ? Number(data.latitude)
+              : null,
+
+          longitude:
+            data.longitude !== null &&
+            data.longitude !== undefined
+              ? Number(data.longitude)
+              : null,
+
           kickoff_time:
             formatForDateTimeInput(
               data.kickoff_time,
             ),
 
-          description: data.description || '',
+          description:
+            data.description || '',
         })
       } catch {
         setErrorMessages([
@@ -94,12 +121,19 @@ function EditMatchPage() {
     matchId,
   ])
 
-  function formatForDateTimeInput(kickoffTime) {
+  // ========================================
+  // DATE / TIME
+  // ========================================
+
+  function formatForDateTimeInput(
+    kickoffTime,
+  ) {
     if (!kickoffTime) {
       return ''
     }
 
-    const date = new Date(kickoffTime)
+    const date =
+      new Date(kickoffTime)
 
     const year =
       date.getFullYear()
@@ -127,6 +161,10 @@ function EditMatchPage() {
     return `${year}-${month}-${day}T${hours}:${minutes}`
   }
 
+  // ========================================
+  // STANDARD FORM FIELDS
+  // ========================================
+
   function handleChange(event) {
     const {
       name,
@@ -141,17 +179,111 @@ function EditMatchPage() {
     )
   }
 
+  // ========================================
+  // MAPBOX LOCATION
+  // ========================================
+
+  function handleLocationChange(value) {
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+
+        location: value,
+
+        // The manager is changing the venue.
+        // Remove the old coordinates until
+        // they choose a new Mapbox result.
+        latitude: null,
+        longitude: null,
+      }),
+    )
+  }
+
+  function handleLocationRetrieve(result) {
+    const feature =
+      result?.features?.[0]
+
+    if (!feature) {
+      return
+    }
+
+    const coordinates =
+      feature.geometry?.coordinates
+
+    if (
+      !Array.isArray(coordinates) ||
+      coordinates.length < 2
+    ) {
+      return
+    }
+
+    // Mapbox / GeoJSON order:
+    // [longitude, latitude]
+    const [
+      longitude,
+      latitude,
+    ] = coordinates
+
+    const properties =
+      feature.properties || {}
+
+    const locationName =
+      properties.full_address ||
+      [
+        properties.name,
+        properties.place_formatted,
+      ]
+        .filter(Boolean)
+        .join(', ')
+
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+
+        location:
+          locationName ||
+          currentFormData.location,
+
+        latitude,
+        longitude,
+      }),
+    )
+
+    setErrorMessages([])
+  }
+
+  function handleLocationClear() {
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+
+        location: '',
+        latitude: null,
+        longitude: null,
+      }),
+    )
+  }
+
+  // ========================================
+  // PAYLOAD
+  // ========================================
+
   function buildMatchPayload() {
     return {
       ...formData,
 
-      // Convert the local datetime-local value
-      // into an absolute UTC ISO timestamp.
-      kickoff_time: new Date(
-        formData.kickoff_time,
-      ).toISOString(),
+      // Convert the user's local date/time
+      // back into UTC before sending to Rails.
+      kickoff_time:
+        new Date(
+          formData.kickoff_time,
+        ).toISOString(),
     }
   }
+
+  // ========================================
+  // SUBMIT
+  // ========================================
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -161,6 +293,20 @@ function EditMatchPage() {
 
     if (!token) {
       navigate('/login')
+      return
+    }
+
+    // If the venue has been changed,
+    // a Mapbox result must be selected so
+    // navigation coordinates are available.
+    if (
+      formData.latitude === null ||
+      formData.longitude === null
+    ) {
+      setErrorMessages([
+        'Please select the match location from the location suggestions.',
+      ])
+
       return
     }
 
@@ -181,7 +327,8 @@ function EditMatchPage() {
           },
 
           body: JSON.stringify({
-            match: buildMatchPayload(),
+            match:
+              buildMatchPayload(),
           }),
         },
       )
@@ -220,6 +367,10 @@ function EditMatchPage() {
     }
   }
 
+  // ========================================
+  // LOADING
+  // ========================================
+
   if (loading) {
     return (
       <p className="dashboard-message">
@@ -244,12 +395,14 @@ function EditMatchPage() {
               Fixture management
             </p>
 
-            <h1>Edit fixture</h1>
+            <h1>
+              Edit fixture
+            </h1>
 
             <p>
-              Update the fixture details. Players
-              will be notified about important
-              changes.
+              Update the fixture details.
+              Players will be notified about
+              important changes.
             </p>
           </div>
 
@@ -275,6 +428,10 @@ function EditMatchPage() {
               </div>
             )}
 
+            {/* ========================================
+                OPPONENT
+            ======================================== */}
+
             <div className="form-group">
               <label htmlFor="opponent">
                 Opponent
@@ -284,11 +441,19 @@ function EditMatchPage() {
                 id="opponent"
                 name="opponent"
                 type="text"
-                value={formData.opponent}
-                onChange={handleChange}
+                value={
+                  formData.opponent
+                }
+                onChange={
+                  handleChange
+                }
                 required
               />
             </div>
+
+            {/* ========================================
+                MATCH TYPE
+            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="match_type">
@@ -298,8 +463,12 @@ function EditMatchPage() {
               <select
                 id="match_type"
                 name="match_type"
-                value={formData.match_type}
-                onChange={handleChange}
+                value={
+                  formData.match_type
+                }
+                onChange={
+                  handleChange
+                }
                 required
               >
                 <option value="league">
@@ -316,20 +485,80 @@ function EditMatchPage() {
               </select>
             </div>
 
+            {/* ========================================
+                MAPBOX LOCATION
+            ======================================== */}
+
             <div className="form-group">
-              <label htmlFor="location">
-                Location
+              <label>
+                Match location
               </label>
 
-              <input
-                id="location"
-                name="location"
-                type="text"
-                value={formData.location}
-                onChange={handleChange}
-                required
-              />
+              {MAPBOX_TOKEN ? (
+                <SearchBox
+                  accessToken={
+                    MAPBOX_TOKEN
+                  }
+                  value={
+                    formData.location
+                  }
+                  onChange={
+                    handleLocationChange
+                  }
+                  onRetrieve={
+                    handleLocationRetrieve
+                  }
+                  onClear={
+                    handleLocationClear
+                  }
+                  placeholder="Search for a football ground, park or address"
+                  options={{
+                    country: 'GB',
+                    language: 'en',
+                    limit: 8,
+                  }}
+                  theme={{
+                    icons: {
+                      search: `
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="1"
+                          height="1"
+                          viewBox="0 0 1 1"
+                        >
+                        </svg>
+                      `,
+                    },
+                  }}
+                />
+              ) : (
+                <p
+                  className="team-error"
+                  role="alert"
+                >
+                  Mapbox is not configured.
+                  Check your frontend
+                  environment variables.
+                </p>
+              )}
+
+              {formData.latitude !== null &&
+                formData.longitude !== null && (
+                  <div className="selected-match-location">
+                    <span>
+                      📍 Location selected
+                    </span>
+
+                    <strong>
+                      {formData.location}
+                    </strong>
+                  </div>
+                )}
             </div>
+
+            {/* ========================================
+                KICK-OFF
+            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="kickoff_time">
@@ -340,11 +569,19 @@ function EditMatchPage() {
                 id="kickoff_time"
                 name="kickoff_time"
                 type="datetime-local"
-                value={formData.kickoff_time}
-                onChange={handleChange}
+                value={
+                  formData.kickoff_time
+                }
+                onChange={
+                  handleChange
+                }
                 required
               />
             </div>
+
+            {/* ========================================
+                MATCH INFORMATION
+            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="description">
@@ -354,12 +591,20 @@ function EditMatchPage() {
               <textarea
                 id="description"
                 name="description"
-                value={formData.description}
-                onChange={handleChange}
+                value={
+                  formData.description
+                }
+                onChange={
+                  handleChange
+                }
                 placeholder="e.g. Wear the blue kit and bring shin pads and boots."
                 rows={5}
               />
             </div>
+
+            {/* ========================================
+                ACTIONS
+            ======================================== */}
 
             <div className="match-form-actions">
               <Link
@@ -372,7 +617,9 @@ function EditMatchPage() {
               <button
                 className="create-match-button"
                 type="submit"
-                disabled={submitting}
+                disabled={
+                  submitting
+                }
               >
                 {submitting
                   ? 'Saving...'

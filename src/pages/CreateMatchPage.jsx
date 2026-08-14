@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { SearchBox } from '@mapbox/search-js-react'
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
+
+const MAPBOX_TOKEN =
+  import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
 function CreateMatchPage() {
   const navigate = useNavigate()
@@ -11,6 +15,8 @@ function CreateMatchPage() {
     opponent: '',
     match_type: 'league',
     location: '',
+    latitude: null,
+    longitude: null,
     kickoff_time: '',
     description: '',
   })
@@ -27,26 +33,110 @@ function CreateMatchPage() {
     }))
   }
 
-  function buildMatchPayload() {
-    return {
-      ...formData,
+  // ========================================
+  // MAPBOX LOCATION SEARCH
+  // ========================================
 
-      // datetime-local gives us local browser time.
-      // Convert it to an ISO timestamp containing
-      // the correct UTC offset before sending to Rails.
-      kickoff_time: new Date(
-        formData.kickoff_time,
-      ).toISOString(),
-    }
+  function handleLocationChange(value) {
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+
+      location: value,
+
+      // If the manager edits the text after selecting
+      // a Mapbox result, require them to select a new
+      // suggestion so stale coordinates are not saved.
+      latitude: null,
+      longitude: null,
+    }))
   }
+
+  function handleLocationRetrieve(result) {
+    const feature =
+      result?.features?.[0]
+
+    if (!feature) {
+      return
+    }
+
+    const coordinates =
+      feature.geometry?.coordinates
+
+    if (
+      !Array.isArray(coordinates) ||
+      coordinates.length < 2
+    ) {
+      return
+    }
+
+    // GeoJSON coordinates are:
+    // [longitude, latitude]
+    const [
+      longitude,
+      latitude,
+    ] = coordinates
+
+    const properties =
+      feature.properties || {}
+
+    const locationName =
+      properties.full_address ||
+      [
+        properties.name,
+        properties.place_formatted,
+      ]
+        .filter(Boolean)
+        .join(', ')
+
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+
+      location:
+        locationName ||
+        currentFormData.location,
+
+      latitude,
+      longitude,
+    }))
+
+    setErrorMessages([])
+  }
+
+  function handleLocationClear() {
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+
+      location: '',
+      latitude: null,
+      longitude: null,
+    }))
+  }
+
+  // ========================================
+  // SUBMIT
+  // ========================================
 
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const token = localStorage.getItem('token')
+    const token =
+      localStorage.getItem('token')
 
     if (!token) {
       navigate('/login')
+      return
+    }
+
+    // Require the manager to choose a Mapbox result.
+    // This guarantees that navigation coordinates exist.
+    if (
+      formData.latitude === null ||
+      formData.longitude === null
+    ) {
+      setErrorMessages([
+        'Please select the match location from the location suggestions.',
+      ])
+
       return
     }
 
@@ -58,26 +148,28 @@ function CreateMatchPage() {
         `${API_URL}/teams/${teamId}/matches`,
         {
           method: 'POST',
+
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: token,
           },
+
           body: JSON.stringify({
-            match: buildMatchPayload(),
+            match: formData,
           }),
         },
       )
 
       if (response.status === 401) {
         localStorage.removeItem('token')
-        localStorage.removeItem('currentUser')
 
         navigate('/login')
         return
       }
 
-      const data = await response.json()
+      const data =
+        await response.json()
 
       if (!response.ok) {
         setErrorMessages(
@@ -90,7 +182,9 @@ function CreateMatchPage() {
         return
       }
 
-      navigate(`/teams/${teamId}/matches`)
+      navigate(
+        `/teams/${teamId}/matches`,
+      )
     } catch {
       setErrorMessages([
         'Unable to connect to the server.',
@@ -111,11 +205,13 @@ function CreateMatchPage() {
               Fixture management
             </p>
 
-            <h1>Create fixture</h1>
+            <h1>
+              Create fixture
+            </h1>
 
             <p>
-              Add the match details and notify your
-              approved players.
+              Add the match details and
+              notify your approved players.
             </p>
           </div>
 
@@ -130,14 +226,20 @@ function CreateMatchPage() {
                 </strong>
 
                 <ul>
-                  {errorMessages.map((message) => (
-                    <li key={message}>
-                      {message}
-                    </li>
-                  ))}
+                  {errorMessages.map(
+                    (message) => (
+                      <li key={message}>
+                        {message}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             )}
+
+            {/* ========================================
+                OPPONENT
+            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="opponent">
@@ -154,6 +256,10 @@ function CreateMatchPage() {
                 required
               />
             </div>
+
+            {/* ========================================
+                MATCH TYPE
+            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="match_type">
@@ -181,21 +287,76 @@ function CreateMatchPage() {
               </select>
             </div>
 
+            {/* ========================================
+                MAPBOX LOCATION
+            ======================================== */}
+
             <div className="form-group">
-              <label htmlFor="location">
-                Location
+              <label>
+                Match location
               </label>
 
-              <input
-                id="location"
-                name="location"
-                type="text"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="e.g. Hackney Marshes"
-                required
-              />
+              {MAPBOX_TOKEN ? (
+                <SearchBox
+                  accessToken={MAPBOX_TOKEN}
+                  value={formData.location}
+                  onChange={
+                    handleLocationChange
+                  }
+                  onRetrieve={
+                    handleLocationRetrieve
+                  }
+                  onClear={
+                    handleLocationClear
+                  }
+                  placeholder="Search for a football ground, park or address"
+                  options={{
+                    country: 'GB',
+                    language: 'en',
+                    limit: 8,
+                  }}
+                  theme={{
+                    icons: {
+                      search: `
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="1"
+                          height="1"
+                          viewBox="0 0 1 1"
+                        >
+                        </svg>
+                      `,
+                    },
+                  }}
+                />
+              ) : (
+                <p
+                  className="team-error"
+                  role="alert"
+                >
+                  Mapbox is not configured.
+                  Check your frontend
+                  environment variables.
+                </p>
+              )}
+
+              {formData.latitude !== null &&
+                formData.longitude !== null && (
+                  <div className="selected-match-location">
+                    <span>
+                      📍 Location selected
+                    </span>
+
+                    <strong>
+                      {formData.location}
+                    </strong>
+                  </div>
+                )}
             </div>
+
+            {/* ========================================
+                KICK-OFF
+            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="kickoff_time">
@@ -212,6 +373,10 @@ function CreateMatchPage() {
               />
             </div>
 
+            {/* ========================================
+                MATCH INFORMATION
+            ======================================== */}
+
             <div className="form-group">
               <label htmlFor="description">
                 Match information
@@ -226,6 +391,10 @@ function CreateMatchPage() {
                 rows={5}
               />
             </div>
+
+            {/* ========================================
+                ACTIONS
+            ======================================== */}
 
             <div className="match-form-actions">
               <Link
