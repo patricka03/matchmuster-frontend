@@ -2590,6 +2590,101 @@
 }
 
 /* ========================================
+   MATCH RESULT DISPLAY
+======================================== */
+
+.match-result-display {
+  margin: 24px 0;
+
+  padding: 22px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff7fb,
+      #ffffff,
+      #f3f8ff
+    );
+}
+
+.match-result-display-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 28px;
+
+  margin: 14px 0;
+}
+
+.match-result-side {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.match-result-side span {
+  color: #475569;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.match-result-side strong {
+  color: #0f172a;
+
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.match-result-display-divider {
+  color: #94a3b8;
+
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.match-result-outcome {
+  display: inline-flex;
+
+  padding: 7px 13px;
+
+  border-radius: 999px;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .match-result-display-score {
+    gap: 14px;
+  }
+
+  .match-result-side {
+    flex-direction: column;
+
+    gap: 5px;
+  }
+
+  .match-result-side span {
+    font-size: 13px;
+
+    text-align: center;
+  }
+
+  .match-result-side strong {
+    font-size: 26px;
+  }
+}
+
+/* ========================================
    MAIN NAVIGATION BAR
 ======================================== */
 

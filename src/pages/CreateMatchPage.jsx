@@ -3,8 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
 
-
-
 function CreateMatchPage() {
   const navigate = useNavigate()
   const { teamId } = useParams()
@@ -27,6 +25,19 @@ function CreateMatchPage() {
       ...currentFormData,
       [name]: value,
     }))
+  }
+
+  function buildMatchPayload() {
+    return {
+      ...formData,
+
+      // datetime-local gives us local browser time.
+      // Convert it to an ISO timestamp containing
+      // the correct UTC offset before sending to Rails.
+      kickoff_time: new Date(
+        formData.kickoff_time,
+      ).toISOString(),
+    }
   }
 
   async function handleSubmit(event) {
@@ -53,13 +64,15 @@ function CreateMatchPage() {
             Authorization: token,
           },
           body: JSON.stringify({
-            match: formData,
+            match: buildMatchPayload(),
           }),
-        }
+        },
       )
 
       if (response.status === 401) {
         localStorage.removeItem('token')
+        localStorage.removeItem('currentUser')
+
         navigate('/login')
         return
       }
@@ -68,14 +81,20 @@ function CreateMatchPage() {
 
       if (!response.ok) {
         setErrorMessages(
-          data.errors || [data.error || 'Unable to create the fixture.']
+          data.errors || [
+            data.error ||
+              'Unable to create the fixture.',
+          ],
         )
+
         return
       }
 
       navigate(`/teams/${teamId}/matches`)
     } catch {
-      setErrorMessages(['Unable to connect to the server.'])
+      setErrorMessages([
+        'Unable to connect to the server.',
+      ])
     } finally {
       setSubmitting(false)
     }
@@ -83,34 +102,47 @@ function CreateMatchPage() {
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
 
       <main className="dashboard-page">
-
         <section className="dashboard-content">
           <div className="dashboard-welcome">
-            <p className="dashboard-label">Fixture management</p>
+            <p className="dashboard-label">
+              Fixture management
+            </p>
+
             <h1>Create fixture</h1>
+
             <p>
-              Add the match details and notify your approved players.
+              Add the match details and notify your
+              approved players.
             </p>
           </div>
 
-          <form className="match-form" onSubmit={handleSubmit}>
+          <form
+            className="match-form"
+            onSubmit={handleSubmit}
+          >
             {errorMessages.length > 0 && (
               <div className="team-error">
-                <strong>Please check the following:</strong>
+                <strong>
+                  Please check the following:
+                </strong>
 
                 <ul>
                   {errorMessages.map((message) => (
-                    <li key={message}>{message}</li>
+                    <li key={message}>
+                      {message}
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
 
             <div className="form-group">
-              <label htmlFor="opponent">Opponent</label>
+              <label htmlFor="opponent">
+                Opponent
+              </label>
 
               <input
                 id="opponent"
@@ -124,7 +156,9 @@ function CreateMatchPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="match_type">Match type</label>
+              <label htmlFor="match_type">
+                Match type
+              </label>
 
               <select
                 id="match_type"
@@ -133,14 +167,24 @@ function CreateMatchPage() {
                 onChange={handleChange}
                 required
               >
-                <option value="league">League</option>
-                <option value="cup">Cup</option>
-                <option value="friendly">Friendly</option>
+                <option value="league">
+                  League
+                </option>
+
+                <option value="cup">
+                  Cup
+                </option>
+
+                <option value="friendly">
+                  Friendly
+                </option>
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="location">Location</label>
+              <label htmlFor="location">
+                Location
+              </label>
 
               <input
                 id="location"
@@ -154,7 +198,9 @@ function CreateMatchPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="kickoff_time">Kick-off date and time</label>
+              <label htmlFor="kickoff_time">
+                Kick-off date and time
+              </label>
 
               <input
                 id="kickoff_time"
@@ -167,7 +213,9 @@ function CreateMatchPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="description">Match information</label>
+              <label htmlFor="description">
+                Match information
+              </label>
 
               <textarea
                 id="description"
@@ -192,7 +240,9 @@ function CreateMatchPage() {
                 type="submit"
                 disabled={submitting}
               >
-                {submitting ? 'Creating...' : 'Create fixture'}
+                {submitting
+                  ? 'Creating...'
+                  : 'Create fixture'}
               </button>
             </div>
           </form>

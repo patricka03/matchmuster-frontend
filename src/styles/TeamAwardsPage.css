@@ -1,0 +1,817 @@
+/* ========================================
+   TEAM AWARDS PAGE
+======================================== */
+
+.team-awards-hero-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+
+  margin-top: 26px;
+}
+
+
+/* ========================================
+   HERO AWARDS
+======================================== */
+
+.team-award-hero-card {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 280px;
+
+  padding: 30px;
+
+  border: 1px solid rgba(255, 10, 120, 0.18);
+  border-radius: 24px;
+
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(255, 10, 120, 0.16),
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(79, 156, 255, 0.18),
+      transparent 40%
+    ),
+    #ffffff;
+
+  box-shadow:
+    0 14px 38px rgba(15, 23, 42, 0.07);
+}
+
+
+.team-award-season-card {
+  background:
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(79, 156, 255, 0.2),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 10% 90%,
+      rgba(255, 10, 120, 0.12),
+      transparent 42%
+    ),
+    #ffffff;
+}
+
+
+.team-award-icon {
+  margin-bottom: 16px;
+
+  font-size: 40px;
+}
+
+
+.team-award-eyebrow {
+  margin: 0 0 5px;
+
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+
+.team-award-hero-card h2 {
+  margin: 0 0 24px;
+
+  color: #0f172a;
+
+  font-size: 27px;
+  font-weight: 900;
+
+  letter-spacing: -0.5px;
+}
+
+
+/* ========================================
+   LEADING PLAYER
+======================================== */
+
+.team-award-leaders {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+.team-award-leader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding: 15px;
+
+  border: 1px solid rgba(79, 156, 255, 0.16);
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.9);
+}
+
+
+.team-award-leader > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+
+.team-award-leader strong {
+  color: #0f172a;
+
+  font-size: 17px;
+  font-weight: 900;
+}
+
+
+.team-award-leader span {
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+
+.team-award-hero-avatar {
+  width: 62px;
+  height: 62px;
+
+  flex-shrink: 0;
+
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  box-shadow:
+    0 5px 16px rgba(15, 23, 42, 0.12);
+}
+
+
+/* ========================================
+   EMPTY HERO
+======================================== */
+
+.team-award-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 18px;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.75);
+}
+
+
+.team-award-empty span {
+  font-size: 24px;
+}
+
+
+.team-award-empty p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+
+/* ========================================
+   PLAYER AVATAR
+======================================== */
+
+.team-award-avatar,
+.recent-motm-avatar {
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  border: 2px solid rgba(79, 156, 255, 0.18);
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+
+.team-award-avatar-placeholder {
+  display: grid;
+  place-items: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff0f7,
+      #eff6ff
+    );
+
+  color: #2563eb;
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+
+/* ========================================
+   SECTIONS
+======================================== */
+
+.team-awards-section {
+  margin-top: 28px;
+
+  overflow: hidden;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+
+.team-awards-section-heading {
+  padding: 24px 26px;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fffafc,
+      #f8fbff
+    );
+}
+
+
+.team-awards-section-heading h2 {
+  margin: 3px 0 6px;
+
+  color: #0f172a;
+
+  font-size: 22px;
+  font-weight: 850;
+}
+
+
+.team-awards-section-heading p:last-child {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+
+/* ========================================
+   LEADERBOARD
+======================================== */
+
+.team-awards-leaderboard {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.team-awards-leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  min-height: 76px;
+
+  padding: 14px 22px;
+
+  border-bottom: 1px solid #edf2f7;
+}
+
+
+.team-awards-leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+
+.team-awards-position {
+  display: grid;
+  place-items: center;
+
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #f1f5f9;
+
+  color: #64748b;
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+
+.team-awards-leaderboard-row:first-child
+.team-awards-position {
+  background:
+    linear-gradient(
+      135deg,
+      #ff0a78,
+      #4f9cff
+    );
+
+  color: #ffffff;
+}
+
+
+.team-awards-player-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+
+.team-awards-player-info strong {
+  color: #0f172a;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+
+.team-awards-player-info span {
+  margin-top: 3px;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+
+.team-awards-count {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  min-width: 60px;
+
+  padding: 8px 11px;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff0f7,
+      #eff6ff
+    );
+}
+
+
+.team-awards-count strong {
+  color: #1d4ed8;
+
+  font-size: 17px;
+  font-weight: 900;
+}
+
+
+/* ========================================
+   RECENT MOTM
+======================================== */
+
+.recent-motm-list {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.recent-motm-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 17px 22px;
+
+  border-bottom: 1px solid #edf2f7;
+}
+
+
+.recent-motm-card:last-child {
+  border-bottom: none;
+}
+
+
+.recent-motm-player {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+
+.recent-motm-player > span {
+  margin-bottom: 3px;
+
+  color: #db2777;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+
+.recent-motm-player strong {
+  color: #0f172a;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+
+.recent-motm-player p {
+  margin: 3px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+
+.recent-motm-result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+
+.recent-motm-result strong {
+  display: grid;
+  place-items: center;
+
+  min-width: 48px;
+  height: 38px;
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff0a78,
+      #4f9cff
+    );
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 900;
+}
+
+
+.recent-motm-result span {
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+
+/* ========================================
+   EMPTY STATES
+======================================== */
+
+.team-awards-no-results {
+  padding: 28px;
+
+  color: #64748b;
+
+  text-align: center;
+
+  font-size: 14px;
+}
+
+
+.team-awards-empty-state {
+  padding: 40px 24px;
+
+  text-align: center;
+}
+
+
+.team-awards-empty-state > span {
+  font-size: 40px;
+}
+
+
+.team-awards-empty-state h3 {
+  margin: 12px 0 8px;
+
+  color: #0f172a;
+
+  font-size: 19px;
+}
+
+
+.team-awards-empty-state p {
+  max-width: 440px;
+
+  margin: 0 auto;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 800px) {
+  .team-awards-hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 520px) {
+  .team-award-hero-card {
+    min-height: 0;
+
+    padding: 24px 20px;
+  }
+
+
+  .team-award-hero-card h2 {
+    font-size: 23px;
+  }
+
+
+  .team-award-hero-avatar {
+    width: 54px;
+    height: 54px;
+  }
+
+
+  .team-awards-section-heading {
+    padding: 20px 18px;
+  }
+
+
+  .team-awards-leaderboard-row,
+  .recent-motm-card {
+    gap: 10px;
+
+    padding: 14px 15px;
+  }
+
+
+  .team-award-avatar,
+  .recent-motm-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+
+  .team-awards-position {
+    width: 30px;
+    height: 30px;
+  }
+
+
+  .team-awards-count {
+    min-width: 52px;
+
+    padding: 7px 9px;
+  }
+}
+
+/* ========================================
+   TEAM RECORD
+======================================== */
+
+.team-record-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(7, minmax(0, 1fr));
+
+  gap: 1px;
+
+  background: #e2e8f0;
+}
+
+
+.team-record-grid article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 20px 10px;
+
+  background: #ffffff;
+}
+
+
+.team-record-grid span {
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+
+.team-record-grid strong {
+  color: #0f172a;
+
+  font-size: 25px;
+  font-weight: 900;
+}
+
+
+.team-record-grid small {
+  color: #94a3b8;
+
+  font-size: 10px;
+  text-align: center;
+}
+
+
+/* ========================================
+   STAT GRID
+======================================== */
+
+.team-stat-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 22px;
+}
+
+
+.team-stat-grid .team-awards-section {
+  margin-top: 28px;
+}
+
+
+/* ========================================
+   STAT LEADERBOARDS
+======================================== */
+
+.team-stat-leaderboard {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.team-stat-row {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  min-height: 76px;
+
+  padding: 14px 22px;
+
+  border-bottom:
+    1px solid #edf2f7;
+}
+
+
+.team-stat-row:last-child {
+  border-bottom: none;
+}
+
+
+.team-stat-row:first-child {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 240, 247, 0.65),
+      rgba(239, 246, 255, 0.65)
+    );
+}
+
+
+.team-stat-total {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  min-width: 60px;
+
+  padding: 8px 11px;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff0f7,
+      #eff6ff
+    );
+}
+
+
+.team-stat-total strong {
+  color: #1d4ed8;
+
+  font-size: 18px;
+  font-weight: 900;
+}
+
+
+.team-awards-stat-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  min-height: 110px;
+
+  padding: 24px;
+
+  color: #64748b;
+
+  text-align: center;
+}
+
+
+.team-awards-stat-empty > span {
+  font-size: 25px;
+}
+
+
+.team-awards-stat-empty p {
+  margin: 0;
+
+  font-size: 13px;
+}
+
+
+/* ========================================
+   RESPONSIVE STATS
+======================================== */
+
+@media (max-width: 900px) {
+  .team-record-grid {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  }
+
+
+  .team-stat-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+
+@media (max-width: 520px) {
+  .team-record-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .team-record-grid article {
+    padding: 16px 8px;
+  }
+
+
+  .team-record-grid strong {
+    font-size: 22px;
+  }
+
+
+  .team-stat-row {
+    gap: 10px;
+
+    padding: 13px 15px;
+  }
+}

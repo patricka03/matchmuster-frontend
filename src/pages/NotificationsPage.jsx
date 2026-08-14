@@ -17,8 +17,10 @@ function UpdatesPage() {
   const [error, setError] = useState('')
   const [actionId, setActionId] = useState(null)
   const [teamId, setTeamId] = useState(null)
+
   const [selectedUpdate, setSelectedUpdate] =
     useState(null)
+
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
@@ -47,7 +49,7 @@ function UpdatesPage() {
         `${API_URL}/teams`,
         {
           headers: authorizationHeaders(),
-        }
+        },
       )
 
       if (!response.ok) return
@@ -74,7 +76,7 @@ function UpdatesPage() {
         `${API_URL}/users/me`,
         {
           headers: authorizationHeaders(),
-        }
+        },
       )
 
       if (!response.ok) return
@@ -96,24 +98,27 @@ function UpdatesPage() {
         `${API_URL}/notifications`,
         {
           headers: authorizationHeaders(),
-        }
+        },
       )
 
       if (!response.ok) {
-        throw new Error('Unable to load your updates.')
+        throw new Error(
+          'Unable to load your updates.',
+        )
       }
 
       const data = await response.json()
 
-      const notificationList = Array.isArray(data)
-        ? data
-        : data.notifications || []
+      const notificationList =
+        Array.isArray(data)
+          ? data
+          : data.notifications || []
 
       setUpdates(notificationList)
     } catch (requestError) {
       setError(
         requestError.message ||
-          'Unable to load your updates.'
+          'Unable to load your updates.',
       )
     } finally {
       setLoading(false)
@@ -123,9 +128,15 @@ function UpdatesPage() {
   async function openUpdate(update) {
     setSelectedUpdate(update)
 
-    if (update.opened_at || update.read) return
+    if (
+      update.opened_at ||
+      update.read
+    ) {
+      return
+    }
 
-    const openedAt = new Date().toISOString()
+    const openedAt =
+      new Date().toISOString()
 
     setUpdates((currentUpdates) =>
       currentUpdates.map((item) =>
@@ -135,18 +146,19 @@ function UpdatesPage() {
               read: true,
               opened_at: openedAt,
             }
-          : item
-      )
+          : item,
+      ),
     )
 
-    setSelectedUpdate((currentSelected) =>
-      currentSelected?.id === update.id
-        ? {
-            ...currentSelected,
-            read: true,
-            opened_at: openedAt,
-          }
-        : currentSelected
+    setSelectedUpdate(
+      (currentSelected) =>
+        currentSelected?.id === update.id
+          ? {
+              ...currentSelected,
+              read: true,
+              opened_at: openedAt,
+            }
+          : currentSelected,
     )
 
     try {
@@ -154,40 +166,51 @@ function UpdatesPage() {
         `${API_URL}/notifications/${update.id}`,
         {
           method: 'PATCH',
+
           headers: authorizationHeaders(),
+
           body: JSON.stringify({
             notification: {
               opened: true,
             },
           }),
-        }
+        },
       )
 
       if (!response.ok) {
         throw new Error(
-          'Unable to record this update as opened.'
+          'Unable to record this update as opened.',
         )
       }
 
-      const savedUpdate = await response.json()
+      const savedUpdate =
+        await response.json()
 
       setUpdates((currentUpdates) =>
         currentUpdates.map((item) =>
           item.id === savedUpdate.id
-            ? { ...item, ...savedUpdate }
-            : item
-        )
+            ? {
+                ...item,
+                ...savedUpdate,
+              }
+            : item,
+        ),
       )
 
-      setSelectedUpdate((currentSelected) =>
-        currentSelected?.id === savedUpdate.id
-          ? { ...currentSelected, ...savedUpdate }
-          : currentSelected
+      setSelectedUpdate(
+        (currentSelected) =>
+          currentSelected?.id ===
+          savedUpdate.id
+            ? {
+                ...currentSelected,
+                ...savedUpdate,
+              }
+            : currentSelected,
       )
     } catch (requestError) {
       setError(
         requestError.message ||
-          'Unable to record this update as opened.'
+          'Unable to record this update as opened.',
       )
 
       await loadUpdates()
@@ -195,7 +218,8 @@ function UpdatesPage() {
   }
 
   async function toggleKept(update) {
-    const keeping = !update.kept_at
+    const keeping =
+      !update.kept_at
 
     setActionId(update.id)
     setError('')
@@ -205,52 +229,66 @@ function UpdatesPage() {
         `${API_URL}/notifications/${update.id}`,
         {
           method: 'PATCH',
+
           headers: authorizationHeaders(),
+
           body: JSON.stringify({
             notification: {
               kept: keeping,
             },
           }),
-        }
+        },
       )
 
       if (!response.ok) {
         throw new Error(
           keeping
             ? 'Unable to keep this update.'
-            : 'Unable to remove this update from kept.'
+            : 'Unable to remove this update from kept.',
         )
       }
 
-      const savedUpdate = await response.json()
+      const savedUpdate =
+        await response.json()
 
       setUpdates((currentUpdates) =>
         currentUpdates.map((item) =>
           item.id === savedUpdate.id
-            ? { ...item, ...savedUpdate }
-            : item
-        )
+            ? {
+                ...item,
+                ...savedUpdate,
+              }
+            : item,
+        ),
       )
 
-      setSelectedUpdate((currentSelected) =>
-        currentSelected?.id === savedUpdate.id
-          ? { ...currentSelected, ...savedUpdate }
-          : currentSelected
+      setSelectedUpdate(
+        (currentSelected) =>
+          currentSelected?.id ===
+          savedUpdate.id
+            ? {
+                ...currentSelected,
+                ...savedUpdate,
+              }
+            : currentSelected,
       )
     } catch (requestError) {
       setError(
         requestError.message ||
-          'Unable to update this item.'
+          'Unable to update this item.',
       )
     } finally {
       setActionId(null)
     }
   }
 
-  async function deleteUpdate(notificationId) {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this update?'
-    )
+  async function deleteUpdate(
+    notificationId,
+  ) {
+    const confirmed =
+      window.confirm(
+        'Are you sure you want to delete this update?',
+      )
 
     if (!confirmed) return
 
@@ -263,28 +301,34 @@ function UpdatesPage() {
         {
           method: 'DELETE',
           headers: authorizationHeaders(),
-        }
+        },
       )
 
       if (!response.ok) {
-        throw new Error('Unable to delete this update.')
+        throw new Error(
+          'Unable to delete this update.',
+        )
       }
 
       setUpdates((currentUpdates) =>
         currentUpdates.filter(
-          (update) => update.id !== notificationId
-        )
+          (update) =>
+            update.id !==
+            notificationId,
+        ),
       )
 
-      setSelectedUpdate((currentSelected) =>
-        currentSelected?.id === notificationId
-          ? null
-          : currentSelected
+      setSelectedUpdate(
+        (currentSelected) =>
+          currentSelected?.id ===
+          notificationId
+            ? null
+            : currentSelected,
       )
     } catch (requestError) {
       setError(
         requestError.message ||
-          'Unable to delete this update.'
+          'Unable to delete this update.',
       )
     } finally {
       setActionId(null)
@@ -294,24 +338,37 @@ function UpdatesPage() {
   function formatDate(date) {
     if (!date) return ''
 
-    const parsedDate = new Date(date)
+    const parsedDate =
+      new Date(date)
 
-    if (Number.isNaN(parsedDate.getTime())) return ''
+    if (
+      Number.isNaN(
+        parsedDate.getTime(),
+      )
+    ) {
+      return ''
+    }
 
-    return new Intl.DateTimeFormat('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(parsedDate)
+    return new Intl.DateTimeFormat(
+      'en-GB',
+      {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    ).format(parsedDate)
   }
 
   function updateTitle(update) {
     return (
       update.post?.title ||
       update.title ||
-      update.notification_type?.replaceAll('_', ' ') ||
+      update.notification_type?.replaceAll(
+        '_',
+        ' ',
+      ) ||
       'MatchMuster update'
     )
   }
@@ -327,13 +384,20 @@ function UpdatesPage() {
   }
 
   function isUnread(update) {
-    return !update.opened_at && !update.read
+    return (
+      !update.opened_at &&
+      !update.read
+    )
   }
 
   function getMatchId(update) {
     if (!update) return null
 
-    return update.match_id || update.match?.id || null
+    return (
+      update.match_id ||
+      update.match?.id ||
+      null
+    )
   }
 
   function getUpdateTeamId(update) {
@@ -354,53 +418,81 @@ function UpdatesPage() {
     )
   }
 
-  function canRespondToAvailability(update) {
-    const updateTeamId = getUpdateTeamId(update)
-    const updateMatchId = getMatchId(update)
+  function canRespondToAvailability(
+    update,
+  ) {
+    const updateTeamId =
+      getUpdateTeamId(update)
+
+    const updateMatchId =
+      getMatchId(update)
 
     return (
-      currentUser?.account_type === 'player' &&
+      currentUser?.account_type ===
+        'player' &&
+
       AVAILABILITY_NOTIFICATION_TYPES.includes(
-        update.notification_type
+        update.notification_type,
       ) &&
-      Boolean(updateMatchId && updateTeamId)
+
+      !update.availability_submitted &&
+
+      Boolean(
+        updateMatchId &&
+          updateTeamId,
+      )
     )
   }
 
   function canViewPayment(update) {
     return (
-      currentUser?.account_type === 'player' &&
+      currentUser?.account_type ===
+        'player' &&
+
       update?.notification_type ===
         'match_payment_requested' &&
+
       Boolean(
         getMatchPaymentId(update) &&
           getMatchId(update) &&
-          getUpdateTeamId(update)
+          getUpdateTeamId(update),
       )
     )
   }
 
-  const unreadCount = updates.filter(isUnread).length
+  const unreadCount =
+    updates.filter(
+      isUnread,
+    ).length
 
-  const filteredUpdates = updates.filter((update) => {
-    if (filter === 'unread') {
-      return isUnread(update)
-    }
+  const filteredUpdates =
+    updates.filter((update) => {
+      if (
+        filter === 'unread'
+      ) {
+        return isUnread(update)
+      }
 
-    if (filter === 'kept') {
-      return Boolean(update.kept_at)
-    }
+      if (
+        filter === 'kept'
+      ) {
+        return Boolean(
+          update.kept_at,
+        )
+      }
 
-    return true
-  })
+      return true
+    })
 
   const selectedTeamId =
-    getUpdateTeamId(selectedUpdate)
+    getUpdateTeamId(
+      selectedUpdate,
+    )
 
-  const selectedMatchId = getMatchId(selectedUpdate)
-
-  const selectedMatchPaymentId =
-    getMatchPaymentId(selectedUpdate)
+  const selectedMatchId =
+    getMatchId(
+      selectedUpdate,
+    )
 
   return (
     <>
@@ -417,13 +509,16 @@ function UpdatesPage() {
               <h1>Updates</h1>
 
               <p className="updates-description">
-                Keep track of squad selections, match
-                changes, payments and team announcements.
+                Keep track of squad selections,
+                match changes, payments and team
+                announcements.
               </p>
             </div>
 
             <div className="updates-summary">
-              <span>{unreadCount}</span>
+              <span>
+                {unreadCount}
+              </span>
 
               <p>
                 {unreadCount === 1
@@ -437,29 +532,50 @@ function UpdatesPage() {
             className="updates-filters"
             aria-label="Filter updates"
           >
-            {['all', 'unread', 'kept'].map(
+            {[
+              'all',
+              'unread',
+              'kept',
+            ].map(
               (filterName) => (
                 <button
-                  key={filterName}
+                  key={
+                    filterName
+                  }
                   type="button"
                   className={
-                    filter === filterName
+                    filter ===
+                    filterName
                       ? 'updates-filter-active'
                       : ''
                   }
-                  onClick={() => setFilter(filterName)}
+                  onClick={() =>
+                    setFilter(
+                      filterName,
+                    )
+                  }
                 >
                   {filterName}
                 </button>
-              )
+              ),
             )}
           </div>
 
           {error && (
-            <div className="updates-error" role="alert">
-              <span>{error}</span>
+            <div
+              className="updates-error"
+              role="alert"
+            >
+              <span>
+                {error}
+              </span>
 
-              <button type="button" onClick={loadUpdates}>
+              <button
+                type="button"
+                onClick={
+                  loadUpdates
+                }
+              >
                 Try again
               </button>
             </div>
@@ -469,101 +585,140 @@ function UpdatesPage() {
             <div className="updates-status">
               <div className="updates-spinner" />
 
-              <p>Loading your updates...</p>
-            </div>
-          ) : updates.length === 0 ? (
-            <div className="updates-empty">
-              <div className="updates-empty-icon">✓</div>
-
-              <h2>You’re all caught up</h2>
-
               <p>
-                New match, squad member and payment updates
-                will appear here.
+                Loading your updates...
               </p>
             </div>
-          ) : filteredUpdates.length === 0 ? (
+          ) : updates.length ===
+            0 ? (
             <div className="updates-empty">
-              <div className="updates-empty-icon">✓</div>
+              <div className="updates-empty-icon">
+                ✓
+              </div>
 
-              <h2>No {filter} updates</h2>
+              <h2>
+                You’re all caught up
+              </h2>
 
               <p>
-                There are currently no updates in this
-                section.
+                New match, squad member
+                and payment updates will
+                appear here.
+              </p>
+            </div>
+          ) : filteredUpdates.length ===
+            0 ? (
+            <div className="updates-empty">
+              <div className="updates-empty-icon">
+                ✓
+              </div>
+
+              <h2>
+                No {filter} updates
+              </h2>
+
+              <p>
+                There are currently no
+                updates in this section.
               </p>
             </div>
           ) : (
             <div className="updates-list">
-              {filteredUpdates.map((update) => {
-                const unread = isUnread(update)
+              {filteredUpdates.map(
+                (update) => {
+                  const unread =
+                    isUnread(update)
 
-                return (
-                  <article
-                    key={update.id}
-                    className={`update-card ${
-                      unread ? '' : 'update-card-read'
-                    }`}
-                    onClick={() => openUpdate(update)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(event) => {
-                      if (
-                        event.key === 'Enter' ||
-                        event.key === ' '
-                      ) {
-                        event.preventDefault()
-                        openUpdate(update)
-                      }
-                    }}
-                  >
-                    <div
-                      className={`update-status-dot ${
+                  return (
+                    <article
+                      key={update.id}
+                      className={`update-card ${
                         unread
                           ? ''
-                          : 'update-status-dot-read'
+                          : 'update-card-read'
                       }`}
-                      aria-hidden="true"
-                    />
+                      onClick={() =>
+                        openUpdate(
+                          update,
+                        )
+                      }
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(
+                        event,
+                      ) => {
+                        if (
+                          event.key ===
+                            'Enter' ||
+                          event.key ===
+                            ' '
+                        ) {
+                          event.preventDefault()
 
-                    <div className="update-card-content">
-                      <div className="update-card-heading">
-                        <h2>{updateTitle(update)}</h2>
+                          openUpdate(
+                            update,
+                          )
+                        }
+                      }}
+                    >
+                      <div
+                        className={`update-status-dot ${
+                          unread
+                            ? ''
+                            : 'update-status-dot-read'
+                        }`}
+                        aria-hidden="true"
+                      />
 
-                        {unread && (
-                          <span className="update-unread-label">
-                            New
-                          </span>
-                        )}
+                      <div className="update-card-content">
+                        <div className="update-card-heading">
+                          <h2>
+                            {updateTitle(
+                              update,
+                            )}
+                          </h2>
 
-                        {update.kept_at && (
-                          <span className="update-kept-label">
-                            Kept
-                          </span>
-                        )}
+                          {unread && (
+                            <span className="update-unread-label">
+                              New
+                            </span>
+                          )}
+
+                          {update.kept_at && (
+                            <span className="update-kept-label">
+                              Kept
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="update-message">
+                          {updateMessage(
+                            update,
+                          )}
+                        </p>
+
+                        <time
+                          className="update-time"
+                          dateTime={
+                            update.created_at
+                          }
+                        >
+                          {formatDate(
+                            update.created_at,
+                          )}
+                        </time>
                       </div>
 
-                      <p className="update-message">
-                        {updateMessage(update)}
-                      </p>
-
-                      <time
-                        className="update-time"
-                        dateTime={update.created_at}
+                      <span
+                        className="update-open-label"
+                        aria-hidden="true"
                       >
-                        {formatDate(update.created_at)}
-                      </time>
-                    </div>
-
-                    <span
-                      className="update-open-label"
-                      aria-hidden="true"
-                    >
-                      View
-                    </span>
-                  </article>
-                )
-              })}
+                        View
+                      </span>
+                    </article>
+                  )
+                },
+              )}
             </div>
           )}
         </section>
@@ -573,9 +728,16 @@ function UpdatesPage() {
         <div
           className="update-modal-backdrop"
           role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setSelectedUpdate(null)
+          onMouseDown={(
+            event,
+          ) => {
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
+              setSelectedUpdate(
+                null,
+              )
             }
           }}
         >
@@ -588,16 +750,19 @@ function UpdatesPage() {
             <div className="update-modal-header">
               <div>
                 <p className="updates-eyebrow">
-                  {selectedUpdate.post?.post_type ||
+                  {selectedUpdate
+                    .post?.post_type ||
                     selectedUpdate.notification_type?.replaceAll(
                       '_',
-                      ' '
+                      ' ',
                     ) ||
                     'Update'}
                 </p>
 
                 <h2 id="update-modal-title">
-                  {updateTitle(selectedUpdate)}
+                  {updateTitle(
+                    selectedUpdate,
+                  )}
                 </h2>
               </div>
 
@@ -605,53 +770,84 @@ function UpdatesPage() {
                 className="update-modal-close"
                 type="button"
                 aria-label="Close update"
-                onClick={() => setSelectedUpdate(null)}
+                onClick={() =>
+                  setSelectedUpdate(
+                    null,
+                  )
+                }
               >
                 ×
               </button>
             </div>
 
             <div className="update-modal-meta">
-              {selectedUpdate.post?.author_name && (
+              {selectedUpdate.post
+                ?.author_name && (
                 <span>
-                  By {selectedUpdate.post.author_name}
+                  By{' '}
+                  {
+                    selectedUpdate
+                      .post
+                      .author_name
+                  }
                 </span>
               )}
 
-              <time dateTime={selectedUpdate.created_at}>
-                {formatDate(selectedUpdate.created_at)}
+              <time
+                dateTime={
+                  selectedUpdate.created_at
+                }
+              >
+                {formatDate(
+                  selectedUpdate.created_at,
+                )}
               </time>
             </div>
 
             <div className="update-modal-message">
-              <p>{updateMessage(selectedUpdate)}</p>
+              <p>
+                {updateMessage(
+                  selectedUpdate,
+                )}
+              </p>
             </div>
 
             {selectedUpdate.kept_at && (
               <p className="update-kept-note">
-                This update has been kept and will remain in
-                your Kept section.
+                This update has been kept
+                and will remain in your
+                Kept section.
               </p>
             )}
 
             <div className="update-modal-actions">
               {canRespondToAvailability(
-                selectedUpdate
+                selectedUpdate,
               ) && (
                 <Link
                   className="update-availability-button"
                   to={`/teams/${selectedTeamId}/matches/${selectedMatchId}/availabilities/confirm`}
-                  onClick={() => setSelectedUpdate(null)}
+                  onClick={() =>
+                    setSelectedUpdate(
+                      null,
+                    )
+                  }
                 >
                   Submit availability
                 </Link>
               )}
 
-              {canViewPayment(selectedUpdate) && (
+              {canViewPayment(
+                selectedUpdate,
+              ) && (
                 <Link
                   className="update-availability-button update-payment-button"
                   to={`/teams/${selectedTeamId}/matches/${selectedMatchId}/payments`}
-                  onClick={() => setSelectedUpdate(null)}
+                  onClick={() =>
+                    setSelectedUpdate(
+                      null,
+                    )
+                  }
                 >
                   View payment &amp; pay
                 </Link>
@@ -661,13 +857,17 @@ function UpdatesPage() {
                 className="update-keep-button"
                 type="button"
                 onClick={() =>
-                  toggleKept(selectedUpdate)
+                  toggleKept(
+                    selectedUpdate,
+                  )
                 }
                 disabled={
-                  actionId === selectedUpdate.id
+                  actionId ===
+                  selectedUpdate.id
                 }
               >
-                {actionId === selectedUpdate.id
+                {actionId ===
+                selectedUpdate.id
                   ? 'Saving...'
                   : selectedUpdate.kept_at
                     ? 'Remove from kept'
@@ -678,10 +878,13 @@ function UpdatesPage() {
                 className="update-delete-button"
                 type="button"
                 onClick={() =>
-                  deleteUpdate(selectedUpdate.id)
+                  deleteUpdate(
+                    selectedUpdate.id,
+                  )
                 }
                 disabled={
-                  actionId === selectedUpdate.id
+                  actionId ===
+                  selectedUpdate.id
                 }
               >
                 Delete
@@ -690,7 +893,11 @@ function UpdatesPage() {
               <button
                 className="update-modal-done"
                 type="button"
-                onClick={() => setSelectedUpdate(null)}
+                onClick={() =>
+                  setSelectedUpdate(
+                    null,
+                  )
+                }
               >
                 Close
               </button>

@@ -36,11 +36,14 @@ import DeveloperDashboardPage from './pages/DeveloperDashboardPage'
 import DeveloperProtectedRoute from './components/DeveloperProtectedRoute'
 import LegalHubPage from './pages/legal/LegalHubPage'
 import LegalPage from './pages/legal/LegalPage'
+import MatchRatingsPage from './pages/MatchRatingsPage'
+import TeamAwardsPage from './pages/TeamAwardsPage'
+import MatchPlayerStatsPage from './pages/MatchPlayerStatsPage'
 
 
 function App() {
   return (
-    <Routes> 
+    <Routes>
       <Route path="/" element={<WelcomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
@@ -79,6 +82,14 @@ function App() {
       <Route
         path="/teams/:teamId/matches/:matchId"
         element={<MatchPage />}
+      />
+      <Route
+        path="/teams/:teamId/matches/:matchId/stats"
+        element={<MatchPlayerStatsPage />}
+      />
+      <Route
+        path="/teams/:teamId/matches/:matchId/ratings"
+        element={<MatchRatingsPage />}
       />
       <Route
         path="/teams/:teamId/matches/:matchId/edit"
@@ -141,6 +152,10 @@ function App() {
       <Route
         path="/forgot-password"
         element={<ForgotPasswordPage />}
+      />
+      <Route
+        path="/teams/:teamId/awards"
+        element={<TeamAwardsPage />}
       />
     </Routes>
   )

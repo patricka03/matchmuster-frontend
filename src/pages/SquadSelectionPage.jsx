@@ -30,7 +30,10 @@ function pitchSlot(id, position) {
 // Rows run from attack at the top to goalkeeper at the bottom.
 const formationLayouts = {
   '4-4-2': [
-    [pitchSlot('left-st', 'ST'), pitchSlot('right-st', 'ST')],
+    [
+      pitchSlot('left-st', 'ST'),
+      pitchSlot('right-st', 'ST'),
+    ],
     [
       pitchSlot('lm', 'LM'),
       pitchSlot('left-cm', 'CM'),
@@ -47,9 +50,15 @@ const formationLayouts = {
   ],
 
   '4-4-2 Diamond': [
-    [pitchSlot('left-st', 'ST'), pitchSlot('right-st', 'ST')],
+    [
+      pitchSlot('left-st', 'ST'),
+      pitchSlot('right-st', 'ST'),
+    ],
     [pitchSlot('cam', 'CAM')],
-    [pitchSlot('left-cm', 'CM'), pitchSlot('right-cm', 'CM')],
+    [
+      pitchSlot('left-cm', 'CM'),
+      pitchSlot('right-cm', 'CM'),
+    ],
     [pitchSlot('cdm', 'CDM')],
     [
       pitchSlot('lb', 'LB'),
@@ -157,7 +166,10 @@ const formationLayouts = {
   ],
 
   '3-5-2': [
-    [pitchSlot('left-st', 'ST'), pitchSlot('right-st', 'ST')],
+    [
+      pitchSlot('left-st', 'ST'),
+      pitchSlot('right-st', 'ST'),
+    ],
     [
       pitchSlot('lwb', 'LWB'),
       pitchSlot('left-cm', 'CM'),
@@ -214,7 +226,10 @@ const formationLayouts = {
   ],
 
   '3-1-4-2': [
-    [pitchSlot('left-st', 'ST'), pitchSlot('right-st', 'ST')],
+    [
+      pitchSlot('left-st', 'ST'),
+      pitchSlot('right-st', 'ST'),
+    ],
     [
       pitchSlot('lm', 'LM'),
       pitchSlot('left-cm', 'CM'),
@@ -231,7 +246,10 @@ const formationLayouts = {
   ],
 
   '5-3-2': [
-    [pitchSlot('left-st', 'ST'), pitchSlot('right-st', 'ST')],
+    [
+      pitchSlot('left-st', 'ST'),
+      pitchSlot('right-st', 'ST'),
+    ],
     [
       pitchSlot('left-cm', 'CM'),
       pitchSlot('cm', 'CM'),
@@ -287,7 +305,10 @@ const formationLayouts = {
 }
 
 const roleFields = [
-  { key: 'captain', label: 'Captain' },
+  {
+    key: 'captain',
+    label: 'Captain',
+  },
   {
     key: 'is_left_corner_taker',
     label: 'Left corner taker',
@@ -320,20 +341,35 @@ const positionFamilies = {
 }
 
 function recordFor(player) {
-  return player.user || player.player || player
+  return (
+    player.user ||
+    player.player ||
+    player
+  )
 }
 
 function playerId(player) {
   const record = recordFor(player)
-  const id = record.id || player.user_id
 
-  return id === undefined || id === null ? '' : String(id)
+  const id =
+    record.id ||
+    player.user_id
+
+  return id === undefined ||
+    id === null
+    ? ''
+    : String(id)
 }
 
 function selectionUserId(selection) {
-  const id = selection.user_id || selection.user?.id
+  const id =
+    selection.user_id ||
+    selection.user?.id
 
-  return id === undefined || id === null ? '' : String(id)
+  return id === undefined ||
+    id === null
+    ? ''
+    : String(id)
 }
 
 function playerName(player) {
@@ -343,21 +379,35 @@ function playerName(player) {
     return record.name.trim()
   }
 
-  const fullName = [record.first_name, record.last_name]
+  const fullName = [
+    record.first_name,
+    record.last_name,
+  ]
     .filter(Boolean)
     .join(' ')
     .trim()
 
-  return fullName || record.email || 'Unknown player'
+  return (
+    fullName ||
+    record.email ||
+    'Unknown player'
+  )
 }
 
 function playerInitials(player) {
-  const name = playerName(player)
-  const parts = name.split(/\s+/).filter(Boolean)
+  const name =
+    playerName(player)
+
+  const parts = name
+    .split(/\s+/)
+    .filter(Boolean)
 
   return parts
     .slice(0, 2)
-    .map((part) => part[0])
+    .map(
+      (part) =>
+        part[0],
+    )
     .join('')
     .toUpperCase()
 }
@@ -368,89 +418,200 @@ function preferredPosition(player) {
   return (
     player.preferred_position ||
     record.preferred_position ||
-    player.team_membership?.preferred_position ||
+    player.team_membership
+      ?.preferred_position ||
     ''
   )
 }
 
 function basePosition(position) {
-  return positionFamilies[position] || position || ''
+  return (
+    positionFamilies[position] ||
+    position ||
+    ''
+  )
 }
 
 function flatSlots(formation) {
-  return (formationLayouts[formation] || []).flat()
+  return (
+    formationLayouts[formation] || []
+  ).flat()
 }
 
-function assignStartersToFormation(formation, starterSelections) {
-  const slots = flatSlots(formation)
-  const remaining = [...starterSelections]
+function assignStartersToFormation(
+  formation,
+  starterSelections,
+) {
+  const slots =
+    flatSlots(formation)
+
+  const remaining = [
+    ...starterSelections,
+  ]
+
   const assignments = {}
 
-  function assignMatchingPlayers(matcher) {
+  function assignMatchingPlayers(
+    matcher,
+  ) {
     slots.forEach((slot) => {
-      if (assignments[slot.id]) return
+      if (
+        assignments[slot.id]
+      ) {
+        return
+      }
 
-      const index = remaining.findIndex((selection) =>
-        matcher(selection, slot)
+      const index =
+        remaining.findIndex(
+          (selection) =>
+            matcher(
+              selection,
+              slot,
+            ),
+        )
+
+      if (index === -1) {
+        return
+      }
+
+      assignments[slot.id] =
+        selectionUserId(
+          remaining[index],
+        )
+
+      remaining.splice(
+        index,
+        1,
       )
-
-      if (index === -1) return
-
-      assignments[slot.id] = selectionUserId(remaining[index])
-      remaining.splice(index, 1)
     })
   }
 
   assignMatchingPlayers(
-    (selection, slot) => selection.position === slot.position
+    (selection, slot) =>
+      selection.position ===
+      slot.position,
   )
 
   assignMatchingPlayers(
     (selection, slot) =>
-      basePosition(selection.position) === basePosition(slot.position)
+      basePosition(
+        selection.position,
+      ) ===
+      basePosition(
+        slot.position,
+      ),
   )
 
-  assignMatchingPlayers(() => true)
+  assignMatchingPlayers(
+    () => true,
+  )
 
   return assignments
 }
 
 function SquadSelectionPage() {
-  const navigate = useNavigate()
-  const { teamId, matchId } = useParams()
+  const navigate =
+    useNavigate()
 
-  const [match, setMatch] = useState(null)
-  const [availablePlayers, setAvailablePlayers] = useState([])
-  const [selections, setSelections] = useState([])
-  const [formation, setFormation] = useState('')
-  const [lineup, setLineup] = useState({})
-  const [swapSourceSlotId, setSwapSourceSlotId] = useState('')
-  const [substituteIds, setSubstituteIds] = useState([])
-  const [substitutePositions, setSubstitutePositions] = useState({})
-  const [roles, setRoles] = useState({
+  const {
+    teamId,
+    matchId,
+  } = useParams()
+
+  const [
+    match,
+    setMatch,
+  ] = useState(null)
+
+  const [
+    availablePlayers,
+    setAvailablePlayers,
+  ] = useState([])
+
+  const [
+    selections,
+    setSelections,
+  ] = useState([])
+
+  const [
+    formation,
+    setFormation,
+  ] = useState('')
+
+  const [
+    lineup,
+    setLineup,
+  ] = useState({})
+
+  const [
+    swapSourceSlotId,
+    setSwapSourceSlotId,
+  ] = useState('')
+
+  const [
+    substituteIds,
+    setSubstituteIds,
+  ] = useState([])
+
+  const [
+    substitutePositions,
+    setSubstitutePositions,
+  ] = useState({})
+
+  const [
+    roles,
+    setRoles,
+  ] = useState({
     captain: '',
     is_left_corner_taker: '',
     is_right_corner_taker: '',
     is_penalty_taker: '',
     is_freekick_taker: '',
   })
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true)
+
+  const [
+    saving,
+    setSaving,
+  ] = useState(false)
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('')
+
+  const [
+    successMessage,
+    setSuccessMessage,
+  ] = useState('')
 
   useEffect(() => {
     async function fetchSquadData() {
-      const token = localStorage.getItem('token')
+      const token =
+        localStorage.getItem(
+          'token',
+        )
 
       if (!token) {
-        navigate('/login', { replace: true })
+        navigate(
+          '/login',
+          {
+            replace: true,
+          },
+        )
+
         return
       }
 
       const headers = {
-        Accept: 'application/json',
-        Authorization: token,
+        Accept:
+          'application/json',
+        Authorization:
+          token,
       }
 
       try {
@@ -461,141 +622,262 @@ function SquadSelectionPage() {
         ] = await Promise.all([
           fetch(
             `${API_URL}/teams/${teamId}/matches/${matchId}`,
-            { headers }
+            {
+              headers,
+            },
           ),
+
           fetch(
             `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities`,
-            { headers }
+            {
+              headers,
+            },
           ),
+
           fetch(
             `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`,
-            { headers }
+            {
+              headers,
+            },
           ),
         ])
 
         if (
-          matchResponse.status === 401 ||
-          availabilityResponse.status === 401 ||
-          selectionResponse.status === 401
+          matchResponse.status ===
+            401 ||
+          availabilityResponse.status ===
+            401 ||
+          selectionResponse.status ===
+            401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login', { replace: true })
+          localStorage.removeItem(
+            'token',
+          )
+
+          localStorage.removeItem(
+            'currentUser',
+          )
+
+          navigate(
+            '/login',
+            {
+              replace: true,
+            },
+          )
+
           return
         }
 
         if (
-          matchResponse.status === 403 ||
-          availabilityResponse.status === 403 ||
-          selectionResponse.status === 403
+          matchResponse.status ===
+            403 ||
+          availabilityResponse.status ===
+            403 ||
+          selectionResponse.status ===
+            403
         ) {
-          navigate('/dashboard', { replace: true })
+          navigate(
+            '/dashboard',
+            {
+              replace: true,
+            },
+          )
+
           return
         }
 
-        const matchData = await matchResponse.json()
-        const availabilityData = await availabilityResponse.json()
-        const selectionData = await selectionResponse.json()
+        const matchData =
+          await matchResponse.json()
 
-        if (!matchResponse.ok) {
+        const availabilityData =
+          await availabilityResponse.json()
+
+        const selectionData =
+          await selectionResponse.json()
+
+        if (
+          !matchResponse.ok
+        ) {
           throw new Error(
-            matchData.error || 'Unable to load the fixture.'
+            matchData.error ||
+              'Unable to load the fixture.',
           )
         }
 
-        if (!availabilityResponse.ok) {
+        if (
+          !availabilityResponse.ok
+        ) {
           throw new Error(
             availabilityData.error ||
-              'Unable to load player availability.'
+              'Unable to load player availability.',
           )
         }
 
-        if (!selectionResponse.ok) {
+        if (
+          !selectionResponse.ok
+        ) {
           throw new Error(
             selectionData.error ||
-              'Unable to load the squad selection.'
+              'Unable to load the squad selection.',
           )
         }
 
-        const matchRecord = matchData.match || matchData
+        const matchRecord =
+          matchData.match ||
+          matchData
 
-        const availabilityList = Array.isArray(availabilityData)
-          ? availabilityData
-          : availabilityData.players ||
-            availabilityData.availabilities ||
-            []
+        const availabilityList =
+          Array.isArray(
+            availabilityData,
+          )
+            ? availabilityData
+            : availabilityData.players ||
+              availabilityData.availabilities ||
+              []
 
-        const selectionList = Array.isArray(selectionData)
-          ? selectionData
-          : selectionData.squad_selections || []
+        const selectionList =
+          Array.isArray(
+            selectionData,
+          )
+            ? selectionData
+            : selectionData.squad_selections ||
+              []
 
-        const available = availabilityList.filter(
-          (player) => player.status === 'available'
-        )
+        /*
+         * Availability controls who is currently
+         * eligible to be newly selected.
+         */
+        const available =
+          availabilityList.filter(
+            (player) =>
+              player.status ===
+              'available',
+          )
 
-        const availableIds = new Set(available.map(playerId))
+        /*
+         * IMPORTANT:
+         *
+         * Saved SquadSelection records are the
+         * source of truth for an existing saved
+         * squad.
+         *
+         * We deliberately DO NOT filter these
+         * against current availability.
+         */
+        const starterSelections =
+          selectionList.filter(
+            (selection) =>
+              selection.selection_type ===
+              'starter',
+          )
 
-        const starterSelections = selectionList.filter(
-          (selection) =>
-            selection.selection_type === 'starter' &&
-            availableIds.has(selectionUserId(selection))
-        )
+        const substitutes =
+          selectionList.filter(
+            (selection) =>
+              selection.selection_type ===
+              'substitute',
+          )
 
-        const substitutes = selectionList.filter(
-          (selection) =>
-            selection.selection_type === 'substitute' &&
-            availableIds.has(selectionUserId(selection))
-        )
+        const savedFormation =
+          matchRecord.formation ||
+          ''
 
-        const savedFormation = matchRecord.formation || ''
+        const initialLineup =
+          savedFormation
+            ? assignStartersToFormation(
+                savedFormation,
+                starterSelections,
+              )
+            : {}
 
-        const initialLineup = savedFormation
-          ? assignStartersToFormation(
-              savedFormation,
-              starterSelections
+        const initialStarterIds =
+          new Set(
+            Object.values(
+              initialLineup,
+            ).filter(Boolean),
+          )
+
+        const initialSubstitutePositions =
+          {}
+
+        substitutes.forEach(
+          (selection) => {
+            initialSubstitutePositions[
+              selectionUserId(
+                selection,
+              )
+            ] = basePosition(
+              selection.position,
             )
-          : {}
-
-        const initialStarterIds = new Set(
-          Object.values(initialLineup).filter(Boolean)
+          },
         )
-
-        const initialSubstitutePositions = {}
-
-        substitutes.forEach((selection) => {
-          initialSubstitutePositions[selectionUserId(selection)] =
-            basePosition(selection.position)
-        })
 
         const roleSelections = {}
 
-        roleFields.forEach(({ key }) => {
-          const selectedPlayer = starterSelections.find(
-            (selection) => selection[key]
-          )
+        roleFields.forEach(
+          ({ key }) => {
+            const selectedPlayer =
+              starterSelections.find(
+                (selection) =>
+                  selection[key],
+              )
 
-          const selectedId = selectedPlayer
-            ? selectionUserId(selectedPlayer)
-            : ''
+            const selectedId =
+              selectedPlayer
+                ? selectionUserId(
+                    selectedPlayer,
+                  )
+                : ''
 
-          roleSelections[key] =
-            !savedFormation || initialStarterIds.has(selectedId)
-              ? selectedId
-              : ''
-        })
+            roleSelections[key] =
+              !savedFormation ||
+              initialStarterIds.has(
+                selectedId,
+              )
+                ? selectedId
+                : ''
+          },
+        )
 
-        setMatch(matchRecord)
-        setAvailablePlayers(available)
-        setSelections(selectionList)
-        setFormation(savedFormation)
-        setLineup(initialLineup)
-        setSubstituteIds(substitutes.map(selectionUserId))
-        setSubstitutePositions(initialSubstitutePositions)
-        setRoles(roleSelections)
+        setMatch(
+          matchRecord,
+        )
+
+        setAvailablePlayers(
+          available,
+        )
+
+        setSelections(
+          selectionList,
+        )
+
+        setFormation(
+          savedFormation,
+        )
+
+        setLineup(
+          initialLineup,
+        )
+
+        setSubstituteIds(
+          substitutes.map(
+            selectionUserId,
+          ),
+        )
+
+        setSubstitutePositions(
+          initialSubstitutePositions,
+        )
+
+        setRoles(
+          roleSelections,
+        )
+
         setErrorMessage('')
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to connect to the server.'
+          error.message ||
+            'Unable to connect to the server.',
         )
       } finally {
         setLoading(false)
@@ -603,233 +885,487 @@ function SquadSelectionPage() {
     }
 
     fetchSquadData()
-  }, [navigate, teamId, matchId])
+  }, [
+    navigate,
+    teamId,
+    matchId,
+  ])
 
-  const formationRows = formationLayouts[formation] || []
+  const formationRows =
+    formationLayouts[
+      formation
+    ] || []
 
-  const formationSlots = useMemo(
-    () => formationRows.flat(),
-    [formationRows]
-  )
+  const formationSlots =
+    useMemo(
+      () =>
+        formationRows.flat(),
+      [formationRows],
+    )
 
-  const playersById = useMemo(
-    () =>
-      new Map(
-        availablePlayers.map((player) => [
+  /*
+   * Players currently available PLUS
+   * players already stored in a saved
+   * SquadSelection.
+   *
+   * This lets saved players still render
+   * after refreshing the page.
+   */
+  const playersById =
+    useMemo(() => {
+      const players =
+        new Map()
+
+      availablePlayers.forEach(
+        (player) => {
+          players.set(
+            playerId(player),
+            player,
+          )
+        },
+      )
+
+      selections.forEach(
+        (selection) => {
+          const user =
+            selection.user ||
+            selection.player
+
+          if (!user) {
+            return
+          }
+
+          players.set(
+            selectionUserId(
+              selection,
+            ),
+            {
+              ...user,
+
+              preferred_position:
+                selection.preferred_position ||
+                user.preferred_position ||
+                '',
+            },
+          )
+        },
+      )
+
+      return players
+    }, [
+      availablePlayers,
+      selections,
+    ])
+
+  const lineupStarterIds =
+    formationSlots
+      .map(
+        (slot) =>
+          lineup[slot.id],
+      )
+      .filter(Boolean)
+
+  /*
+   * Do not remove persisted starters
+   * just because they are no longer
+   * inside the current availability list.
+   */
+  const persistedStarterIds =
+    selections
+      .filter(
+        (selection) =>
+          selection.selection_type ===
+          'starter',
+      )
+      .map(
+        selectionUserId,
+      )
+
+  const starterIds =
+    formation
+      ? lineupStarterIds
+      : persistedStarterIds
+
+  const starterIdSet =
+    new Set(
+      starterIds,
+    )
+
+  /*
+   * Saved substitutes should remain
+   * visible after refresh too.
+   */
+  const validSubstituteIds =
+    substituteIds.filter(
+      (id) =>
+        !starterIdSet.has(id),
+    )
+
+  const substituteIdSet =
+    new Set(
+      validSubstituteIds,
+    )
+
+  /*
+   * Available pool still only contains
+   * players who are CURRENTLY available
+   * and not already selected.
+   */
+  const availablePoolCount =
+    availablePlayers.filter(
+      (player) => {
+        const id =
+          playerId(player)
+
+        return (
+          !starterIdSet.has(id) &&
+          !substituteIdSet.has(id)
+        )
+      },
+    ).length
+
+  /*
+   * Only currently available players
+   * should be offered for NEW bench
+   * selection.
+   */
+  const nonStarters =
+    availablePlayers.filter(
+      (player) =>
+        !starterIdSet.has(
           playerId(player),
-          player,
-        ])
-      ),
-    [availablePlayers]
-  )
-
-  const lineupStarterIds = formationSlots
-    .map((slot) => lineup[slot.id])
-    .filter(Boolean)
-
-  const persistedStarterIds = selections
-    .filter(
-      (selection) => selection.selection_type === 'starter'
+        ),
     )
-    .map(selectionUserId)
-    .filter((id) => playersById.has(id))
 
-  const starterIds = formation
-    ? lineupStarterIds
-    : persistedStarterIds
+  /*
+   * Role dropdowns use playersById
+   * so previously saved starters can
+   * still appear after refresh.
+   */
+  const starterOptions =
+    formationSlots
+      .map(
+        (slot) =>
+          playersById.get(
+            lineup[slot.id],
+          ),
+      )
+      .filter(Boolean)
 
-  const starterIdSet = new Set(starterIds)
+  function clearRolesForPlayer(
+    id,
+  ) {
+    if (!id) {
+      return
+    }
 
-  const validSubstituteIds = substituteIds.filter(
-    (id) => playersById.has(id) && !starterIdSet.has(id)
-  )
-
-  const substituteIdSet = new Set(validSubstituteIds)
-
-  const availablePoolCount = availablePlayers.filter((player) => {
-    const id = playerId(player)
-
-    return (
-      !starterIdSet.has(id) &&
-      !substituteIdSet.has(id)
-    )
-  }).length
-
-  const nonStarters = availablePlayers.filter(
-    (player) => !starterIdSet.has(playerId(player))
-  )
-
-  const starterOptions = formationSlots
-    .map((slot) => playersById.get(lineup[slot.id]))
-    .filter(Boolean)
-
-  function clearRolesForPlayer(id) {
-    if (!id) return
-
-    setRoles((currentRoles) => {
-      const nextRoles = { ...currentRoles }
-
-      roleFields.forEach(({ key }) => {
-        if (nextRoles[key] === id) {
-          nextRoles[key] = ''
+    setRoles(
+      (currentRoles) => {
+        const nextRoles = {
+          ...currentRoles,
         }
-      })
 
-      return nextRoles
-    })
+        roleFields.forEach(
+          ({ key }) => {
+            if (
+              nextRoles[key] ===
+              id
+            ) {
+              nextRoles[key] =
+                ''
+            }
+          },
+        )
+
+        return nextRoles
+      },
+    )
   }
 
   function currentStarterSelections() {
     if (!formation) {
       return selections.filter(
         (selection) =>
-          selection.selection_type === 'starter'
+          selection.selection_type ===
+          'starter',
       )
     }
 
-    const slotsById = new Map(
-      formationSlots.map((slot) => [slot.id, slot])
-    )
+    const slotsById =
+      new Map(
+        formationSlots.map(
+          (slot) => [
+            slot.id,
+            slot,
+          ],
+        ),
+      )
 
-    return Object.entries(lineup)
-      .filter(([, id]) => id)
-      .map(([slotId, id]) => ({
-        user_id: id,
-        position: slotsById.get(slotId)?.position || '',
-      }))
+    return Object.entries(
+      lineup,
+    )
+      .filter(
+        ([, id]) => id,
+      )
+      .map(
+        ([slotId, id]) => ({
+          user_id: id,
+
+          position:
+            slotsById.get(
+              slotId,
+            )?.position ||
+            '',
+        }),
+      )
   }
 
-  function handleFormationChange(event) {
-    const nextFormation = event.target.value
+  function handleFormationChange(
+    event,
+  ) {
+    const nextFormation =
+      event.target.value
 
-    const eligibleIds = new Set(
-      availablePlayers.map(playerId)
+    /*
+     * Existing saved starters should
+     * remain eligible when switching
+     * formation.
+     *
+     * Current availability is used for
+     * new selections elsewhere.
+     */
+    const starters =
+      currentStarterSelections()
+
+    setFormation(
+      nextFormation,
     )
 
-    const starters = currentStarterSelections().filter(
-      (selection) =>
-        eligibleIds.has(selectionUserId(selection))
+    setSwapSourceSlotId(
+      '',
     )
-
-    setFormation(nextFormation)
-    setSwapSourceSlotId('')
 
     setLineup(
       nextFormation
-        ? assignStartersToFormation(nextFormation, starters)
-        : {}
+        ? assignStartersToFormation(
+            nextFormation,
+            starters,
+          )
+        : {},
     )
 
     setErrorMessage('')
     setSuccessMessage('')
   }
 
-  function handleSlotChange(slotId, event) {
-    const nextPlayerId = event.target.value
-    const previousPlayerId = lineup[slotId] || ''
+  function handleSlotChange(
+    slotId,
+    event,
+  ) {
+    const nextPlayerId =
+      event.target.value
 
-    setLineup((currentLineup) => {
-      const nextLineup = { ...currentLineup }
+    const previousPlayerId =
+      lineup[slotId] ||
+      ''
 
-      Object.keys(nextLineup).forEach((currentSlotId) => {
-        if (nextLineup[currentSlotId] === nextPlayerId) {
-          nextLineup[currentSlotId] = ''
+    setLineup(
+      (currentLineup) => {
+        const nextLineup = {
+          ...currentLineup,
         }
-      })
 
-      nextLineup[slotId] = nextPlayerId
+        Object.keys(
+          nextLineup,
+        ).forEach(
+          (currentSlotId) => {
+            if (
+              nextLineup[
+                currentSlotId
+              ] ===
+              nextPlayerId
+            ) {
+              nextLineup[
+                currentSlotId
+              ] = ''
+            }
+          },
+        )
 
-      return nextLineup
-    })
+        nextLineup[slotId] =
+          nextPlayerId
 
-    setSwapSourceSlotId('')
+        return nextLineup
+      },
+    )
 
-    if (nextPlayerId) {
-      setSubstituteIds((currentIds) =>
-        currentIds.filter((id) => id !== nextPlayerId)
+    setSwapSourceSlotId(
+      '',
+    )
+
+    if (
+      nextPlayerId
+    ) {
+      setSubstituteIds(
+        (currentIds) =>
+          currentIds.filter(
+            (id) =>
+              id !==
+              nextPlayerId,
+          ),
       )
     }
 
     if (
       previousPlayerId &&
-      previousPlayerId !== nextPlayerId
+      previousPlayerId !==
+        nextPlayerId
     ) {
-      clearRolesForPlayer(previousPlayerId)
+      clearRolesForPlayer(
+        previousPlayerId,
+      )
     }
 
     setErrorMessage('')
     setSuccessMessage('')
   }
 
-  function handlePlayerSwap(slotId) {
-    const selectedPlayerId = lineup[slotId]
+  function handlePlayerSwap(
+    slotId,
+  ) {
+    const selectedPlayerId =
+      lineup[slotId]
 
-    if (saving || !selectedPlayerId) return
+    if (
+      saving ||
+      !selectedPlayerId
+    ) {
+      return
+    }
 
-    if (!swapSourceSlotId) {
-      setSwapSourceSlotId(slotId)
+    if (
+      !swapSourceSlotId
+    ) {
+      setSwapSourceSlotId(
+        slotId,
+      )
+
       setErrorMessage('')
       setSuccessMessage('')
+
       return
     }
 
-    if (swapSourceSlotId === slotId) {
-      setSwapSourceSlotId('')
+    if (
+      swapSourceSlotId ===
+      slotId
+    ) {
+      setSwapSourceSlotId(
+        '',
+      )
+
       return
     }
 
-    setLineup((currentLineup) => ({
-      ...currentLineup,
-      [swapSourceSlotId]: currentLineup[slotId],
-      [slotId]: currentLineup[swapSourceSlotId],
-    }))
+    setLineup(
+      (currentLineup) => ({
+        ...currentLineup,
 
-    setSwapSourceSlotId('')
-    setErrorMessage('')
-    setSuccessMessage('')
-  }
+        [swapSourceSlotId]:
+          currentLineup[
+            slotId
+          ],
 
-  function toggleSubstitute(player) {
-    const id = playerId(player)
+        [slotId]:
+          currentLineup[
+            swapSourceSlotId
+          ],
+      }),
+    )
 
-    setSubstituteIds((currentIds) => {
-      if (currentIds.includes(id)) {
-        return currentIds.filter(
-          (currentId) => currentId !== id
-        )
-      }
-
-      return [...currentIds, id]
-    })
-
-    setSubstitutePositions((currentPositions) => ({
-      ...currentPositions,
-      [id]:
-        currentPositions[id] ||
-        basePosition(preferredPosition(player)),
-    }))
+    setSwapSourceSlotId(
+      '',
+    )
 
     setErrorMessage('')
     setSuccessMessage('')
   }
 
-  function handleRoleChange(event) {
-    const { name, value } = event.target
+  function toggleSubstitute(
+    player,
+  ) {
+    const id =
+      playerId(player)
 
-    setRoles((currentRoles) => ({
-      ...currentRoles,
-      [name]: value,
-    }))
+    setSubstituteIds(
+      (currentIds) => {
+        if (
+          currentIds.includes(
+            id,
+          )
+        ) {
+          return currentIds.filter(
+            (currentId) =>
+              currentId !==
+              id,
+          )
+        }
+
+        return [
+          ...currentIds,
+          id,
+        ]
+      },
+    )
+
+    setSubstitutePositions(
+      (currentPositions) => ({
+        ...currentPositions,
+
+        [id]:
+          currentPositions[id] ||
+          basePosition(
+            preferredPosition(
+              player,
+            ),
+          ),
+      }),
+    )
 
     setErrorMessage('')
     setSuccessMessage('')
   }
 
-  function handleSubstitutePositionChange(id, event) {
-    setSubstitutePositions((currentPositions) => ({
-      ...currentPositions,
-      [id]: event.target.value,
-    }))
+  function handleRoleChange(
+    event,
+  ) {
+    const {
+      name,
+      value,
+    } = event.target
+
+    setRoles(
+      (currentRoles) => ({
+        ...currentRoles,
+        [name]: value,
+      }),
+    )
+
+    setErrorMessage('')
+    setSuccessMessage('')
+  }
+
+  function handleSubstitutePositionChange(
+    id,
+    event,
+  ) {
+    setSubstitutePositions(
+      (currentPositions) => ({
+        ...currentPositions,
+        [id]:
+          event.target.value,
+      }),
+    )
 
     setErrorMessage('')
     setSuccessMessage('')
@@ -837,64 +1373,113 @@ function SquadSelectionPage() {
 
   function selectionNeedsUpdate(
     existingSelection,
-    desiredSelection
+    desiredSelection,
   ) {
     return (
       existingSelection.selection_type !==
         desiredSelection.selection_type ||
+
       existingSelection.position !==
         desiredSelection.position ||
-      Boolean(existingSelection.captain) !==
+
+      Boolean(
+        existingSelection.captain,
+      ) !==
         desiredSelection.captain ||
-      Boolean(existingSelection.is_left_corner_taker) !==
-        desiredSelection.is_left.corner_taker ||
-      Boolean(existingSelection.is_right_corner_taker) !==
+
+      Boolean(
+        existingSelection.is_left_corner_taker,
+      ) !==
+        desiredSelection.is_left_corner_taker ||
+
+      Boolean(
+        existingSelection.is_right_corner_taker,
+      ) !==
         desiredSelection.is_right_corner_taker ||
-      Boolean(existingSelection.is_penalty_taker) !==
+
+      Boolean(
+        existingSelection.is_penalty_taker,
+      ) !==
         desiredSelection.is_penalty_taker ||
-      Boolean(existingSelection.is_freekick_taker) !==
+
+      Boolean(
+        existingSelection.is_freekick_taker,
+      ) !==
         desiredSelection.is_freekick_taker
     )
   }
 
   async function readApiResponse(
     response,
-    fallbackMessage
+    fallbackMessage,
   ) {
-    if (response.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('currentUser')
-      navigate('/login', { replace: true })
+    if (
+      response.status ===
+      401
+    ) {
+      localStorage.removeItem(
+        'token',
+      )
+
+      localStorage.removeItem(
+        'currentUser',
+      )
+
+      navigate(
+        '/login',
+        {
+          replace: true,
+        },
+      )
 
       throw new Error(
-        'Your session has expired. Please sign in again.'
+        'Your session has expired. Please sign in again.',
       )
     }
 
-    if (response.status === 403) {
-      navigate('/dashboard', { replace: true })
+    if (
+      response.status ===
+      403
+    ) {
+      navigate(
+        '/dashboard',
+        {
+          replace: true,
+        },
+      )
 
       throw new Error(
-        'You are not allowed to manage this squad.'
+        'You are not allowed to manage this squad.',
       )
     }
 
     let data = null
-    const responseText = await response.text()
 
-    if (responseText) {
+    const responseText =
+      await response.text()
+
+    if (
+      responseText
+    ) {
       try {
-        data = JSON.parse(responseText)
+        data =
+          JSON.parse(
+            responseText,
+          )
       } catch {
         data = null
       }
     }
 
-    if (!response.ok) {
+    if (
+      !response.ok
+    ) {
       throw new Error(
-        data?.errors?.join(', ') ||
+        data?.errors?.join(
+          ', ',
+        ) ||
           data?.error ||
-          fallbackMessage
+          fallbackMessage,
       )
     }
 
@@ -902,85 +1487,167 @@ function SquadSelectionPage() {
   }
 
   async function handleSaveLineup() {
-    const token = localStorage.getItem('token')
+    const token =
+      localStorage.getItem(
+        'token',
+      )
 
     if (!token) {
-      navigate('/login', { replace: true })
+      navigate(
+        '/login',
+        {
+          replace: true,
+        },
+      )
+
       return
     }
 
     if (!formation) {
-      setErrorMessage('Please select a formation.')
+      setErrorMessage(
+        'Please select a formation.',
+      )
+
       return
     }
 
-    if (starterIds.length !== 11) {
+    if (
+      starterIds.length !==
+      11
+    ) {
       setErrorMessage(
-        `Please select all 11 starters. You currently have ${starterIds.length}.`
+        `Please select all 11 starters. You currently have ${starterIds.length}.`,
       )
+
       return
     }
 
-    const missingRole = roleFields.find(
-      ({ key }) => !roles[key]
-    )
-
-    if (missingRole) {
-      setErrorMessage(
-        `Please select the ${missingRole.label.toLowerCase()}.`
+    const missingRole =
+      roleFields.find(
+        ({ key }) =>
+          !roles[key],
       )
+
+    if (
+      missingRole
+    ) {
+      setErrorMessage(
+        `Please select the ${missingRole.label.toLowerCase()}.`,
+      )
+
       return
     }
 
     const substituteWithoutPosition =
       validSubstituteIds.find(
-        (id) => !substitutePositions[id]
+        (id) =>
+          !substitutePositions[
+            id
+          ],
       )
 
-    if (substituteWithoutPosition) {
+    if (
+      substituteWithoutPosition
+    ) {
       setErrorMessage(
         `Please select a position for ${playerName(
-          playersById.get(substituteWithoutPosition)
-        )}.`
+          playersById.get(
+            substituteWithoutPosition,
+          ),
+        )}.`,
       )
+
       return
     }
 
-    const desiredSelections = new Map()
+    const desiredSelections =
+      new Map()
 
-    formationSlots.forEach((slot) => {
-      const id = lineup[slot.id]
+    formationSlots.forEach(
+      (slot) => {
+        const id =
+          lineup[slot.id]
 
-      desiredSelections.set(id, {
-        user_id: id,
-        selection_type: 'starter',
-        position: slot.position,
-        captain: roles.captain === id,
-        is_left_corner_taker: roles.is_left_corner_taker === id,
-        is_right_corner_taker: roles.is_right_corner_taker === id,
-        is_penalty_taker: roles.is_penalty_taker === id,
-        is_freekick_taker:
-          roles.is_freekick_taker === id,
-      })
-    })
+        desiredSelections.set(
+          id,
+          {
+            user_id:
+              id,
 
-    validSubstituteIds.forEach((id) => {
-      desiredSelections.set(id, {
-        user_id: id,
-        selection_type: 'substitute',
-        position: substitutePositions[id],
-        captain: false,
-        is_left_taker: false,
-        is_right_taker: false,
-        is_penalty_taker: false,
-        is_freekick_taker: false,
-      })
-    })
+            selection_type:
+              'starter',
+
+            position:
+              slot.position,
+
+            captain:
+              roles.captain ===
+              id,
+
+            is_left_corner_taker:
+              roles.is_left_corner_taker ===
+              id,
+
+            is_right_corner_taker:
+              roles.is_right_corner_taker ===
+              id,
+
+            is_penalty_taker:
+              roles.is_penalty_taker ===
+              id,
+
+            is_freekick_taker:
+              roles.is_freekick_taker ===
+              id,
+          },
+        )
+      },
+    )
+
+    validSubstituteIds.forEach(
+      (id) => {
+        desiredSelections.set(
+          id,
+          {
+            user_id:
+              id,
+
+            selection_type:
+              'substitute',
+
+            position:
+              substitutePositions[
+                id
+              ],
+
+            captain:
+              false,
+
+            is_left_corner_taker:
+              false,
+
+            is_right_corner_taker:
+              false,
+
+            is_penalty_taker:
+              false,
+
+            is_freekick_taker:
+              false,
+          },
+        )
+      },
+    )
 
     const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: token,
+      Accept:
+        'application/json',
+
+      'Content-Type':
+        'application/json',
+
+      Authorization:
+        token,
     }
 
     const matchUrl =
@@ -990,102 +1657,155 @@ function SquadSelectionPage() {
       `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`
 
     setSaving(true)
+
     setErrorMessage('')
     setSuccessMessage('')
 
     try {
-      const matchResponse = await fetch(matchUrl, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({
-          match: { formation },
-        }),
-      })
+      const matchResponse =
+        await fetch(
+          matchUrl,
+          {
+            method:
+              'PATCH',
 
-      const savedMatchData = await readApiResponse(
-        matchResponse,
-        'Unable to save the formation.'
-      )
+            headers,
 
-      const savedSelections = []
+            body:
+              JSON.stringify({
+                match: {
+                  formation,
+                },
+              }),
+          },
+        )
 
-      for (const existingSelection of selections) {
-        const id = selectionUserId(existingSelection)
-        const desiredSelection = desiredSelections.get(id)
+      const savedMatchData =
+        await readApiResponse(
+          matchResponse,
+          'Unable to save the formation.',
+        )
 
-        if (!desiredSelection) {
-          const deleteResponse = await fetch(
-            `${selectionBaseUrl}/${existingSelection.id}`,
-            {
-              method: 'DELETE',
-              headers,
-            }
+      const savedSelections =
+        []
+
+      for (
+        const existingSelection
+        of selections
+      ) {
+        const id =
+          selectionUserId(
+            existingSelection,
           )
+
+        const desiredSelection =
+          desiredSelections.get(
+            id,
+          )
+
+        if (
+          !desiredSelection
+        ) {
+          const deleteResponse =
+            await fetch(
+              `${selectionBaseUrl}/${existingSelection.id}`,
+              {
+                method:
+                  'DELETE',
+
+                headers,
+              },
+            )
 
           await readApiResponse(
             deleteResponse,
-            'Unable to remove an old squad selection.'
+            'Unable to remove an old squad selection.',
           )
 
           continue
         }
 
-        desiredSelections.delete(id)
+        desiredSelections.delete(
+          id,
+        )
 
         if (
           !selectionNeedsUpdate(
             existingSelection,
-            desiredSelection
+            desiredSelection,
           )
         ) {
-          savedSelections.push(existingSelection)
+          savedSelections.push(
+            existingSelection,
+          )
+
           continue
         }
 
-        const updateResponse = await fetch(
-          `${selectionBaseUrl}/${existingSelection.id}`,
-          {
-            method: 'PATCH',
-            headers,
-            body: JSON.stringify({
-              squad_selection: desiredSelection,
-            }),
-          }
-        )
+        const updateResponse =
+          await fetch(
+            `${selectionBaseUrl}/${existingSelection.id}`,
+            {
+              method:
+                'PATCH',
 
-        const updateData = await readApiResponse(
-          updateResponse,
-          'Unable to update a squad selection.'
-        )
+              headers,
+
+              body:
+                JSON.stringify({
+                  squad_selection:
+                    desiredSelection,
+                }),
+            },
+          )
+
+        const updateData =
+          await readApiResponse(
+            updateResponse,
+            'Unable to update a squad selection.',
+          )
 
         savedSelections.push(
-          updateData?.squad_selection ||
+          updateData
+            ?.squad_selection ||
             updateData || {
               ...existingSelection,
               ...desiredSelection,
-            }
+            },
         )
       }
 
-      for (const desiredSelection of desiredSelections.values()) {
-        const createResponse = await fetch(
-          selectionBaseUrl,
-          {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({
-              squad_selection: desiredSelection,
-            }),
-          }
-        )
+      for (
+        const desiredSelection
+        of desiredSelections.values()
+      ) {
+        const createResponse =
+          await fetch(
+            selectionBaseUrl,
+            {
+              method:
+                'POST',
 
-        const createData = await readApiResponse(
-          createResponse,
-          'Unable to add a player to the squad.'
-        )
+              headers,
+
+              body:
+                JSON.stringify({
+                  squad_selection:
+                    desiredSelection,
+                }),
+            },
+          )
+
+        const createData =
+          await readApiResponse(
+            createResponse,
+            'Unable to add a player to the squad.',
+          )
 
         savedSelections.push(
-          createData?.squad_selection || createData
+          createData
+            ?.squad_selection ||
+            createData,
         )
       }
 
@@ -1094,56 +1814,99 @@ function SquadSelectionPage() {
           savedMatchData || {
             ...match,
             formation,
-          }
+          },
       )
 
-      setSelections(savedSelections)
+      setSelections(
+        savedSelections,
+      )
+
       setSuccessMessage(
-        'Formation and line-up saved successfully.'
+        'Formation and line-up saved successfully.',
       )
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to connect to the server.'
+        error.message ||
+          'Unable to connect to the server.',
       )
     } finally {
       setSaving(false)
     }
   }
 
-  function playerRoleBadges(id) {
-    if (!id) return []
+  function playerRoleBadges(
+    id,
+  ) {
+    if (!id) {
+      return []
+    }
 
     const badges = []
 
-    if (roles.captain === id) {
+    if (
+      roles.captain ===
+      id
+    ) {
       badges.push({
-        label: 'C',
-        title: 'Captain',
+        label:
+          'C',
+
+        title:
+          'Captain',
       })
     }
 
-    const setPieceRoles = []
+    const setPieceRoles =
+      []
 
-    if (roles.is_left_corner_taker === id) {
-      setPieceRoles.push('Corners')
+    if (
+      roles.is_left_corner_taker ===
+      id
+    ) {
+      setPieceRoles.push(
+        'Left corners',
+      )
     }
 
-    if (roles.is_right_corner_taker === id) {
-      setPieceRoles.push('Corners')
+    if (
+      roles.is_right_corner_taker ===
+      id
+    ) {
+      setPieceRoles.push(
+        'Right corners',
+      )
     }
 
-    if (roles.is_penalty_taker === id) {
-      setPieceRoles.push('Penalties')
+    if (
+      roles.is_penalty_taker ===
+      id
+    ) {
+      setPieceRoles.push(
+        'Penalties',
+      )
     }
 
-    if (roles.is_freekick_taker === id) {
-      setPieceRoles.push('Free kicks')
+    if (
+      roles.is_freekick_taker ===
+      id
+    ) {
+      setPieceRoles.push(
+        'Free kicks',
+      )
     }
 
-    if (setPieceRoles.length > 0) {
+    if (
+      setPieceRoles.length >
+      0
+    ) {
       badges.push({
-        label: 'SP',
-        title: setPieceRoles.join(', '),
+        label:
+          'SP',
+
+        title:
+          setPieceRoles.join(
+            ', ',
+          ),
       })
     }
 
@@ -1175,24 +1938,37 @@ function SquadSelectionPage() {
                 Squad management
               </p>
 
-              <h1>Build your matchday squad</h1>
+              <h1>
+                Build your matchday squad
+              </h1>
 
               <p>
-                Choose the formation, starting XI and
-                substitutes against{' '}
-                <strong>{match.opponent}</strong>.
+                Choose the formation,
+                starting XI and substitutes
+                against{' '}
+
+                <strong>
+                  {match.opponent}
+                </strong>
+                .
               </p>
             </div>
           )}
 
           {errorMessage && (
-            <p className="team-error" role="alert">
+            <p
+              className="team-error"
+              role="alert"
+            >
               {errorMessage}
             </p>
           )}
 
           {successMessage && (
-            <p className="team-success" role="status">
+            <p
+              className="team-success"
+              role="status"
+            >
               {successMessage}
             </p>
           )}
@@ -1201,20 +1977,37 @@ function SquadSelectionPage() {
             <>
               <section className="squad-selection-summary">
                 <article>
-                  <span>Starting XI</span>
-                  <strong>{starterIds.length}/11</strong>
-                </article>
+                  <span>
+                    Starting XI
+                  </span>
 
-                <article>
-                  <span>Substitutes</span>
                   <strong>
-                    {validSubstituteIds.length}
+                    {starterIds.length}/11
                   </strong>
                 </article>
 
                 <article>
-                  <span>Available players</span>
-                  <strong>{availablePoolCount}</strong>
+                  <span>
+                    Substitutes
+                  </span>
+
+                  <strong>
+                    {
+                      validSubstituteIds.length
+                    }
+                  </strong>
+                </article>
+
+                <article>
+                  <span>
+                    Available players
+                  </span>
+
+                  <strong>
+                    {
+                      availablePoolCount
+                    }
+                  </strong>
                 </article>
               </section>
 
@@ -1229,31 +2022,46 @@ function SquadSelectionPage() {
                       <select
                         id="match-formation"
                         value={formation}
-                        onChange={handleFormationChange}
-                        disabled={saving}
+                        onChange={
+                          handleFormationChange
+                        }
+                        disabled={
+                          saving
+                        }
                       >
                         <option value="">
                           Select formation
                         </option>
 
-                        {Object.keys(formationLayouts).map(
+                        {Object.keys(
+                          formationLayouts,
+                        ).map(
                           (option) => (
                             <option
-                              value={option}
-                              key={option}
+                              value={
+                                option
+                              }
+                              key={
+                                option
+                              }
                             >
-                              {option}
+                              {
+                                option
+                              }
                             </option>
-                          )
+                          ),
                         )}
                       </select>
                     </div>
 
                     <span className="formation-progress">
-                      {starterIds.length} of 11 positions
-                      filled
+                      {
+                        starterIds.length
+                      }{' '}
+                      of 11 positions filled
                     </span>
                   </div>
+
                   {formation && (
                     <p className="player-swap-help">
                       {swapSourceSlotId
@@ -1264,13 +2072,18 @@ function SquadSelectionPage() {
 
                   {!formation ? (
                     <article className="formation-empty-state">
-                      <div className="card-icon">⚽</div>
+                      <div className="card-icon">
+                        ⚽
+                      </div>
 
-                      <h2>Select a formation</h2>
+                      <h2>
+                        Select a formation
+                      </h2>
 
                       <p>
-                        The pitch will update automatically
-                        when you choose a formation.
+                        The pitch will update
+                        automatically when you
+                        choose a formation.
                       </p>
                     </article>
                   ) : (
@@ -1292,113 +2105,206 @@ function SquadSelectionPage() {
                         className={`formation-grid rows-${formationRows.length}`}
                       >
                         {formationRows.map(
-                          (row, rowIndex) => (
+                          (
+                            row,
+                            rowIndex,
+                          ) => (
                             <div
                               className="formation-row"
                               key={`row-${rowIndex}`}
                             >
-                              {row.map((slot) => {
-                                const selectedId =
-                                  lineup[slot.id] || ''
+                              {row.map(
+                                (slot) => {
+                                  const selectedId =
+                                    lineup[
+                                      slot.id
+                                    ] ||
+                                    ''
 
-                                const selectedPlayer =
-                                  playersById.get(selectedId)
-
-                                const usedByAnotherSlot =
-                                  new Set(
-                                    starterIds.filter(
-                                      (id) =>
-                                        id !== selectedId
+                                  const selectedPlayer =
+                                    playersById.get(
+                                      selectedId,
                                     )
-                                  )
 
-                                const badges =
-                                  playerRoleBadges(
-                                    selectedId
-                                  )
+                                  const usedByAnotherSlot =
+                                    new Set(
+                                      starterIds.filter(
+                                        (id) =>
+                                          id !==
+                                          selectedId,
+                                      ),
+                                    )
 
-                                return (
-                                  <div
-                                    className={`pitch-player-slot ${
-                                      selectedPlayer ? 'filled' : ''
-                                    } ${
-                                      swapSourceSlotId === slot.id
-                                        ? 'swap-selected'
-                                        : ''
-                                    }`}
-                                    key={slot.id}
-                                  >
-                                    <button
-                                      type="button"
-                                      className="pitch-player-avatar"
-                                      onClick={() => handlePlayerSwap(slot.id)}
-                                      disabled={saving || !selectedPlayer}
-                                      aria-label={
+                                  const badges =
+                                    playerRoleBadges(
+                                      selectedId,
+                                    )
+
+                                  return (
+                                    <div
+                                      className={`pitch-player-slot ${
                                         selectedPlayer
-                                          ? `Select ${playerName(
-                                              selectedPlayer
-                                            )} to swap positions`
-                                          : 'Empty position'
+                                          ? 'filled'
+                                          : ''
+                                      } ${
+                                        swapSourceSlotId ===
+                                        slot.id
+                                          ? 'swap-selected'
+                                          : ''
+                                      }`}
+                                      key={
+                                        slot.id
                                       }
                                     >
-                                      {selectedPlayer
-                                        ? playerInitials(selectedPlayer)
-                                        : '+'}
-                                    </button>
-
-                                    {badges.length > 0 && (
-                                      <div
-                                        className="pitch-role-badges"
-                                        aria-label="Player roles"
+                                      <button
+                                        type="button"
+                                        className="pitch-player-avatar"
+                                        onClick={() =>
+                                          handlePlayerSwap(
+                                            slot.id,
+                                          )
+                                        }
+                                        disabled={
+                                          saving ||
+                                          !selectedPlayer
+                                        }
+                                        aria-label={
+                                          selectedPlayer
+                                            ? `Select ${playerName(
+                                                selectedPlayer,
+                                              )} to swap positions`
+                                            : 'Empty position'
+                                        }
                                       >
-                                        {badges.map((badge) => (
-                                          <span
-                                            key={badge.label}
-                                            title={badge.title}
-                                            aria-label={badge.title}
-                                          >
-                                            {badge.label}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    )}
-
-                                    <label htmlFor={`pitch-slot-${slot.id}`}>
-                                      {slot.position}
-                                    </label>
-
-                                    <select
-                                      id={`pitch-slot-${slot.id}`}
-                                      value={selectedId}
-                                      onChange={(event) =>
-                                        handleSlotChange(slot.id, event)
-                                      }
-                                      disabled={saving}
-                                      aria-label={`Select ${slot.position}`}
-                                    >
-                                      <option value="">Choose player</option>
-
-                                      {availablePlayers
-                                        .filter(
-                                          (player) =>
-                                            !usedByAnotherSlot.has(
-                                              playerId(player)
+                                        {selectedPlayer
+                                          ? playerInitials(
+                                              selectedPlayer,
                                             )
-                                        )
-                                        .map((player) => (
-                                          <option
-                                            value={playerId(player)}
-                                            key={playerId(player)}
-                                          >
-                                            {playerName(player)}
-                                          </option>
-                                        ))}
-                                    </select>
-                                  </div>
-                                )
-                              })}
+                                          : '+'}
+                                      </button>
+
+                                      {badges.length >
+                                        0 && (
+                                        <div
+                                          className="pitch-role-badges"
+                                          aria-label="Player roles"
+                                        >
+                                          {badges.map(
+                                            (
+                                              badge,
+                                            ) => (
+                                              <span
+                                                key={
+                                                  badge.label
+                                                }
+                                                title={
+                                                  badge.title
+                                                }
+                                                aria-label={
+                                                  badge.title
+                                                }
+                                              >
+                                                {
+                                                  badge.label
+                                                }
+                                              </span>
+                                            ),
+                                          )}
+                                        </div>
+                                      )}
+
+                                      <label
+                                        htmlFor={`pitch-slot-${slot.id}`}
+                                      >
+                                        {
+                                          slot.position
+                                        }
+                                      </label>
+
+                                      <select
+                                        id={`pitch-slot-${slot.id}`}
+                                        value={
+                                          selectedId
+                                        }
+                                        onChange={(
+                                          event,
+                                        ) =>
+                                          handleSlotChange(
+                                            slot.id,
+                                            event,
+                                          )
+                                        }
+                                        disabled={
+                                          saving
+                                        }
+                                        aria-label={`Select ${slot.position}`}
+                                      >
+                                        <option value="">
+                                          Choose player
+                                        </option>
+
+                                        {/*
+                                          Keep the currently selected
+                                          saved player in the dropdown,
+                                          while only offering AVAILABLE
+                                          players for new selection.
+                                        */}
+
+                                        {selectedPlayer &&
+                                          !availablePlayers.some(
+                                            (player) =>
+                                              playerId(
+                                                player,
+                                              ) ===
+                                              selectedId,
+                                          ) && (
+                                            <option
+                                              value={
+                                                selectedId
+                                              }
+                                            >
+                                              {playerName(
+                                                selectedPlayer,
+                                              )}
+                                            </option>
+                                          )}
+
+                                        {availablePlayers
+                                          .filter(
+                                            (
+                                              player,
+                                            ) =>
+                                              !usedByAnotherSlot.has(
+                                                playerId(
+                                                  player,
+                                                ),
+                                              ),
+                                          )
+                                          .map(
+                                            (
+                                              player,
+                                            ) => (
+                                              <option
+                                                value={playerId(
+                                                  player,
+                                                )}
+                                                key={playerId(
+                                                  player,
+                                                )}
+                                              >
+                                                {playerName(
+                                                  player,
+                                                )}
+                                              </option>
+                                            ),
+                                          )}
+                                      </select>
+                                    </div>
+                                  )
+                                },
+                              )}
                             </div>
-                          )
+                          ),
                         )}
                       </div>
                     </div>
@@ -1410,49 +2316,74 @@ function SquadSelectionPage() {
                     Match roles
                   </p>
 
-                  <h2>Responsibilities</h2>
+                  <h2>
+                    Responsibilities
+                  </h2>
 
                   <p>
-                    Choose each role from the players in
-                    the starting XI. One player can take
-                    more than one set piece.
+                    Choose each role from the
+                    players in the starting XI.
+                    One player can take more
+                    than one set piece.
                   </p>
 
                   <div className="lineup-role-fields">
-                    {roleFields.map(({ key, label }) => (
-                      <div
-                        className="form-group"
-                        key={key}
-                      >
-                        <label htmlFor={`role-${key}`}>
-                          {label}
-                        </label>
-
-                        <select
-                          id={`role-${key}`}
-                          name={key}
-                          value={roles[key]}
-                          onChange={handleRoleChange}
-                          disabled={
-                            saving ||
-                            starterOptions.length === 0
-                          }
+                    {roleFields.map(
+                      ({
+                        key,
+                        label,
+                      }) => (
+                        <div
+                          className="form-group"
+                          key={key}
                         >
-                          <option value="">
-                            Select player
-                          </option>
+                          <label
+                            htmlFor={`role-${key}`}
+                          >
+                            {label}
+                          </label>
 
-                          {starterOptions.map((player) => (
-                            <option
-                              value={playerId(player)}
-                              key={playerId(player)}
-                            >
-                              {playerName(player)}
+                          <select
+                            id={`role-${key}`}
+                            name={key}
+                            value={
+                              roles[key]
+                            }
+                            onChange={
+                              handleRoleChange
+                            }
+                            disabled={
+                              saving ||
+                              starterOptions.length ===
+                                0
+                            }
+                          >
+                            <option value="">
+                              Select player
                             </option>
-                          ))}
-                        </select>
-                      </div>
-                    ))}
+
+                            {starterOptions.map(
+                              (
+                                player,
+                              ) => (
+                                <option
+                                  value={playerId(
+                                    player,
+                                  )}
+                                  key={playerId(
+                                    player,
+                                  )}
+                                >
+                                  {playerName(
+                                    player,
+                                  )}
+                                </option>
+                              ),
+                            )}
+                          </select>
+                        </div>
+                      ),
+                    )}
                   </div>
                 </aside>
               </section>
@@ -1464,128 +2395,260 @@ function SquadSelectionPage() {
                       Matchday bench
                     </p>
 
-                    <h2>Select substitutes</h2>
+                    <h2>
+                      Select substitutes
+                    </h2>
                   </div>
 
                   <strong>
-                    {validSubstituteIds.length} selected
+                    {
+                      validSubstituteIds.length
+                    }{' '}
+                    selected
                   </strong>
                 </div>
 
-                {nonStarters.length === 0 ? (
-                  <p className="substitute-empty-message">
-                    Every available player is currently in
-                    the starting XI.
-                  </p>
+                {/*
+                  SAVED SUBSTITUTES
+                  -----------------
+                  These remain visible even if
+                  their availability later changes.
+                */}
+
+                {validSubstituteIds.length >
+                  0 && (
+                  <div className="substitute-player-list">
+                    {validSubstituteIds
+                      .map(
+                        (id) =>
+                          playersById.get(
+                            id,
+                          ),
+                      )
+                      .filter(Boolean)
+                      .map(
+                        (player) => {
+                          const id =
+                            playerId(
+                              player,
+                            )
+
+                          return (
+                            <article
+                              className="substitute-player-card selected"
+                              key={`saved-${id}`}
+                            >
+                              <div className="substitute-player-details">
+                                <div
+                                  className="player-avatar"
+                                  aria-hidden="true"
+                                >
+                                  {playerInitials(
+                                    player,
+                                  )}
+                                </div>
+
+                                <div>
+                                  <h3>
+                                    {playerName(
+                                      player,
+                                    )}
+                                  </h3>
+
+                                  <p>
+                                    {preferredPosition(
+                                      player,
+                                    )
+                                      ? `Preferred: ${preferredPosition(
+                                          player,
+                                        )}`
+                                      : 'Saved substitute'}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="substitute-player-actions">
+                                <select
+                                  value={
+                                    substitutePositions[
+                                      id
+                                    ] ||
+                                    ''
+                                  }
+                                  onChange={(
+                                    event,
+                                  ) =>
+                                    handleSubstitutePositionChange(
+                                      id,
+                                      event,
+                                    )
+                                  }
+                                  disabled={
+                                    saving
+                                  }
+                                  aria-label={`Position for ${playerName(
+                                    player,
+                                  )}`}
+                                >
+                                  <option value="">
+                                    Position
+                                  </option>
+
+                                  {benchPositions.map(
+                                    (
+                                      position,
+                                    ) => (
+                                      <option
+                                        value={
+                                          position
+                                        }
+                                        key={
+                                          position
+                                        }
+                                      >
+                                        {
+                                          position
+                                        }
+                                      </option>
+                                    ),
+                                  )}
+                                </select>
+
+                                <button
+                                  className="remove"
+                                  type="button"
+                                  onClick={() =>
+                                    toggleSubstitute(
+                                      player,
+                                    )
+                                  }
+                                  disabled={
+                                    saving
+                                  }
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </article>
+                          )
+                        },
+                      )}
+                  </div>
+                )}
+
+                {/*
+                  AVAILABLE PLAYERS
+                  -----------------
+                  Only currently available players
+                  are offered as NEW substitutes.
+                */}
+
+                {nonStarters.filter(
+                  (player) =>
+                    !substituteIdSet.has(
+                      playerId(player),
+                    ),
+                ).length === 0 ? (
+                  validSubstituteIds.length ===
+                  0 && (
+                    <p className="substitute-empty-message">
+                      Every available player is
+                      currently in the starting XI.
+                    </p>
+                  )
                 ) : (
                   <div className="substitute-player-list">
-                    {nonStarters.map((player) => {
-                      const id = playerId(player)
-                      const isSubstitute =
-                        substituteIdSet.has(id)
-
-                      return (
-                        <article
-                          className={`substitute-player-card ${
-                            isSubstitute
-                              ? 'selected'
-                              : ''
-                          }`}
-                          key={id}
-                        >
-                          <div className="substitute-player-details">
-                            <div
-                              className="player-avatar"
-                              aria-hidden="true"
-                            >
-                              {playerInitials(player)}
-                            </div>
-
-                            <div>
-                              <h3>
-                                {playerName(player)}
-                              </h3>
-
-                              <p>
-                                {preferredPosition(player)
-                                  ? `Preferred: ${preferredPosition(
-                                      player
-                                    )}`
-                                  : 'No preferred position set'}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="substitute-player-actions">
-                            {isSubstitute && (
-                              <select
-                                value={
-                                  substitutePositions[id] ||
-                                  ''
-                                }
-                                onChange={(event) =>
-                                  handleSubstitutePositionChange(
-                                    id,
-                                    event
-                                  )
-                                }
-                                disabled={saving}
-                                aria-label={`Position for ${playerName(
-                                  player
-                                )}`}
-                              >
-                                <option value="">
-                                  Position
-                                </option>
-
-                                {benchPositions.map(
-                                  (position) => (
-                                    <option
-                                      value={position}
-                                      key={position}
-                                    >
-                                      {position}
-                                    </option>
-                                  )
-                                )}
-                              </select>
-                            )}
-
-                            <button
-                              className={
-                                isSubstitute
-                                  ? 'remove'
-                                  : 'add'
-                              }
-                              type="button"
-                              onClick={() =>
-                                toggleSubstitute(player)
-                              }
-                              disabled={saving}
-                            >
-                              {isSubstitute
-                                ? 'Remove'
-                                : 'Add to bench'}
-                            </button>
-                          </div>
-                        </article>
+                    {nonStarters
+                      .filter(
+                        (player) =>
+                          !substituteIdSet.has(
+                            playerId(
+                              player,
+                            ),
+                          ),
                       )
-                    })}
+                      .map(
+                        (player) => {
+                          const id =
+                            playerId(
+                              player,
+                            )
+
+                          return (
+                            <article
+                              className="substitute-player-card"
+                              key={`available-${id}`}
+                            >
+                              <div className="substitute-player-details">
+                                <div
+                                  className="player-avatar"
+                                  aria-hidden="true"
+                                >
+                                  {playerInitials(
+                                    player,
+                                  )}
+                                </div>
+
+                                <div>
+                                  <h3>
+                                    {playerName(
+                                      player,
+                                    )}
+                                  </h3>
+
+                                  <p>
+                                    {preferredPosition(
+                                      player,
+                                    )
+                                      ? `Preferred: ${preferredPosition(
+                                          player,
+                                        )}`
+                                      : 'No preferred position set'}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="substitute-player-actions">
+                                <button
+                                  className="add"
+                                  type="button"
+                                  onClick={() =>
+                                    toggleSubstitute(
+                                      player,
+                                    )
+                                  }
+                                  disabled={
+                                    saving
+                                  }
+                                >
+                                  Add to bench
+                                </button>
+                              </div>
+                            </article>
+                          )
+                        },
+                      )}
                   </div>
                 )}
               </section>
 
               <div className="save-lineup-bar">
                 <p>
-                  Saving will update the formation, starting
-                  XI, substitutes and match roles together.
+                  Saving will update the
+                  formation, starting XI,
+                  substitutes and match roles
+                  together.
                 </p>
 
                 <button
                   className="save-lineup-button"
                   type="button"
-                  onClick={handleSaveLineup}
-                  disabled={saving}
+                  onClick={
+                    handleSaveLineup
+                  }
+                  disabled={
+                    saving
+                  }
                 >
                   {saving
                     ? 'Saving line-up...'

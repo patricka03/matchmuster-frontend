@@ -4,18 +4,20 @@ import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
-
-
 function EditMatchPage() {
   const navigate = useNavigate()
-  const { teamId, matchId } = useParams()
+
+  const {
+    teamId,
+    matchId,
+  } = useParams()
 
   const [formData, setFormData] = useState({
     opponent: '',
     match_type: 'league',
     location: '',
     kickoff_time: '',
-    description: ''
+    description: '',
   })
 
   const [loading, setLoading] = useState(true)
@@ -39,11 +41,13 @@ function EditMatchPage() {
               Accept: 'application/json',
               Authorization: token,
             },
-          }
+          },
         )
 
         if (response.status === 401) {
           localStorage.removeItem('token')
+          localStorage.removeItem('currentUser')
+
           navigate('/login')
           return
         }
@@ -52,52 +56,108 @@ function EditMatchPage() {
 
         if (!response.ok) {
           setErrorMessages([
-            data.error || 'Unable to load the fixture.',
+            data.error ||
+              'Unable to load the fixture.',
           ])
+
           return
         }
 
         setFormData({
-          opponent: data.opponent,
-          match_type: data.match_type,
-          location: data.location,
-          kickoff_time: formatForDateTimeInput(data.kickoff_time),
+          opponent: data.opponent || '',
+          match_type: data.match_type || 'league',
+          location: data.location || '',
+
+          // API gives us the UTC timestamp.
+          // Convert it back into the user's
+          // local timezone for datetime-local.
+          kickoff_time:
+            formatForDateTimeInput(
+              data.kickoff_time,
+            ),
+
+          description: data.description || '',
         })
       } catch {
-        setErrorMessages(['Unable to connect to the server.'])
+        setErrorMessages([
+          'Unable to connect to the server.',
+        ])
       } finally {
         setLoading(false)
       }
     }
 
     fetchMatch()
-  }, [navigate, teamId, matchId])
+  }, [
+    navigate,
+    teamId,
+    matchId,
+  ])
 
   function formatForDateTimeInput(kickoffTime) {
+    if (!kickoffTime) {
+      return ''
+    }
+
     const date = new Date(kickoffTime)
 
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const year =
+      date.getFullYear()
+
+    const month =
+      String(
+        date.getMonth() + 1,
+      ).padStart(2, '0')
+
+    const day =
+      String(
+        date.getDate(),
+      ).padStart(2, '0')
+
+    const hours =
+      String(
+        date.getHours(),
+      ).padStart(2, '0')
+
+    const minutes =
+      String(
+        date.getMinutes(),
+      ).padStart(2, '0')
 
     return `${year}-${month}-${day}T${hours}:${minutes}`
   }
 
   function handleChange(event) {
-    const { name, value } = event.target
+    const {
+      name,
+      value,
+    } = event.target
 
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      [name]: value,
-    }))
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+        [name]: value,
+      }),
+    )
+  }
+
+  function buildMatchPayload() {
+    return {
+      ...formData,
+
+      // Convert the local datetime-local value
+      // into an absolute UTC ISO timestamp.
+      kickoff_time: new Date(
+        formData.kickoff_time,
+      ).toISOString(),
+    }
   }
 
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const token = localStorage.getItem('token')
+    const token =
+      localStorage.getItem('token')
 
     if (!token) {
       navigate('/login')
@@ -112,37 +172,49 @@ function EditMatchPage() {
         `${API_URL}/teams/${teamId}/matches/${matchId}`,
         {
           method: 'PATCH',
+
           headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/json',
+            'Content-Type':
+              'application/json',
             Authorization: token,
           },
+
           body: JSON.stringify({
-            match: formData,
+            match: buildMatchPayload(),
           }),
-        }
+        },
       )
 
       if (response.status === 401) {
         localStorage.removeItem('token')
+        localStorage.removeItem('currentUser')
+
         navigate('/login')
         return
       }
 
-      const data = await response.json()
+      const data =
+        await response.json()
 
       if (!response.ok) {
         setErrorMessages(
           data.errors || [
-            data.error || 'Unable to update the fixture.',
-          ]
+            data.error ||
+              'Unable to update the fixture.',
+          ],
         )
+
         return
       }
 
-      navigate(`/teams/${teamId}/matches/${matchId}`)
+      navigate(
+        `/teams/${teamId}/matches/${matchId}`,
+      )
     } catch {
-      setErrorMessages(['Unable to connect to the server.'])
+      setErrorMessages([
+        'Unable to connect to the server.',
+      ])
     } finally {
       setSubmitting(false)
     }
@@ -158,37 +230,55 @@ function EditMatchPage() {
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
 
       <main className="dashboard-page">
-
         <section className="dashboard-content">
+          <BackButton
+            to={`/teams/${teamId}/matches/${matchId}`}
+            label="Back to match"
+          />
 
-        <BackButton to={`/teams/${teamId}/matches/${matchId}`} label="Back to match"/>
           <div className="dashboard-welcome">
-            <p className="dashboard-label">Fixture management</p>
+            <p className="dashboard-label">
+              Fixture management
+            </p>
+
             <h1>Edit fixture</h1>
+
             <p>
-              Update the fixture details. Players will be notified
-              about important changes.
+              Update the fixture details. Players
+              will be notified about important
+              changes.
             </p>
           </div>
 
-          <form className="match-form" onSubmit={handleSubmit}>
+          <form
+            className="match-form"
+            onSubmit={handleSubmit}
+          >
             {errorMessages.length > 0 && (
               <div className="team-error">
-                <strong>Please check the following:</strong>
+                <strong>
+                  Please check the following:
+                </strong>
 
                 <ul>
-                  {errorMessages.map((message) => (
-                    <li key={message}>{message}</li>
-                  ))}
+                  {errorMessages.map(
+                    (message) => (
+                      <li key={message}>
+                        {message}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             )}
 
             <div className="form-group">
-              <label htmlFor="opponent">Opponent</label>
+              <label htmlFor="opponent">
+                Opponent
+              </label>
 
               <input
                 id="opponent"
@@ -201,7 +291,9 @@ function EditMatchPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="match_type">Match type</label>
+              <label htmlFor="match_type">
+                Match type
+              </label>
 
               <select
                 id="match_type"
@@ -210,14 +302,24 @@ function EditMatchPage() {
                 onChange={handleChange}
                 required
               >
-                <option value="league">League</option>
-                <option value="cup">Cup</option>
-                <option value="friendly">Friendly</option>
+                <option value="league">
+                  League
+                </option>
+
+                <option value="cup">
+                  Cup
+                </option>
+
+                <option value="friendly">
+                  Friendly
+                </option>
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="location">Location</label>
+              <label htmlFor="location">
+                Location
+              </label>
 
               <input
                 id="location"
@@ -245,7 +347,9 @@ function EditMatchPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="description">Match information</label>
+              <label htmlFor="description">
+                Match information
+              </label>
 
               <textarea
                 id="description"
@@ -270,7 +374,9 @@ function EditMatchPage() {
                 type="submit"
                 disabled={submitting}
               >
-                {submitting ? 'Saving...' : 'Save changes'}
+                {submitting
+                  ? 'Saving...'
+                  : 'Save changes'}
               </button>
             </div>
           </form>
