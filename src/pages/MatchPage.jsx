@@ -18,7 +18,7 @@ function MatchPage() {
   const [playerAvailability, setPlayerAvailability] = useState(null)
   const [ratingStatus, setRatingStatus] = useState(null)
 
-  const [currentTime, setCurrentTime] = useState(Date.now())
+  const [currentTime, setCurrentTime] = useState(() => Date.now())
 
   const [showMap, setShowMap] = useState(false)
 
@@ -716,6 +716,13 @@ function MatchPage() {
                           to={`/teams/${teamId}/matches/${matchId}/payments`}
                         >
                           Payment status
+                        </Link>
+
+                        <Link
+                          className="select-squad-button"
+                          to={`/teams/${teamId}/matches/${matchId}/squad`}
+                        >
+                          Matchday Squad
                         </Link>
 
                         {renderRatingAction()}

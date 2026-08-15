@@ -1,0 +1,72 @@
+.matchday-squad-readonly .lineup-builder,
+.matchday-squad-readonly .substitute-selection-panel {
+  border-color: #dbeafe;
+}
+
+.matchday-formation-readout {
+  display: flex;
+  min-width: 180px;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.matchday-formation-readout span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.matchday-formation-readout strong {
+  color: #2563eb;
+  font-size: 20px;
+}
+
+.matchday-squad-readonly .pitch-player-slot {
+  cursor: default;
+}
+
+.matchday-player-avatar {
+  cursor: default;
+}
+
+.matchday-player-name {
+  display: block;
+  max-width: 120px;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matchday-role-readout {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #fff7fb, #eff6ff);
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.matchday-squad-readonly .substitute-player-card.selected {
+  border-color: #bfdbfe;
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+}
+
+@media (max-width: 700px) {
+  .matchday-formation-readout {
+    min-width: 0;
+  }
+
+  .matchday-player-name {
+    max-width: 82px;
+    font-size: 10px;
+  }
+}

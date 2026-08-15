@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import '../styles/SquadSelectionPage.css'
+import '../styles/MatchdaySquadReadOnly.css'
 import API_URL from '../config/api'
 
 const benchPositions = [
@@ -524,6 +525,11 @@ function SquadSelectionPage() {
   ] = useState(null)
 
   const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(null)
+
+  const [
     availablePlayers,
     setAvailablePlayers,
   ] = useState([])
@@ -617,38 +623,29 @@ function SquadSelectionPage() {
       try {
         const [
           matchResponse,
-          availabilityResponse,
+          userResponse,
           selectionResponse,
         ] = await Promise.all([
           fetch(
             `${API_URL}/teams/${teamId}/matches/${matchId}`,
-            {
-              headers,
-            },
+            { headers },
           ),
 
           fetch(
-            `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities`,
-            {
-              headers,
-            },
+            `${API_URL}/users/me`,
+            { headers },
           ),
 
           fetch(
             `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`,
-            {
-              headers,
-            },
+            { headers },
           ),
         ])
 
         if (
-          matchResponse.status ===
-            401 ||
-          availabilityResponse.status ===
-            401 ||
-          selectionResponse.status ===
-            401
+          matchResponse.status === 401 ||
+          userResponse.status === 401 ||
+          selectionResponse.status === 401
         ) {
           localStorage.removeItem(
             'token',
@@ -669,12 +666,9 @@ function SquadSelectionPage() {
         }
 
         if (
-          matchResponse.status ===
-            403 ||
-          availabilityResponse.status ===
-            403 ||
-          selectionResponse.status ===
-            403
+          matchResponse.status === 403 ||
+          userResponse.status === 403 ||
+          selectionResponse.status === 403
         ) {
           navigate(
             '/dashboard',
@@ -689,8 +683,9 @@ function SquadSelectionPage() {
         const matchData =
           await matchResponse.json()
 
-        const availabilityData =
-          await availabilityResponse.json()
+
+        const userData =
+          await userResponse.json()
 
         const selectionData =
           await selectionResponse.json()
@@ -704,12 +699,10 @@ function SquadSelectionPage() {
           )
         }
 
-        if (
-          !availabilityResponse.ok
-        ) {
+        if (!userResponse.ok) {
           throw new Error(
-            availabilityData.error ||
-              'Unable to load player availability.',
+            userData.error ||
+              'Unable to load your account.',
           )
         }
 
@@ -725,6 +718,48 @@ function SquadSelectionPage() {
         const matchRecord =
           matchData.match ||
           matchData
+
+        const userRecord =
+          userData.user ||
+          userData
+
+        const canManageSquad =
+          userRecord.account_type === 'manager' &&
+          userRecord.manager_verification_status === 'approved'
+
+        let availabilityData = {
+          players: [],
+        }
+
+        if (canManageSquad) {
+          const availabilityResponse =
+            await fetch(
+              `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities`,
+              { headers },
+            )
+
+          if (availabilityResponse.status === 401) {
+            localStorage.removeItem('token')
+            localStorage.removeItem('currentUser')
+            navigate('/login', { replace: true })
+            return
+          }
+
+          if (availabilityResponse.status === 403) {
+            navigate('/dashboard', { replace: true })
+            return
+          }
+
+          availabilityData =
+            await availabilityResponse.json()
+
+          if (!availabilityResponse.ok) {
+            throw new Error(
+              availabilityData.error ||
+                'Unable to load player availability.',
+            )
+          }
+        }
 
         const availabilityList =
           Array.isArray(
@@ -843,6 +878,10 @@ function SquadSelectionPage() {
           matchRecord,
         )
 
+        setCurrentUser(
+          userRecord,
+        )
+
         setAvailablePlayers(
           available,
         )
@@ -891,10 +930,21 @@ function SquadSelectionPage() {
     matchId,
   ])
 
+  const canManageSquad =
+    currentUser?.account_type === 'manager' &&
+    currentUser?.manager_verification_status === 'approved'
+
+  const isPlayerView =
+    currentUser?.account_type === 'player'
+
   const formationRows =
-    formationLayouts[
-      formation
-    ] || []
+    useMemo(
+      () =>
+        formationLayouts[
+          formation
+        ] || [],
+      [formation],
+    )
 
   const formationSlots =
     useMemo(
@@ -1923,9 +1973,18 @@ function SquadSelectionPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar
+        teamId={teamId}
+        currentUser={currentUser}
+      />
 
-      <main className="dashboard-page">
+      <main
+        className={`dashboard-page ${
+          isPlayerView
+            ? 'matchday-squad-readonly'
+            : ''
+        }`}
+      >
         <section className="dashboard-content">
           <BackButton
             to={`/teams/${teamId}/matches/${matchId}`}
@@ -1935,17 +1994,21 @@ function SquadSelectionPage() {
           {match && (
             <div className="dashboard-welcome">
               <p className="dashboard-label">
-                Squad management
+                {canManageSquad
+                  ? 'Squad management'
+                  : 'Matchday squad'}
               </p>
 
               <h1>
-                Build your matchday squad
+                {canManageSquad
+                  ? 'Build your matchday squad'
+                  : 'Matchday Squad'}
               </h1>
 
               <p>
-                Choose the formation,
-                starting XI and substitutes
-                against{' '}
+                {canManageSquad
+                  ? 'Choose the formation, starting XI and substitutes against '
+                  : 'View the starting XI, substitutes and match roles against '}
 
                 <strong>
                   {match.opponent}
@@ -2000,13 +2063,15 @@ function SquadSelectionPage() {
 
                 <article>
                   <span>
-                    Available players
+                    {canManageSquad
+                      ? 'Available players'
+                      : 'Formation'}
                   </span>
 
                   <strong>
-                    {
-                      availablePoolCount
-                    }
+                    {canManageSquad
+                      ? availablePoolCount
+                      : formation || 'Not announced'}
                   </strong>
                 </article>
               </section>
@@ -2014,45 +2079,46 @@ function SquadSelectionPage() {
               <section className="lineup-builder">
                 <div className="lineup-pitch-panel">
                   <div className="formation-toolbar">
-                    <div className="form-group">
-                      <label htmlFor="match-formation">
-                        Formation
-                      </label>
+                    {canManageSquad ? (
+                      <div className="form-group">
+                        <label htmlFor="match-formation">
+                          Formation
+                        </label>
 
-                      <select
-                        id="match-formation"
-                        value={formation}
-                        onChange={
-                          handleFormationChange
-                        }
-                        disabled={
-                          saving
-                        }
-                      >
-                        <option value="">
-                          Select formation
-                        </option>
+                        <select
+                          id="match-formation"
+                          value={formation}
+                          onChange={
+                            handleFormationChange
+                          }
+                          disabled={
+                            saving
+                          }
+                        >
+                          <option value="">
+                            Select formation
+                          </option>
 
-                        {Object.keys(
-                          formationLayouts,
-                        ).map(
-                          (option) => (
-                            <option
-                              value={
-                                option
-                              }
-                              key={
-                                option
-                              }
-                            >
-                              {
-                                option
-                              }
-                            </option>
-                          ),
-                        )}
-                      </select>
-                    </div>
+                          {Object.keys(
+                            formationLayouts,
+                          ).map(
+                            (option) => (
+                              <option
+                                value={option}
+                                key={option}
+                              >
+                                {option}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </div>
+                    ) : (
+                      <div className="matchday-formation-readout">
+                        <span>Formation</span>
+                        <strong>{formation || 'Not announced'}</strong>
+                      </div>
+                    )}
 
                     <span className="formation-progress">
                       {
@@ -2062,7 +2128,7 @@ function SquadSelectionPage() {
                     </span>
                   </div>
 
-                  {formation && (
+                  {formation && canManageSquad && (
                     <p className="player-swap-help">
                       {swapSourceSlotId
                         ? 'Now tap another player circle to swap their positions.'
@@ -2077,13 +2143,15 @@ function SquadSelectionPage() {
                       </div>
 
                       <h2>
-                        Select a formation
+                        {canManageSquad
+                          ? 'Select a formation'
+                          : 'Matchday squad not announced'}
                       </h2>
 
                       <p>
-                        The pitch will update
-                        automatically when you
-                        choose a formation.
+                        {canManageSquad
+                          ? 'The pitch will update automatically when you choose a formation.'
+                          : 'Your manager has not published the formation and squad yet.'}
                       </p>
                     </article>
                   ) : (
@@ -2156,32 +2224,45 @@ function SquadSelectionPage() {
                                         slot.id
                                       }
                                     >
-                                      <button
-                                        type="button"
-                                        className="pitch-player-avatar"
-                                        onClick={() =>
-                                          handlePlayerSwap(
-                                            slot.id,
-                                          )
-                                        }
-                                        disabled={
-                                          saving ||
-                                          !selectedPlayer
-                                        }
-                                        aria-label={
-                                          selectedPlayer
-                                            ? `Select ${playerName(
-                                                selectedPlayer,
-                                              )} to swap positions`
-                                            : 'Empty position'
-                                        }
-                                      >
-                                        {selectedPlayer
-                                          ? playerInitials(
-                                              selectedPlayer,
+                                      {canManageSquad ? (
+                                        <button
+                                          type="button"
+                                          className="pitch-player-avatar"
+                                          onClick={() =>
+                                            handlePlayerSwap(
+                                              slot.id,
                                             )
-                                          : '+'}
-                                      </button>
+                                          }
+                                          disabled={
+                                            saving ||
+                                            !selectedPlayer
+                                          }
+                                          aria-label={
+                                            selectedPlayer
+                                              ? `Select ${playerName(
+                                                  selectedPlayer,
+                                                )} to swap positions`
+                                              : 'Empty position'
+                                          }
+                                        >
+                                          {selectedPlayer
+                                            ? playerInitials(
+                                                selectedPlayer,
+                                              )
+                                            : '+'}
+                                        </button>
+                                      ) : (
+                                        <div
+                                          className="pitch-player-avatar matchday-player-avatar"
+                                          aria-hidden="true"
+                                        >
+                                          {selectedPlayer
+                                            ? playerInitials(
+                                                selectedPlayer,
+                                              )
+                                            : '—'}
+                                        </div>
+                                      )}
 
                                       {badges.length >
                                         0 && (
@@ -2214,34 +2295,31 @@ function SquadSelectionPage() {
                                       )}
 
                                       <label
-                                        htmlFor={`pitch-slot-${slot.id}`}
-                                      >
-                                        {
-                                          slot.position
+                                        htmlFor={
+                                          canManageSquad
+                                            ? `pitch-slot-${slot.id}`
+                                            : undefined
                                         }
+                                      >
+                                        {slot.position}
                                       </label>
 
-                                      <select
-                                        id={`pitch-slot-${slot.id}`}
-                                        value={
-                                          selectedId
-                                        }
-                                        onChange={(
-                                          event,
-                                        ) =>
-                                          handleSlotChange(
-                                            slot.id,
-                                            event,
-                                          )
-                                        }
-                                        disabled={
-                                          saving
-                                        }
-                                        aria-label={`Select ${slot.position}`}
-                                      >
-                                        <option value="">
-                                          Choose player
-                                        </option>
+                                      {canManageSquad ? (
+                                        <select
+                                          id={`pitch-slot-${slot.id}`}
+                                          value={selectedId}
+                                          onChange={(event) =>
+                                            handleSlotChange(
+                                              slot.id,
+                                              event,
+                                            )
+                                          }
+                                          disabled={saving}
+                                          aria-label={`Select ${slot.position}`}
+                                        >
+                                          <option value="">
+                                            Choose player
+                                          </option>
 
                                         {/*
                                           Keep the currently selected
@@ -2250,55 +2328,39 @@ function SquadSelectionPage() {
                                           players for new selection.
                                         */}
 
-                                        {selectedPlayer &&
-                                          !availablePlayers.some(
-                                            (player) =>
-                                              playerId(
-                                                player,
-                                              ) ===
-                                              selectedId,
-                                          ) && (
-                                            <option
-                                              value={
-                                                selectedId
-                                              }
-                                            >
-                                              {playerName(
-                                                selectedPlayer,
-                                              )}
-                                            </option>
-                                          )}
-
-                                        {availablePlayers
-                                          .filter(
-                                            (
-                                              player,
-                                            ) =>
-                                              !usedByAnotherSlot.has(
-                                                playerId(
-                                                  player,
-                                                ),
-                                              ),
-                                          )
-                                          .map(
-                                            (
-                                              player,
-                                            ) => (
-                                              <option
-                                                value={playerId(
-                                                  player,
-                                                )}
-                                                key={playerId(
-                                                  player,
-                                                )}
-                                              >
-                                                {playerName(
-                                                  player,
-                                                )}
+                                          {selectedPlayer &&
+                                            !availablePlayers.some(
+                                              (player) =>
+                                                playerId(player) === selectedId,
+                                            ) && (
+                                              <option value={selectedId}>
+                                                {playerName(selectedPlayer)}
                                               </option>
-                                            ),
-                                          )}
-                                      </select>
+                                            )}
+
+                                          {availablePlayers
+                                            .filter(
+                                              (player) =>
+                                                !usedByAnotherSlot.has(
+                                                  playerId(player),
+                                                ),
+                                            )
+                                            .map((player) => (
+                                              <option
+                                                value={playerId(player)}
+                                                key={playerId(player)}
+                                              >
+                                                {playerName(player)}
+                                              </option>
+                                            ))}
+                                        </select>
+                                      ) : (
+                                        <strong className="matchday-player-name">
+                                          {selectedPlayer
+                                            ? playerName(selectedPlayer)
+                                            : 'Not selected'}
+                                        </strong>
+                                      )}
                                     </div>
                                   )
                                 },
@@ -2321,10 +2383,9 @@ function SquadSelectionPage() {
                   </h2>
 
                   <p>
-                    Choose each role from the
-                    players in the starting XI.
-                    One player can take more
-                    than one set piece.
+                    {canManageSquad
+                      ? 'Choose each role from the players in the starting XI. One player can take more than one set piece.'
+                      : 'The captain and set-piece responsibilities selected by your manager.'}
                   </p>
 
                   <div className="lineup-role-fields">
@@ -2338,49 +2399,46 @@ function SquadSelectionPage() {
                           key={key}
                         >
                           <label
-                            htmlFor={`role-${key}`}
+                            htmlFor={
+                              canManageSquad
+                                ? `role-${key}`
+                                : undefined
+                            }
                           >
                             {label}
                           </label>
 
-                          <select
-                            id={`role-${key}`}
-                            name={key}
-                            value={
-                              roles[key]
-                            }
-                            onChange={
-                              handleRoleChange
-                            }
-                            disabled={
-                              saving ||
-                              starterOptions.length ===
-                                0
-                            }
-                          >
-                            <option value="">
-                              Select player
-                            </option>
+                          {canManageSquad ? (
+                            <select
+                              id={`role-${key}`}
+                              name={key}
+                              value={roles[key]}
+                              onChange={handleRoleChange}
+                              disabled={
+                                saving ||
+                                starterOptions.length === 0
+                              }
+                            >
+                              <option value="">
+                                Select player
+                              </option>
 
-                            {starterOptions.map(
-                              (
-                                player,
-                              ) => (
+                              {starterOptions.map((player) => (
                                 <option
-                                  value={playerId(
-                                    player,
-                                  )}
-                                  key={playerId(
-                                    player,
-                                  )}
+                                  value={playerId(player)}
+                                  key={playerId(player)}
                                 >
-                                  {playerName(
-                                    player,
-                                  )}
+                                  {playerName(player)}
                                 </option>
-                              ),
-                            )}
-                          </select>
+                              ))}
+                            </select>
+                          ) : (
+                            <strong className="matchday-role-readout">
+                              {roles[key] && playersById.get(roles[key])
+                                ? playerName(playersById.get(roles[key]))
+                                : 'Not assigned'}
+                            </strong>
+                          )}
                         </div>
                       ),
                     )}
@@ -2396,7 +2454,9 @@ function SquadSelectionPage() {
                     </p>
 
                     <h2>
-                      Select substitutes
+                      {canManageSquad
+                        ? 'Select substitutes'
+                        : 'Substitutes'}
                     </h2>
                   </div>
 
@@ -2456,79 +2516,59 @@ function SquadSelectionPage() {
                                   </h3>
 
                                   <p>
-                                    {preferredPosition(
-                                      player,
-                                    )
-                                      ? `Preferred: ${preferredPosition(
-                                          player,
-                                        )}`
-                                      : 'Saved substitute'}
+                                    {canManageSquad
+                                      ? preferredPosition(player)
+                                        ? `Preferred: ${preferredPosition(player)}`
+                                        : 'Saved substitute'
+                                      : `Position: ${
+                                          substitutePositions[id] ||
+                                          'Substitute'
+                                        }`}
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="substitute-player-actions">
-                                <select
-                                  value={
-                                    substitutePositions[
-                                      id
-                                    ] ||
-                                    ''
-                                  }
-                                  onChange={(
-                                    event,
-                                  ) =>
-                                    handleSubstitutePositionChange(
-                                      id,
-                                      event,
-                                    )
-                                  }
-                                  disabled={
-                                    saving
-                                  }
-                                  aria-label={`Position for ${playerName(
-                                    player,
-                                  )}`}
-                                >
-                                  <option value="">
-                                    Position
-                                  </option>
-
-                                  {benchPositions.map(
-                                    (
-                                      position,
-                                    ) => (
-                                      <option
-                                        value={
-                                          position
-                                        }
-                                        key={
-                                          position
-                                        }
-                                      >
-                                        {
-                                          position
-                                        }
-                                      </option>
-                                    ),
-                                  )}
-                                </select>
-
-                                <button
-                                  className="remove"
-                                  type="button"
-                                  onClick={() =>
-                                    toggleSubstitute(
+                              {canManageSquad && (
+                                <div className="substitute-player-actions">
+                                  <select
+                                    value={substitutePositions[id] || ''}
+                                    onChange={(event) =>
+                                      handleSubstitutePositionChange(
+                                        id,
+                                        event,
+                                      )
+                                    }
+                                    disabled={saving}
+                                    aria-label={`Position for ${playerName(
                                       player,
-                                    )
-                                  }
-                                  disabled={
-                                    saving
-                                  }
-                                >
-                                  Remove
-                                </button>
-                              </div>
+                                    )}`}
+                                  >
+                                    <option value="">
+                                      Position
+                                    </option>
+
+                                    {benchPositions.map((position) => (
+                                      <option
+                                        value={position}
+                                        key={position}
+                                      >
+                                        {position}
+                                      </option>
+                                    ))}
+                                  </select>
+
+                                  <button
+                                    className="remove"
+                                    type="button"
+                                    onClick={() =>
+                                      toggleSubstitute(player)
+                                    }
+                                    disabled={saving}
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              )}
                             </article>
                           )
                         },
@@ -2543,17 +2583,20 @@ function SquadSelectionPage() {
                   are offered as NEW substitutes.
                 */}
 
-                {nonStarters.filter(
+                {!canManageSquad && validSubstituteIds.length === 0 && (
+                  <p className="substitute-empty-message">
+                    No substitutes have been announced for this match.
+                  </p>
+                )}
+
+                {canManageSquad &&
+                (nonStarters.filter(
                   (player) =>
-                    !substituteIdSet.has(
-                      playerId(player),
-                    ),
+                    !substituteIdSet.has(playerId(player)),
                 ).length === 0 ? (
-                  validSubstituteIds.length ===
-                  0 && (
+                  validSubstituteIds.length === 0 && (
                     <p className="substitute-empty-message">
-                      Every available player is
-                      currently in the starting XI.
+                      Every available player is currently in the starting XI.
                     </p>
                   )
                 ) : (
@@ -2629,10 +2672,11 @@ function SquadSelectionPage() {
                         },
                       )}
                   </div>
-                )}
+                ))}
               </section>
 
-              <div className="save-lineup-bar">
+              {canManageSquad && (
+                <div className="save-lineup-bar">
                 <p>
                   Saving will update the
                   formation, starting XI,
@@ -2654,7 +2698,8 @@ function SquadSelectionPage() {
                     ? 'Saving line-up...'
                     : 'Save line-up'}
                 </button>
-              </div>
+                </div>
+              )}
             </>
           )}
         </section>
