@@ -794,8 +794,8 @@ function NotificationsPage() {
 
   const roleDescription =
     currentUser?.account_type === 'manager'
-      ? 'Player responses, squad activity, payments and MatchMuster announcements—all in one place.'
-      : 'Fixture changes, availability requests, squad news and payments—all in one place.'
+      ? 'Player responses, squad activity, payments and MatchMuster announcements. All in one place.'
+      : 'Fixture changes, availability requests, squad news and payments. All in one place.'
 
   return (
     <>
