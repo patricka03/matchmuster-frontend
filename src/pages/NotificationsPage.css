@@ -1398,6 +1398,10 @@ body.updates-modal-open {
   color: #f59e0b;
 }
 
+.notification-motm-winner-names {
+  font-weight: 800;
+}
+
 .notification-game-squad {
   margin-top: 22px;
   overflow: hidden;

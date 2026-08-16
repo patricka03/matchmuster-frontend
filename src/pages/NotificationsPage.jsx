@@ -1145,21 +1145,31 @@ function MotmNotificationCard({ notification }) {
     notification.motm?.player ||
     notification.winner ||
     null
+
   const type = notification.notification_type
-  const playerName = personName(featuredPlayer)
+  const message = notificationMessageText(notification)
+  const winnerNames = motmWinnerNames(message)
+  const playerName = personFirstName(featuredPlayer)
+
   const isWinner =
     ['motm_announced', 'man_of_the_match'].includes(type) ||
     (type === 'match_rating_result' && Boolean(featuredPlayer))
+
   const isVote = type === 'motm_vote_received'
+
   const isClosedWithoutWinner =
     type === 'match_rating_result' && !featuredPlayer
+
   const heading = isWinner
-    ? playerName || 'Player of the match announced'
+    ? formatMotmHeading(winnerNames) ||
+      playerName ||
+      'Player of the match announced'
     : isVote
       ? playerName || 'A new MOTM vote was received'
       : isClosedWithoutWinner
         ? notification.title || 'Player ratings closed'
         : 'MOTM voting is open'
+
   const label = isWinner
     ? 'Player of the match'
     : isVote
@@ -1171,6 +1181,7 @@ function MotmNotificationCard({ notification }) {
   return (
     <article className="notification-motm-card">
       <div className="notification-motm-glow" aria-hidden="true" />
+
       <div className="notification-motm-trophy" aria-hidden="true">
         <Trophy size={38} strokeWidth={1.8} />
       </div>
@@ -1185,14 +1196,79 @@ function MotmNotificationCard({ notification }) {
 
       <p>{label}</p>
       <h3>{heading}</h3>
+
       <div className="notification-motm-stars" aria-hidden="true">
         <Star size={15} fill="currentColor" />
         <Star size={18} fill="currentColor" />
         <Star size={15} fill="currentColor" />
       </div>
-      <span>{notificationMessageText(notification)}</span>
+
+      <span>
+        <MotmMessage message={message} />
+      </span>
     </article>
   )
+}
+
+function MotmMessage({ message }) {
+  const winnerNames = motmWinnerNames(message)
+
+  if (!winnerNames) return message
+
+  return (
+    <>
+      <strong className="notification-motm-winner-names">
+        {winnerNames}
+      </strong>
+
+      {message.slice(winnerNames.length)}
+    </>
+  )
+}
+
+function motmWinnerNames(message) {
+  if (!message) return ''
+
+  const marker = [' were voted', ' was voted'].find((text) =>
+    message.includes(text)
+  )
+
+  if (!marker) return ''
+
+  const markerIndex = message.indexOf(marker)
+  const names = message.slice(0, markerIndex).trim()
+
+  if (
+    !names ||
+    names.toLowerCase().includes('congratulations')
+  ) {
+    return ''
+  }
+
+  return names
+}
+
+function formatMotmHeading(winnerNames) {
+  if (!winnerNames) return ''
+
+  return winnerNames.replace(
+    /,?\s+and\s+/,
+    ' & '
+  )
+}
+
+function personFirstName(person) {
+  if (!person) return ''
+
+  if (person.first_name?.trim()) {
+    return person.first_name.trim()
+  }
+
+  if (person.name?.trim()) {
+    return person.name.trim().split(/\s+/)[0]
+  }
+
+  return ''
 }
 
 function GameSquadNotificationCard({ notification }) {
