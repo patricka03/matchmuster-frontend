@@ -3941,3 +3941,39 @@
     padding: 11px 12px;
   }
 }
+
+/* ========================================
+   MOBILE SAFE-AREA NAVIGATION
+======================================== */
+
+@media (max-width: 950px) {
+  .main-navbar {
+    padding-top: max(
+      8px,
+      env(safe-area-inset-top, 0px)
+    );
+  }
+
+  .navbar-container {
+    min-height: 56px;
+    padding: 0 16px;
+  }
+
+  .navbar-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+  }
+
+  .navbar-menu-button {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 450px) {
+  .navbar-container {
+    padding: 0 14px;
+  }
+}
