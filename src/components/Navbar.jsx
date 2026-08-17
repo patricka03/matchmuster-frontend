@@ -431,10 +431,6 @@ function Navbar({
             alt=""
             aria-hidden="true"
           />
-
-          {/* <span className="navbar-brand-name">
-            MatchMuster
-          </span> */}
         </Link>
 
         <button
