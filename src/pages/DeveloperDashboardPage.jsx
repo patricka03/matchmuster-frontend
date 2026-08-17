@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import DeveloperModerationPanel from '../components/DeveloperModerationPanel'
+import DeveloperAccountManagementPanel from '../components/DeveloperAccountManagementPanel'
 import './DeveloperDashboardPage.css'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
@@ -73,7 +75,7 @@ function DeveloperDashboardPage() {
     }
 
     loadDashboard()
-  }, [API_URL, navigate])
+  }, [navigate])
 
   const loadManagers = async () => {
     const developerToken =
@@ -421,6 +423,24 @@ function DeveloperDashboardPage() {
 
             <button
               className={
+                activeSection === 'moderation' ? 'active' : ''
+              }
+              onClick={() => setActiveSection('moderation')}
+            >
+              Moderation
+            </button>
+
+            <button
+              className={
+                activeSection === 'accounts' ? 'active' : ''
+              }
+              onClick={() => setActiveSection('accounts')}
+            >
+              Accounts
+            </button>
+
+            <button
+              className={
                 activeSection === 'managers' ? 'active' : ''
               }
               onClick={loadManagers}
@@ -721,6 +741,14 @@ function DeveloperDashboardPage() {
               </form>
             </section>
           </>
+        )}
+
+        {activeSection === 'moderation' && (
+          <DeveloperModerationPanel />
+        )}
+
+        {activeSection === 'accounts' && (
+          <DeveloperAccountManagementPanel />
         )}
 
         {activeSection === 'activity' && (

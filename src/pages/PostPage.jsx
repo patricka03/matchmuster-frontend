@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams,} from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import ReportModal from '../components/ReportModal'
 import './PostPage.css'
 import API_URL from '../config/api'
 
@@ -13,7 +14,10 @@ function PostPage() {
   const [postReads, setPostReads] = useState([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
+  const [isBlockingAuthor, setIsBlockingAuthor] = useState(false)
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [safetyMessage, setSafetyMessage] = useState('')
 
   useEffect(() => {
     async function loadPostPage() {
@@ -150,6 +154,74 @@ function PostPage() {
     }
   }
 
+  async function handleBlockAuthor() {
+    const authorId = post?.user_id || post?.user?.id
+
+    if (!authorId) {
+      setErrorMessage('Unable to identify the author of this post.')
+      return
+    }
+
+    const authorName =
+      [post?.user?.first_name, post?.user?.last_name]
+        .filter(Boolean)
+        .join(' ')
+        .trim() || 'this member'
+
+    const confirmed = window.confirm(
+      `Block ${authorName}? Their posts and activity will be hidden from you.`,
+    )
+
+    if (!confirmed) return
+
+    const token = localStorage.getItem('token')
+
+    setIsBlockingAuthor(true)
+    setErrorMessage('')
+    setSafetyMessage('')
+
+    try {
+      const response = await fetch(`${API_URL}/user_blocks`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: token,
+        },
+        body: JSON.stringify({
+          user_block: {
+            blocked_user_id: authorId,
+          },
+        }),
+      })
+
+      const data = await readResponse(response)
+
+      if (response.status === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('currentUser')
+        navigate('/login')
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          getErrorMessage(data, `Unable to block ${authorName}.`),
+        )
+      }
+
+      setSafetyMessage(
+        `${authorName} has been blocked. You can manage blocked accounts from your profile.`,
+      )
+    } catch (error) {
+      setErrorMessage(
+        error.message || `Unable to block ${authorName}.`,
+      )
+    } finally {
+      setIsBlockingAuthor(false)
+    }
+  }
+
   function formatDate(date) {
     if (!date) return ''
 
@@ -202,6 +274,13 @@ function PostPage() {
     post?.post_type
   )
 
+  const postAuthorId = post?.user_id || post?.user?.id
+
+  const canUseSafetyTools =
+    Boolean(postAuthorId) &&
+    Boolean(currentUser?.id) &&
+    String(postAuthorId) !== String(currentUser.id)
+
   return (
     <>
       <Navbar
@@ -221,6 +300,12 @@ function PostPage() {
           {errorMessage && (
             <p className="post-page-error" role="alert">
               {errorMessage}
+            </p>
+          )}
+
+          {safetyMessage && (
+            <p className="post-page-safety-success" role="status">
+              {safetyMessage}
             </p>
           )}
 
@@ -281,6 +366,39 @@ function PostPage() {
                 <div className="post-content">
                   {post.content}
                 </div>
+
+                {canUseSafetyTools && (
+                  <div className="post-safety-actions">
+                    <span>
+                      Something wrong with this post or its author?
+                    </span>
+
+                    <div>
+                      <button
+                        className="post-report-button"
+                        type="button"
+                        onClick={() => {
+                          setErrorMessage('')
+                          setSafetyMessage('')
+                          setIsReportModalOpen(true)
+                        }}
+                      >
+                        Report post
+                      </button>
+
+                      <button
+                        className="post-block-button"
+                        type="button"
+                        onClick={handleBlockAuthor}
+                        disabled={isBlockingAuthor}
+                      >
+                        {isBlockingAuthor
+                          ? 'Blocking…'
+                          : 'Block author'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </article>
 
               {approvedManager && tracksReads && (
@@ -342,8 +460,42 @@ function PostPage() {
           )}
         </section>
       </main>
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        reportableType="Post"
+        reportableId={post?.id}
+        reportedUserId={postAuthorId}
+        targetLabel="this post"
+        onReported={() =>
+          setSafetyMessage(
+            'Thank you. Your report has been sent privately to the MatchMuster moderation team.',
+          )
+        }
+      />
     </>
   )
+}
+
+async function readResponse(response) {
+  const responseText = await response.text()
+
+  if (!responseText) return {}
+
+  try {
+    return JSON.parse(responseText)
+  } catch {
+    return {}
+  }
+}
+
+function getErrorMessage(data, fallbackMessage) {
+  if (Array.isArray(data.errors)) {
+    return data.errors.join(', ')
+  }
+
+  return data.error || data.message || fallbackMessage
 }
 
 export default PostPage

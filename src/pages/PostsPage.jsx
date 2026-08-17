@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams, } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import './PostsPage.css'
 import API_URL from '../config/api'
@@ -30,38 +30,51 @@ function PostsPage() {
       try {
         const [userResponse, postsResponse] = await Promise.all([
           fetch(`${API_URL}/users/me`, { headers }),
-          fetch(
-            `${API_URL}/teams/${teamId}/posts`,
-            { headers }
-          ),
+          fetch(`${API_URL}/teams/${teamId}/posts`, { headers }),
         ])
 
-        if (userResponse.status === 401) {
+        if (
+          userResponse.status === 401 ||
+          postsResponse.status === 401
+        ) {
           localStorage.removeItem('token')
+          localStorage.removeItem('currentUser')
           navigate('/login')
           return
         }
 
-        const userData = await userResponse.json()
-        const postsData = await postsResponse.json()
+        const userData = await readResponse(userResponse)
+        const postsData = await readResponse(postsResponse)
 
         if (!userResponse.ok) {
           throw new Error(
-            userData.error || 'Unable to load your account.'
+            getErrorMessage(
+              userData,
+              'Unable to load your account.',
+            ),
           )
         }
 
         if (!postsResponse.ok) {
           throw new Error(
-            postsData.error || 'Unable to load team posts.'
+            getErrorMessage(
+              postsData,
+              'Unable to load team posts.',
+            ),
           )
         }
 
-        setCurrentUser(userData.user)
-        setPosts(Array.isArray(postsData) ? postsData : [])
+        const loadedPosts = Array.isArray(postsData)
+          ? postsData
+          : Array.isArray(postsData.posts)
+            ? postsData.posts
+            : []
+
+        setCurrentUser(userData.user || userData)
+        setPosts(loadedPosts)
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to load team posts.'
+          error.message || 'Unable to load team posts.',
         )
       } finally {
         setLoading(false)
@@ -79,6 +92,8 @@ function PostsPage() {
   }
 
   function formatDate(date) {
+    if (!date) return ''
+
     return new Intl.DateTimeFormat('en-GB', {
       day: 'numeric',
       month: 'short',
@@ -94,10 +109,7 @@ function PostsPage() {
 
   return (
     <>
-      <Navbar
-        teamId={teamId}
-        currentUser={currentUser}
-      />
+      <Navbar teamId={teamId} currentUser={currentUser} />
 
       <main className="posts-page">
         <section className="posts-container">
@@ -107,8 +119,8 @@ function PostsPage() {
               <h1>Team Posts</h1>
 
               <p>
-                View announcements, tactical instructions and
-                general team updates.
+                View announcements, tactical instructions and general
+                team updates.
               </p>
             </div>
 
@@ -135,8 +147,7 @@ function PostsPage() {
               <span>📣</span>
               <h2>No posts yet</h2>
               <p>
-                Team announcements and tactical posts will appear
-                here.
+                Team announcements and tactical posts will appear here.
               </p>
             </section>
           ) : (
@@ -155,21 +166,18 @@ function PostsPage() {
                     </span>
 
                     {post.pinned && (
-                      <span className="post-pinned">
-                        Pinned
-                      </span>
+                      <span className="post-pinned">Pinned</span>
                     )}
                   </div>
 
                   <h2>{post.title}</h2>
 
-                  <p className="post-preview">
-                    {post.content}
-                  </p>
+                  <p className="post-preview">{post.content}</p>
 
                   <div className="post-card-footer">
                     <span>
-                      Posted by {post.user?.first_name || 'Manager'}
+                      Posted by{' '}
+                      {post.user?.first_name || 'Team member'}
                     </span>
 
                     <time dateTime={post.created_at}>
@@ -184,6 +192,26 @@ function PostsPage() {
       </main>
     </>
   )
+}
+
+async function readResponse(response) {
+  const responseText = await response.text()
+
+  if (!responseText) return {}
+
+  try {
+    return JSON.parse(responseText)
+  } catch {
+    return {}
+  }
+}
+
+function getErrorMessage(data, fallbackMessage) {
+  if (Array.isArray(data.errors)) {
+    return data.errors.join(', ')
+  }
+
+  return data.error || data.message || fallbackMessage
 }
 
 export default PostsPage

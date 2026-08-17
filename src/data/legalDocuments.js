@@ -2,13 +2,14 @@ export const legalDocuments = {
   terms: {
     title: 'Terms of Service',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
         title: '1. About these Terms',
         paragraphs: [
           'These Terms of Service govern your access to and use of MatchMuster, including our website, mobile applications, web applications and related services.',
+          'These Terms form an agreement between you and MATCHMUSTER LTD, the operator of MatchMuster.',
           'By creating an account or otherwise using MatchMuster, you agree to these Terms.',
           'If you do not agree to these Terms, you must not create an account or use the Service.',
           'Our Privacy Policy explains how we collect, use and protect personal information and should be read alongside these Terms.'
@@ -259,10 +260,12 @@ export const legalDocuments = {
       {
         title: '26. Contact MatchMuster',
         paragraphs: [
-          'Questions about these Terms or MatchMuster can be sent to MatchMuster.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.',
-          'Legal operator details will be added before commercial launch.'
+          'MatchMuster is operated by MATCHMUSTER LTD.',
+          'Company number: 17400982.',
+          'Registered in England and Wales.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Questions about these Terms or MatchMuster can be sent to matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.'
         ]
       }
     ]
@@ -270,7 +273,7 @@ export const legalDocuments = {
   privacy: {
     title: 'Privacy Policy',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
@@ -286,11 +289,12 @@ export const legalDocuments = {
       {
         title: '2. Who is responsible for your information?',
         paragraphs: [
-          'For data-protection purposes, the organisation or individual operating MatchMuster is responsible for personal information processed through MatchMuster except where another organisation acts independently.',
-          'Legal operator details will be added before commercial launch.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com',
-          'Website: matchmuster.uk.'
+          'MATCHMUSTER LTD is the controller responsible for personal information processed through MatchMuster, except where another organisation acts as an independent controller.',
+          'Company number: 17400982.',
+          'Registered in England and Wales.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Privacy and support email: matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.'
         ]
       },
 
@@ -467,7 +471,14 @@ export const legalDocuments = {
           'We process personal information only where we have an appropriate reason to do so.',
           'Core account, team and match functionality will generally be processed because it is necessary to provide MatchMuster under our agreement with you.',
           'Security, fraud prevention, moderation and service reliability may rely on legitimate interests or legal obligations where appropriate.',
-          'Optional precise location sharing may rely on consent where required.'
+          'Optional precise location sharing may rely on consent where required.',
+          'Where we rely on legitimate interests, we consider the need for the processing, its benefits and its effect on the rights and freedoms of users.'
+        ],
+        items: [
+          'Contract: to create accounts and provide requested MatchMuster features',
+          'Legitimate interests: to secure, maintain and improve the Service and prevent misuse',
+          'Legal obligation: to meet accounting, regulatory, safety and law-enforcement requirements where applicable',
+          'Consent: for optional processing where consent is the appropriate lawful basis'
         ]
       },
 
@@ -483,7 +494,7 @@ export const legalDocuments = {
       {
         title: '17. Service Providers',
         paragraphs: [
-          'MatchMuster uses or plans to use specialist providers for infrastructure, file storage, payments and transactional email.'
+          'MatchMuster uses specialist providers for infrastructure, file storage, payments and transactional email.'
         ],
         items: [
           'Heroku for application and database infrastructure',
@@ -497,8 +508,8 @@ export const legalDocuments = {
         title: '18. International Transfers',
         paragraphs: [
           'Some service providers may process personal information outside the United Kingdom.',
-          'Where personal information is transferred internationally, MatchMuster will use appropriate safeguards required by UK data-protection law.',
-          'Provider transfer arrangements will be reviewed before commercial launch.'
+          'Where UK data-protection law requires a safeguard for an international transfer, MatchMuster will use an applicable adequacy regulation, contractual safeguard or another legally recognised transfer mechanism.',
+          'Users may contact MatchMuster for further information about the safeguards relevant to their information.'
         ]
       },
 
@@ -508,6 +519,9 @@ export const legalDocuments = {
           'MatchMuster does not intend to retain personal information indefinitely.',
           'Retention depends on why the information was collected and whether there is a continuing legal or operational reason to keep it.',
           'Information will be deleted, anonymised or retained only where appropriate.',
+          'Account and profile information is normally retained while the account remains active and is then deleted or anonymised in accordance with our Account Deletion & Data Retention Policy.',
+          'Records needed for company accounting and tax purposes may be retained for at least six years from the end of the financial year to which they relate, or longer where legally required.',
+          'Reports, moderation records, support messages and security records are retained only for as long as reasonably necessary for safety, fraud prevention, dispute handling, legal claims or compliance.',
           'More information is available in our Account Deletion & Data Retention Policy.'
         ]
       },
@@ -542,7 +556,7 @@ export const legalDocuments = {
         title: '22. Complaints',
         paragraphs: [
           'If you have concerns about how MatchMuster handles your personal information, please contact us so that we can investigate.',
-          'You may also have the right to complain to the Information Commissioner’s Office, the UK data-protection regulator.'
+          'You may also have the right to complain to the Information Commissioner’s Office, the UK data-protection regulator, through https://ico.org.uk/make-a-complaint/.'
         ]
       },
 
@@ -592,11 +606,11 @@ export const legalDocuments = {
       {
         title: '28. Contact MatchMuster',
         paragraphs: [
-          'Questions or requests concerning privacy can be sent to MatchMuster.',
-          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.',
-          'Legal operator details will be added before commercial launch.'
+          'MatchMuster is operated by MATCHMUSTER LTD.',
+          'Company number: 17400982.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Privacy and support requests: matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.'
         ]
       }
     ]
@@ -604,7 +618,7 @@ export const legalDocuments = {
   'community-guidelines': {
     title: 'Community Guidelines',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
@@ -868,9 +882,10 @@ export const legalDocuments = {
       {
         title: '24. Contact MatchMuster',
         paragraphs: [
-          'Questions or reports concerning these Guidelines can be sent to MatchMuster.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.'
+          'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Questions or reports concerning these Guidelines can be sent to matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.'
         ]
       }
     ]
@@ -878,7 +893,7 @@ export const legalDocuments = {
   payments: {
     title: 'Payments, Subscriptions & Refunds',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
@@ -956,7 +971,8 @@ export const legalDocuments = {
         paragraphs: [
           'Deleting a MatchMuster account and cancelling a subscription are related but separate actions.',
           'Where possible, MatchMuster will warn managers about an active subscription during the account-deletion process.',
-          'Our systems will be designed so users are not deliberately left unknowingly paying for a subscription after valid cancellation.'
+          'Users should separately confirm that any active subscription has been cancelled when requesting account deletion.',
+          'MatchMuster will not intentionally continue billing after a valid subscription cancellation.'
         ]
       },
 
@@ -1052,10 +1068,10 @@ export const legalDocuments = {
       {
         title: '18. Payment Providers',
         paragraphs: [
-          'MatchMuster intends to use specialist payment providers for subscription and team-payment functionality.',
-          'Stripe may be used for web subscriptions and football-team payments.',
-          'Apple or Google payment systems may be used where required for mobile-app subscriptions.',
-          'MatchMuster does not intend to store complete payment-card numbers in its own application database.'
+          'MatchMuster uses specialist payment providers for subscription and team-payment functionality.',
+          'Stripe is used for supported web payments and football-team payments.',
+          'Apple or Google payment systems may be introduced where required for future mobile-app subscriptions.',
+          'Complete payment-card numbers are handled by specialist payment providers rather than stored in the MatchMuster application database.'
         ]
       },
 
@@ -1134,7 +1150,7 @@ export const legalDocuments = {
       {
         title: '26. Payment Security',
         paragraphs: [
-          'MatchMuster intends to rely on specialist payment infrastructure rather than storing complete card details directly.',
+          'MatchMuster relies on specialist payment infrastructure rather than storing complete card details directly.',
           'Users should never enter full card numbers, bank passwords or card security codes into ordinary MatchMuster posts, profile fields or support messages.'
         ]
       },
@@ -1175,9 +1191,10 @@ export const legalDocuments = {
       {
         title: '31. Contact MatchMuster About Payments',
         paragraphs: [
-          'Questions about subscription billing, refunds or payment functionality can be sent to MatchMuster.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.',
+          'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Questions about subscription billing, refunds or payment functionality can be sent to matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.',
           'Users should never send their full card number or card security code by email.'
         ]
       }
@@ -1186,7 +1203,7 @@ export const legalDocuments = {
   location: {
     title: 'Location & ETA Privacy',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
@@ -1407,10 +1424,10 @@ export const legalDocuments = {
       {
         title: '24. Contact MatchMuster',
         paragraphs: [
-          'Questions about location or ETA privacy can be sent to MatchMuster.',
-          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.'
+          'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Questions about location or ETA privacy can be sent to matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.'
         ]
       }
     ]
@@ -1418,7 +1435,7 @@ export const legalDocuments = {
   age: {
     title: 'Age & Eligibility',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
@@ -1607,10 +1624,10 @@ export const legalDocuments = {
       {
         title: '21. Contact MatchMuster',
         paragraphs: [
-          'Questions or concerns regarding age eligibility can be sent to MatchMuster.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.'
+          'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Questions or concerns regarding age eligibility can be sent to matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.'
         ]
       }
     ]
@@ -1618,7 +1635,7 @@ export const legalDocuments = {
   'account-deletion': {
     title: 'Account Deletion & Data Retention',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
@@ -1633,8 +1650,9 @@ export const legalDocuments = {
         title: '2. Your Right to Request Account Deletion',
         paragraphs: [
           'MatchMuster users may request deletion of their account.',
-          'We intend to provide an account-deletion option directly through MatchMuster, for example through Settings and Account.',
-          'Users may also be able to contact MatchMuster support if they cannot access the normal deletion functionality.'
+          'Users can request deletion by contacting MatchMuster support at matchmuster.dev@gmail.com.',
+          'Where an in-app account-deletion option is available, users may also submit the request through that functionality.',
+          'Support can assist where a user cannot access the normal account functionality.'
         ]
       },
 
@@ -1900,8 +1918,11 @@ export const legalDocuments = {
       {
         title: '31. MatchMuster Retention Schedule',
         paragraphs: [
-          'Before commercial launch, MatchMuster will maintain an internal retention schedule covering important categories of information.',
-          'Exact retention periods will be documented and reviewed as the technical and legal requirements of MatchMuster are finalised.'
+          'MatchMuster maintains retention rules covering important categories of information and reviews them as the Service changes.',
+          'Account information is retained while an account is active and is deleted or anonymised when a valid deletion request is completed, subject to the exceptions explained in this Policy.',
+          'Company accounting and tax records may be retained for at least six years from the end of the financial year to which they relate, or longer where legally required.',
+          'Moderation, support and security records are kept only for as long as reasonably necessary for safety, fraud prevention, disputes, legal claims and compliance.',
+          'Information remaining in secure backups is removed as backups expire or are overwritten through the normal backup cycle.'
         ]
       },
 
@@ -1975,10 +1996,10 @@ export const legalDocuments = {
       {
         title: '39. Contact MatchMuster',
         paragraphs: [
-          'Questions about account deletion or retention can be sent to MatchMuster.',
-          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.'
+          'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Questions about account deletion or retention can be sent to matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.'
         ]
       }
     ]
@@ -1986,7 +2007,7 @@ export const legalDocuments = {
   reporting: {
     title: 'Reporting, Moderation & Complaints',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
@@ -2065,8 +2086,9 @@ export const legalDocuments = {
       {
         title: '6. In-App Reporting',
         paragraphs: [
-          'Where technically appropriate, MatchMuster intends to provide reporting functionality within the Service.',
-          'For example, users may be able to report a post, user profile or relevant payment request directly through the application.'
+          'MatchMuster provides in-app reporting controls for supported user-generated content, including eligible team posts.',
+          'Where an in-app report option is not available, users can report an account, payment concern or other issue by emailing matchmuster.dev@gmail.com.',
+          'Reports should identify the relevant team, account or content and briefly explain the concern.'
         ]
       },
 
@@ -2163,7 +2185,8 @@ export const legalDocuments = {
       {
         title: '14. Initial Review',
         paragraphs: [
-          'When MatchMuster receives a report, we may first determine what has been reported, the seriousness of the allegation, whether urgent action is required and whether further information is necessary.'
+          'When MatchMuster receives a report, we first determine what has been reported, the seriousness of the allegation, whether urgent action is required and whether further information is necessary.',
+          'Reports involving immediate safety risks, credible threats, suspected child sexual exploitation or other potentially serious illegal activity are prioritised.'
         ]
       },
 
@@ -2332,8 +2355,10 @@ export const legalDocuments = {
       {
         title: '32. Complaints Process',
         paragraphs: [
-          'Users may submit complaints through available in-app functionality or MatchMuster support channels.',
+          'Users may submit complaints through available in-app functionality or by emailing matchmuster.dev@gmail.com.',
           'MatchMuster may need sufficient information to identify the account, report or content involved.',
+          'Complaints are reviewed as soon as reasonably practicable, with urgent safety concerns prioritised.',
+          'The outcome may be communicated by email or through the Service, although information about another user may be limited for privacy and security reasons.',
           'Users should never send passwords or complete payment-card details.'
         ]
       },
@@ -2365,7 +2390,7 @@ export const legalDocuments = {
       {
         title: '36. Blocking and User Controls',
         paragraphs: [
-          'Where appropriate for the relevant communication features, MatchMuster may provide functionality allowing users to block or limit interaction with another user.',
+          'MatchMuster provides blocking controls for supported user interactions.',
           'Some team-management functionality may still require limited interaction between members of the same football team.'
         ]
       },
@@ -2414,7 +2439,8 @@ export const legalDocuments = {
       {
         title: '41. Online Safety',
         paragraphs: [
-          'Where MatchMuster falls within applicable online-safety legislation, MatchMuster will assess relevant risks associated with user-generated content and user interaction.',
+          'MatchMuster will comply with applicable duties under the UK Online Safety Act and related requirements.',
+          'This includes completing and reviewing applicable risk assessments, maintaining appropriate records, providing reporting and complaints processes and taking proportionate steps to reduce risks from illegal content and activity.',
           'Safety measures will be reviewed as MatchMuster grows or introduces significant new functionality.'
         ]
       },
@@ -2431,8 +2457,10 @@ export const legalDocuments = {
         title: '43. Contact MatchMuster',
         paragraphs: [
           'Reports, appeals or complaints can be sent to MatchMuster through the reporting tools and support channels made available in the Service.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.',
+          'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Support email: matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.',
           'Where someone is in immediate danger, contact the appropriate emergency services rather than relying solely on MatchMuster.'
         ]
       }
@@ -2441,7 +2469,7 @@ export const legalDocuments = {
   cookies: {
     title: 'Cookie & Storage Technologies Policy',
     version: '1.0',
-    effectiveDate: '13 August 2026',
+    effectiveDate: '17 August 2026',
 
     sections: [
       {
@@ -2500,7 +2528,8 @@ export const legalDocuments = {
         title: '6. Local Storage',
         paragraphs: [
           'The MatchMuster web application may use browser storage such as localStorage or sessionStorage.',
-          'This may be used to remember necessary application state, authentication information, security-related information or another choice required to provide requested functionality.',
+          'MatchMuster currently uses browser storage for authentication and limited application state needed to provide requested functionality.',
+          'Authentication information remains until it expires, the user signs out, the account is restricted or deleted, or the user clears the relevant browser storage.',
           'The fact that a technology is called local storage rather than a cookie does not automatically mean that privacy or electronic-communications requirements do not apply.'
         ]
       },
@@ -2620,7 +2649,8 @@ export const legalDocuments = {
       {
         title: '18. Current MatchMuster V1 Position',
         paragraphs: [
-          'For MatchMuster V1, our intended setup is focused on essential functionality and legitimate user preferences.',
+          'MatchMuster V1 is focused on essential functionality and legitimate user preferences.',
+          'Current browser storage supports authentication, security and limited requested application state.',
           'Analytics has not yet been finalised.',
           'Advertising tracking and cross-site behavioural profiling are not intended for V1.'
         ]
@@ -2683,10 +2713,10 @@ export const legalDocuments = {
       {
         title: '25. Contact MatchMuster',
         paragraphs: [
-          'Questions about cookies or similar technologies can be sent to MatchMuster.',
-          'Privacy email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Support email: To be added before launch — intended address matchmuster.dev@gmail.com.',
-          'Website: matchmuster.uk.'
+          'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
+          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Questions about cookies or similar technologies can be sent to matchmuster.dev@gmail.com.',
+          'Website: https://www.matchmuster.uk.'
         ]
       }
     ]

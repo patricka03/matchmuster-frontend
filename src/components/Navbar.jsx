@@ -432,9 +432,9 @@ function Navbar({
             aria-hidden="true"
           />
 
-          <span className="navbar-brand-name">
+          {/* <span className="navbar-brand-name">
             MatchMuster
-          </span>
+          </span> */}
         </Link>
 
         <button

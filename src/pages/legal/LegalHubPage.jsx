@@ -119,6 +119,15 @@ function LegalHubPage() {
 
           <p>matchmuster.dev@gmail.com</p>
         </div>
+
+        <footer className="legal-company-details">
+          <p className="legal-company-name">MATCHMUSTER LTD</p>
+          <p>Company number: 17400982</p>
+          <p>Registered in England and Wales</p>
+          <address>
+            Registered office: 8 Cancell Road, London, SW9 6HN
+          </address>
+        </footer>
       </div>
     </main>
   )

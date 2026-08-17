@@ -1,0 +1,336 @@
+.developer-accounts-panel {
+  width: 100%;
+}
+
+.developer-accounts-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.developer-accounts-header p {
+  margin: 0 0 8px;
+  color: var(--color-brand-pink, #ff0a78);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.developer-accounts-header h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 38px;
+  letter-spacing: -0.8px;
+}
+
+.developer-accounts-header span {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.developer-accounts-header > button,
+.developer-accounts-filters button {
+  padding: 10px 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: white;
+  color: #2563eb;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.developer-accounts-header > button:disabled,
+.developer-accounts-filters button:disabled,
+.developer-account-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.developer-accounts-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.developer-accounts-summary article {
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: white;
+}
+
+.developer-accounts-summary span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.developer-accounts-summary strong {
+  display: block;
+  margin-top: 5px;
+  color: #0f172a;
+  font-size: 25px;
+}
+
+.developer-accounts-filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) 1fr 1fr auto;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: white;
+}
+
+.developer-accounts-filters label {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.developer-accounts-filters input,
+.developer-accounts-filters select {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 6px;
+  padding: 9px 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: white;
+  color: #1e293b;
+  font: inherit;
+  font-size: 14px;
+}
+
+.developer-accounts-filters > div {
+  display: flex;
+  gap: 8px;
+}
+
+.developer-accounts-filters > div button:first-child {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: white;
+}
+
+.developer-accounts-error,
+.developer-accounts-success {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.developer-accounts-error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.developer-accounts-success {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.developer-accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.developer-account-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.04);
+}
+
+.developer-account-main {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  gap: 13px;
+}
+
+.developer-account-avatar {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff0a78, #4f9cff);
+  color: white;
+  font-weight: 900;
+}
+
+.developer-account-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.developer-account-name-row h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 17px;
+}
+
+.developer-account-name-row > span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.developer-account-name-row .status-active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.developer-account-name-row .status-suspended {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.developer-account-name-row .status-banned,
+.developer-account-name-row .status-deleted {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.developer-account-main p {
+  margin: 4px 0 7px;
+  overflow-wrap: anywhere;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.developer-account-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.developer-account-meta span {
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.developer-account-main small {
+  display: block;
+  margin-top: 7px;
+  color: #8492a8;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.developer-account-actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.developer-account-actions button {
+  padding: 8px 11px;
+  border-radius: 8px;
+  background: white;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.developer-account-actions .suspend {
+  border: 1px solid #fcd34d;
+  color: #a16207;
+}
+
+.developer-account-actions .ban,
+.developer-account-actions .delete {
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+}
+
+.developer-account-actions .delete {
+  background: #fef2f2;
+}
+
+.developer-account-actions .restore {
+  border: 1px solid #86efac;
+  color: #15803d;
+}
+
+.developer-account-final-state {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.developer-accounts-empty {
+  padding: 38px 20px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #64748b;
+  text-align: center;
+}
+
+@media (max-width: 1050px) {
+  .developer-accounts-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .developer-accounts-header,
+  .developer-account-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .developer-accounts-header h1 {
+    font-size: 31px;
+  }
+
+  .developer-accounts-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .developer-accounts-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .developer-account-actions {
+    justify-content: flex-start;
+  }
+}

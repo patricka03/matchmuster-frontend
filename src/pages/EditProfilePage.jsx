@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import BlockedUsersModal from '../components/BlockedUsersModal'
 import './EditProfilePage.css'
 import API_URL from '../config/api'
 
@@ -1040,6 +1041,46 @@ function EditProfilePage() {
           </section>
 
           {/* =====================================
+              SAFETY & BLOCKING
+          ===================================== */}
+
+          <section className="profile-settings-section">
+            <div className="profile-section-heading">
+              <h2>Safety &amp; blocking</h2>
+
+              <p>
+                Review the accounts you have blocked and restore
+                access whenever you choose.
+              </p>
+            </div>
+
+            <div className="profile-settings-list">
+              <div className="profile-setting-row">
+                <div>
+                  <span className="profile-setting-label">
+                    Blocked accounts
+                  </span>
+
+                  <strong>Manage blocked members</strong>
+
+                  <small>
+                    Unblock someone to see their content and activity
+                    again.
+                  </small>
+                </div>
+
+                <button
+                  type="button"
+                  className="profile-edit-button"
+                  onClick={() => openModal('blocked-users')}
+                >
+                  Manage
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* =====================================
               LEGAL & PRIVACY
           ===================================== */}
 
@@ -1123,6 +1164,11 @@ function EditProfilePage() {
             </div>
           </section>
         </section>
+
+        <BlockedUsersModal
+          isOpen={activeModal === 'blocked-users'}
+          onClose={closeModal}
+        />
 
         {/* =====================================
             PERSONAL DETAILS MODAL
