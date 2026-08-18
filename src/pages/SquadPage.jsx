@@ -503,9 +503,6 @@ function SquadPage() {
     currentMembership?.role === 'player' &&
     currentMembership?.status === 'approved'
 
-  const canViewMatches =
-    isApprovedManager || isApprovedPlayer
-
   const pendingMemberships = memberships.filter(
     (membership) =>
       membership?.status === 'pending'
@@ -558,36 +555,6 @@ function SquadPage() {
             >
               {errorMessage}
             </p>
-          )}
-
-          {!errorMessage && canViewMatches && (
-            <div className="squad-page-actions">
-              {isApprovedManager && (
-                <button
-                  className="create-fixture-button"
-                  type="button"
-                  onClick={() =>
-                    navigate(
-                      `/teams/${teamId}/matches/new`
-                    )
-                  }
-                >
-                  Create fixture
-                </button>
-              )}
-
-              <button
-                className="upcoming-matches-button"
-                type="button"
-                onClick={() =>
-                  navigate(
-                    `/teams/${teamId}/matches`
-                  )
-                }
-              >
-                View upcoming matches
-              </button>
-            </div>
           )}
 
           {currentUser && (

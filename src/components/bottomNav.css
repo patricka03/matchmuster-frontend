@@ -82,22 +82,6 @@
   display: inline-flex;
 }
 
-.bottom-nav-badge {
-  position: absolute;
-  top: -9px;
-  right: -14px;
-  min-width: 17px;
-  height: 17px;
-  display: grid;
-  padding: 0 4px;
-  place-items: center;
-  border: 2px solid #ffffff;
-  border-radius: 999px;
-  background: #dc2626;
-  color: #ffffff;
-  font-size: 8px;
-  font-weight: 900;
-}
 
 .bottom-nav-sheet-backdrop {
   position: fixed;
@@ -306,4 +290,20 @@
 
 .bottom-nav-team-option svg {
   flex: 0 0 auto;
+}
+
+/* ========================================
+   FIXED BOTTOM NAV PAGE CLEARANCE
+======================================== */
+
+/*
+ * BottomNav is fixed to the viewport.
+ * Give standard authenticated pages real
+ * space below their content so their final
+ * buttons can always scroll above the nav.
+ */
+.dashboard-page {
+  padding-bottom: calc(
+    116px + env(safe-area-inset-bottom, 0px)
+  );
 }

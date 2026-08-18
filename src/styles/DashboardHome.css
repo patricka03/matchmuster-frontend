@@ -327,6 +327,88 @@
   color: #334155;
 }
 
+
+
+/* ========================================
+   PLAYER NEXT TRAINING CARD
+======================================== */
+
+.home-dashboard-training-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-top: 18px;
+  padding: 22px;
+  border: 0;
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      135deg,
+      #4f9cff,
+      #357ee8 55%,
+      #2563d9
+    );
+  color: #ffffff;
+  box-shadow:
+    0 18px 34px rgba(79, 156, 255, 0.2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.home-dashboard-training-card:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 22px 40px rgba(79, 156, 255, 0.28);
+}
+
+.home-dashboard-training-card:disabled {
+  cursor: default;
+  opacity: 0.92;
+}
+
+.home-dashboard-training-label {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+
+.home-dashboard-training-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: clamp(24px, 6vw, 34px);
+  font-weight: 900;
+  letter-spacing: -0.7px;
+}
+
+.home-dashboard-training-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.home-dashboard-training-meta > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-dashboard-no-training {
+  padding: 16px 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 @media (max-width: 520px) {
   .home-dashboard-content {
     padding: 18px 14px 28px;
@@ -338,6 +420,16 @@
   }
 
   .home-dashboard-fixture-opponent {
+    font-size: 25px;
+  }
+
+  .home-dashboard-training-card {
+    margin-top: 14px;
+    padding: 19px;
+    border-radius: 19px;
+  }
+
+  .home-dashboard-training-title {
     font-size: 25px;
   }
 

@@ -53,7 +53,15 @@
   white-space: nowrap;
 }
 
-.app-topbar-settings {
+.app-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.app-topbar-action {
+  position: relative;
   width: 42px;
   height: 42px;
   flex: 0 0 42px;
@@ -70,7 +78,7 @@
     color 0.2s ease;
 }
 
-.app-topbar-settings:hover {
+.app-topbar-action:hover {
   transform: translateY(-1px);
   background:
     linear-gradient(
@@ -81,8 +89,26 @@
   color: #ff0a78;
 }
 
+.app-topbar-notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  min-width: 19px;
+  height: 19px;
+  display: grid;
+  padding: 0 5px;
+  place-items: center;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .app-topbar-brand:focus-visible,
-.app-topbar-settings:focus-visible {
+.app-topbar-action:focus-visible {
   outline: 3px solid rgba(79, 156, 255, 0.28);
   outline-offset: 3px;
 }
@@ -126,9 +152,13 @@
     font-size: 17px;
   }
 
-  .app-topbar-settings {
+  .app-topbar-action {
     width: 40px;
     height: 40px;
     flex-basis: 40px;
+  }
+
+  .app-topbar-actions {
+    gap: 7px;
   }
 }

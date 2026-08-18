@@ -1,0 +1,173 @@
+/* ========================================
+   TRAINING DETAILS
+======================================== */
+
+.training-page {
+  /*
+   * BottomNav is fixed, so authenticated
+   * pages need enough real document space
+   * underneath their final action.
+   */
+  padding-bottom: calc(
+    116px + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+.training-detail-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ========================================
+   PLAYER TRAINING AVAILABILITY
+======================================== */
+
+.training-player-availability {
+  width: 100%;
+  max-width: 850px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 22px;
+  padding: 18px 20px;
+  border: 1px solid #e2e8f0;
+  border-left: 5px solid #ff0a78;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.training-player-availability-status {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.training-player-availability-status > span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.45px;
+  text-transform: uppercase;
+}
+
+.training-availability-status-text {
+  color: #334155;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.training-availability-status-text.available {
+  color: #15803d;
+}
+
+.training-availability-status-text.unavailable {
+  color: #b91c1c;
+}
+
+.training-availability-status-text.pending {
+  color: #2563eb;
+}
+
+.training-player-availability-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 10px;
+  flex: 0 1 330px;
+}
+
+.training-availability-button {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 15px;
+  border-radius: 11px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.training-availability-button.available {
+  border: 1px solid #86efac;
+  color: #15803d;
+}
+
+.training-availability-button.available:hover:not(:disabled),
+.training-availability-button.available.selected {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  color: #15803d;
+  box-shadow: 0 7px 18px rgba(22, 163, 74, 0.1);
+}
+
+.training-availability-button.unavailable {
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.training-availability-button.unavailable:hover:not(:disabled),
+.training-availability-button.unavailable.selected {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #b91c1c;
+  box-shadow: 0 7px 18px rgba(220, 38, 38, 0.1);
+}
+
+.training-availability-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.training-availability-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (max-width: 650px) {
+  .training-player-availability {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 15px;
+    padding: 16px;
+  }
+
+  /*
+   * The two response buttons deliberately
+   * remain next to each other on mobile.
+   */
+  .training-player-availability-actions {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: none;
+  }
+
+  .training-availability-button {
+    min-width: 0;
+    padding-right: 9px;
+    padding-left: 9px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .training-player-availability {
+    padding: 14px;
+  }
+
+  .training-availability-button {
+    font-size: 11px;
+  }
+}

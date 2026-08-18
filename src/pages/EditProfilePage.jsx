@@ -37,6 +37,7 @@ function EditProfilePage() {
   const [isSavingPosition, setIsSavingPosition] = useState(false)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
   const [errorMessage, setErrorMessage] = useState('')
@@ -142,6 +143,8 @@ function EditProfilePage() {
   function clearSession() {
     localStorage.removeItem('token')
     localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
 
     navigate('/login', {
       replace: true,
@@ -616,6 +619,37 @@ function EditProfilePage() {
       )
     } finally {
       setIsChangingPassword(false)
+    }
+  }
+
+  async function handleSignOut() {
+    if (isSigningOut) return
+
+    const token =
+      localStorage.getItem('token')
+
+    setIsSigningOut(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    try {
+      if (token) {
+        await fetch(
+          `${API_URL}/users/sign_out`,
+          {
+            method: 'DELETE',
+            headers: {
+              Accept:
+                'application/json',
+              Authorization: token,
+            },
+          },
+        )
+      }
+    } catch {
+      // Still clear the local session if Rails is unavailable.
+    } finally {
+      clearSession()
     }
   }
 
@@ -1122,6 +1156,57 @@ function EditProfilePage() {
                 >
                   View
                 </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* =====================================
+              SESSION
+          ===================================== */}
+
+          <section className="profile-settings-section">
+            <div className="profile-section-heading">
+              <h2>
+                Session
+              </h2>
+
+              <p>
+                Sign out of MatchMuster on
+                this device.
+              </p>
+            </div>
+
+            <div className="profile-settings-list">
+              <div className="profile-setting-row">
+                <div>
+                  <span className="profile-setting-label">
+                    Sign out
+                  </span>
+
+                  <strong>
+                    End this session
+                  </strong>
+
+                  <small>
+                    You can sign back in
+                    again at any time.
+                  </small>
+                </div>
+
+                <button
+                  type="button"
+                  className="profile-edit-button"
+                  onClick={
+                    handleSignOut
+                  }
+                  disabled={
+                    isSigningOut
+                  }
+                >
+                  {isSigningOut
+                    ? 'Signing out...'
+                    : 'Sign out'}
+                </button>
               </div>
             </div>
           </section>

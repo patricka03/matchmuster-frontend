@@ -20,6 +20,7 @@ function DashboardPage() {
   const [user, setUser] = useState(null)
   const [team, setTeam] = useState(null)
   const [nextMatch, setNextMatch] = useState(null)
+  const [nextTraining, setNextTraining] = useState(null)
   const [activeTeamVersion, setActiveTeamVersion] = useState(0)
 
   const [teamJoinPending, setTeamJoinPending] = useState(
@@ -177,6 +178,7 @@ function DashboardPage() {
         setUser(currentUser)
         setTeam(currentTeam)
         setNextMatch(null)
+        setNextTraining(null)
         setSquadSelections([])
         setSquadLoaded(false)
         setPlayerPayment(null)
@@ -205,19 +207,38 @@ function DashboardPage() {
           localStorage.removeItem('teamJoinPending')
           setTeamJoinPending(false)
 
-          const matchesResponse = await fetch(
-            `${API_URL}/teams/${currentTeam.id}/matches`,
-            { headers },
-          )
+          const [
+            matchesResponse,
+            trainingsResponse,
+          ] = await Promise.all([
+            fetch(
+              `${API_URL}/teams/${currentTeam.id}/matches`,
+              { headers },
+            ),
 
-          if (matchesResponse.status === 401) {
+            fetch(
+              `${API_URL}/teams/${currentTeam.id}/trainings`,
+              { headers },
+            ),
+          ])
+
+          if (
+            matchesResponse.status === 401 ||
+            trainingsResponse.status === 401
+          ) {
             localStorage.removeItem('token')
             localStorage.removeItem('currentUser')
             navigate('/login', { replace: true })
             return
           }
 
-          const matchesData = await matchesResponse.json()
+          const [
+            matchesData,
+            trainingsData,
+          ] = await Promise.all([
+            matchesResponse.json(),
+            trainingsResponse.json(),
+          ])
 
           if (!matchesResponse.ok) {
             throw new Error(
@@ -225,10 +246,22 @@ function DashboardPage() {
             )
           }
 
+          if (!trainingsResponse.ok) {
+            throw new Error(
+              trainingsData.error ||
+                'Unable to load training sessions.',
+            )
+          }
+
           const matches =
             Array.isArray(matchesData)
               ? matchesData
               : matchesData.matches || []
+
+          const trainings =
+            Array.isArray(trainingsData)
+              ? trainingsData
+              : trainingsData.trainings || []
 
           const upcomingMatches = matches
             .filter((match) => {
@@ -245,7 +278,23 @@ function DashboardPage() {
                 new Date(secondMatch.kickoff_time).getTime(),
             )
 
+          const upcomingTrainings = trainings
+            .filter((training) => {
+              if (!training.starts_at) return false
+
+              return (
+                new Date(training.starts_at).getTime() >
+                Date.now()
+              )
+            })
+            .sort(
+              (firstTraining, secondTraining) =>
+                new Date(firstTraining.starts_at).getTime() -
+                new Date(secondTraining.starts_at).getTime(),
+            )
+
           setNextMatch(upcomingMatches[0] || null)
+          setNextTraining(upcomingTrainings[0] || null)
         } else {
           localStorage.removeItem('activeTeamId')
           localStorage.removeItem('activeTeamName')
@@ -432,6 +481,25 @@ function DashboardPage() {
     }).format(new Date(match.kickoff_time))
   }
 
+  function trainingDate(training) {
+    if (!training?.starts_at) return ''
+
+    return new Intl.DateTimeFormat('en-GB', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    }).format(new Date(training.starts_at))
+  }
+
+  function trainingTime(training) {
+    if (!training?.starts_at) return ''
+
+    return new Intl.DateTimeFormat('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(training.starts_at))
+  }
+
   function squadStatus() {
     if (!nextMatch) {
       return {
@@ -517,6 +585,14 @@ function DashboardPage() {
 
     navigate(
       `/teams/${teamId}/matches/${nextMatch.id}`,
+    )
+  }
+
+  function openNextTraining() {
+    if (!teamId || !nextTraining) return
+
+    navigate(
+      `/teams/${teamId}/trainings/${nextTraining.id}`,
     )
   }
 
@@ -869,6 +945,60 @@ function DashboardPage() {
                   <small>Ratings & MOTM</small>
                 </button>
               </section>
+
+              {isApprovedPlayer && (
+                <button
+                  className="home-dashboard-training-card"
+                  type="button"
+                  onClick={openNextTraining}
+                  disabled={!nextTraining}
+                >
+                  <span className="home-dashboard-training-label">
+                    Next training
+                  </span>
+
+                  {nextTraining ? (
+                    <>
+                      <span className="home-dashboard-training-title">
+                        <span>
+                          {nextTraining.title}
+                        </span>
+
+                        <ArrowRight
+                          size={21}
+                          aria-hidden="true"
+                        />
+                      </span>
+
+                      <span className="home-dashboard-training-meta">
+                        <span>
+                          <CalendarDays
+                            size={17}
+                            aria-hidden="true"
+                          />
+
+                          {trainingDate(nextTraining)}
+                          {' • '}
+                          {trainingTime(nextTraining)}
+                        </span>
+
+                        <span>
+                          <MapPin
+                            size={17}
+                            aria-hidden="true"
+                          />
+
+                          {nextTraining.location || 'Location TBC'}
+                        </span>
+                      </span>
+                    </>
+                  ) : (
+                    <span className="home-dashboard-no-training">
+                      No upcoming training has been added yet.
+                    </span>
+                  )}
+                </button>
+              )}
             </>
           )}
         </section>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-  Bell,
   CalendarDays,
   CircleDollarSign,
   FileText,
@@ -30,7 +29,6 @@ function BottomNav({
   nextMatchId,
   canUseTeamNavigation,
   isApprovedManager,
-  unreadCount,
   onTeamSwitch,
   onSignOut,
   signingOut,
@@ -62,9 +60,9 @@ function BottomNav({
     }
   }, [moreOpen])
 
-  const fixturesPath =
+  const schedulePath =
     teamId
-      ? `/teams/${teamId}/matches`
+      ? `/teams/${teamId}/schedule`
       : null
 
   const squadPath =
@@ -75,7 +73,7 @@ function BottomNav({
   const paymentsPath =
     teamId && nextMatchId
       ? `/teams/${teamId}/matches/${nextMatchId}/payments`
-      : fixturesPath
+      : schedulePath
 
   const postsPath =
     teamId
@@ -88,7 +86,6 @@ function BottomNav({
       : null
 
   const moreActive =
-    location.pathname === '/notifications' ||
     location.pathname === '/team' ||
     location.pathname === '/help' ||
     location.pathname === '/legal' ||
@@ -136,16 +133,16 @@ function BottomNav({
             <small>Home</small>
           </NavLink>
 
-          {canUseTeamNavigation && fixturesPath ? (
+          {canUseTeamNavigation && schedulePath ? (
             <NavLink
               className={activeClass}
-              to={fixturesPath}
+              to={schedulePath}
             >
               <CalendarDays
                 size={22}
                 aria-hidden="true"
               />
-              <small>Fixtures</small>
+              <small>Schedule</small>
             </NavLink>
           ) : (
             <DisabledItem
@@ -155,7 +152,7 @@ function BottomNav({
                   aria-hidden="true"
                 />
               }
-              label="Fixtures"
+              label="Schedule"
             />
           )}
 
@@ -226,15 +223,6 @@ function BottomNav({
                 size={22}
                 aria-hidden="true"
               />
-
-              {unreadCount > 0 && (
-                <span
-                  className="bottom-nav-badge"
-                  aria-hidden="true"
-                >
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </span>
-              )}
             </span>
 
             <small>More</small>
@@ -363,20 +351,6 @@ function BottomNav({
                   <span>Ratings & MOTM</span>
                 </Link>
               )}
-
-              <Link to="/notifications">
-                <Bell
-                  size={20}
-                  aria-hidden="true"
-                />
-                <span>Notifications</span>
-
-                {unreadCount > 0 && (
-                  <strong>
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                  </strong>
-                )}
-              </Link>
 
               {canUseTeamNavigation && (
                 <Link to="/team">

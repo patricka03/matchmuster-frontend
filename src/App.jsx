@@ -39,7 +39,11 @@ import LegalPage from './pages/legal/LegalPage'
 import MatchRatingsPage from './pages/MatchRatingsPage'
 import TeamAwardsPage from './pages/TeamAwardsPage'
 import MatchPlayerStatsPage from './pages/MatchPlayerStatsPage'
-
+import TrainingsPage from './pages/TrainingsPage'
+import TrainingPage from './pages/TrainingPage'
+import CreateTrainingPage from './pages/CreateTrainingPage'
+import EditTrainingPage from './pages/EditTrainingPage'
+import SchedulePage from './pages/SchedulePage'
 
 
 function App() {
@@ -157,6 +161,26 @@ function App() {
       <Route
         path="/teams/:teamId/awards"
         element={<TeamAwardsPage />}
+      />
+      <Route
+        path="/teams/:teamId/trainings"
+        element={<TrainingsPage />}
+      />
+      <Route
+        path="/teams/:teamId/trainings/:trainingId"
+        element={<TrainingPage />}
+      />
+      <Route
+        path="/teams/:teamId/trainings/new"
+        element={<CreateTrainingPage />}
+      />
+      <Route
+        path="/teams/:teamId/trainings/:trainingId/edit"
+        element={<EditTrainingPage />}
+      />
+      <Route
+        path="/teams/:teamId/schedule"
+        element={<SchedulePage />}
       />
     </Routes>
   )

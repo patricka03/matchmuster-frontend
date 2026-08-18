@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Settings } from 'lucide-react'
+import { Bell, Settings } from 'lucide-react'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import API_URL from '../config/api'
 import BottomNav from './BottomNav'
@@ -458,17 +458,44 @@ function Navbar({
             <strong>{headerName}</strong>
           </Link>
 
-          <Link
-            className="app-topbar-settings"
-            to="/profile/edit"
-            aria-label="Open settings"
-            title="Settings"
-          >
-            <Settings
-              size={22}
-              aria-hidden="true"
-            />
-          </Link>
+          <div className="app-topbar-actions">
+            <Link
+              className="app-topbar-action app-topbar-notifications"
+              to="/notifications"
+              aria-label={
+                unreadCount > 0
+                  ? `Notifications, ${unreadCount} unread`
+                  : 'Notifications'
+              }
+              title="Notifications"
+            >
+              <Bell
+                size={22}
+                aria-hidden="true"
+              />
+
+              {unreadCount > 0 && (
+                <span
+                  className="app-topbar-notification-badge"
+                  aria-hidden="true"
+                >
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </Link>
+
+            <Link
+              className="app-topbar-action"
+              to="/profile/edit"
+              aria-label="Open settings"
+              title="Settings"
+            >
+              <Settings
+                size={22}
+                aria-hidden="true"
+              />
+            </Link>
+          </div>
         </div>
 
         {navbarError && (
@@ -491,7 +518,6 @@ function Navbar({
         nextMatchId={nextMatchId}
         canUseTeamNavigation={canUseTeamNavigation}
         isApprovedManager={isApprovedManager}
-        unreadCount={unreadCount}
         onTeamSwitch={handleTeamSwitch}
         onSignOut={handleSignOut}
         signingOut={signingOut}
