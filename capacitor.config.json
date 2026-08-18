@@ -1,0 +1,8 @@
+{
+  "appId": "uk.matchmuster.app",
+  "appName": "MatchMuster",
+  "webDir": "dist",
+  "ios": {
+    "contentInset": "always"
+  }
+}
