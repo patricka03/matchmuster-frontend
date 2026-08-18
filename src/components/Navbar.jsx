@@ -1,323 +1,390 @@
-import { useEffect, useState } from 'react'
-import API_URL from '../config/api'
-import {
-  Bell,
-  CalendarDays,
-  CreditCard,
-  FileText,
-  LogOut,
-  Menu,
-  Settings,
-  Trophy,
-  Users,
-  X,
-} from 'lucide-react'
-import {
-  Link,
-  NavLink,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Settings } from 'lucide-react'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
+import API_URL from '../config/api'
+import BottomNav from './BottomNav'
 import './navbar.css'
+
+function readStoredTeamId() {
+  return localStorage.getItem('activeTeamId') || null
+}
+
+function readStoredTeamName() {
+  return localStorage.getItem('activeTeamName') || ''
+}
+
+function readStoredUser() {
+  try {
+    return JSON.parse(
+      localStorage.getItem('currentUser') || 'null',
+    )
+  } catch {
+    return null
+  }
+}
 
 function Navbar({
   teamId: suppliedTeamId,
+  teamName: suppliedTeamName,
   currentUser: suppliedCurrentUser,
 }) {
   const navigate = useNavigate()
   const params = useParams()
 
-  const teamId =
-    suppliedTeamId ||
-    params.teamId
+  const routeTeamId = params.teamId
 
-  const [
-    currentUser,
-    setCurrentUser,
-  ] = useState(
-    suppliedCurrentUser || null,
+  const [currentUser, setCurrentUser] = useState(
+    suppliedCurrentUser || readStoredUser(),
   )
 
-  const [
-    unreadCount,
-    setUnreadCount,
-  ] = useState(0)
+  const [resolvedTeamId, setResolvedTeamId] = useState(
+    suppliedTeamId || routeTeamId || readStoredTeamId(),
+  )
 
-  const [
-    menuOpen,
-    setMenuOpen,
-  ] = useState(false)
+  const [resolvedTeamName, setResolvedTeamName] = useState(
+    suppliedTeamName || readStoredTeamName(),
+  )
 
-  const [
-    signingOut,
-    setSigningOut,
-  ] = useState(false)
+  const [teams, setTeams] = useState([])
 
-  const [
-    openingStripe,
-    setOpeningStripe,
-  ] = useState(false)
-
-  const [
-    navbarError,
-    setNavbarError,
-  ] = useState('')
-
-  const isPlayer =
-    currentUser?.account_type ===
-    'player'
+  const [nextMatchId, setNextMatchId] = useState(null)
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [signingOut, setSigningOut] = useState(false)
+  const [openingStripe, setOpeningStripe] = useState(false)
+  const [navbarError, setNavbarError] = useState('')
 
   const isManager =
-    currentUser?.account_type ===
-    'manager'
+    currentUser?.account_type === 'manager'
 
   const isApprovedManager =
     isManager &&
-    currentUser
-      ?.manager_verification_status ===
-      'approved'
+    currentUser?.manager_verification_status === 'approved'
 
-  /*
-   * The teams endpoint only returns approved memberships.
-   * Therefore, a player with a teamId is treated as approved.
-   */
   const isApprovedPlayer =
-    isPlayer &&
-    Boolean(teamId)
+    currentUser?.account_type === 'player' &&
+    Boolean(resolvedTeamId)
 
   const canUseTeamNavigation =
-    isApprovedPlayer ||
-    isApprovedManager
+    Boolean(resolvedTeamId) &&
+    (isApprovedPlayer || isApprovedManager)
 
   useEffect(() => {
     if (suppliedCurrentUser) {
-      setCurrentUser(
-        suppliedCurrentUser,
+      setCurrentUser(suppliedCurrentUser)
+
+      localStorage.setItem(
+        'currentUser',
+        JSON.stringify(suppliedCurrentUser),
       )
     }
   }, [suppliedCurrentUser])
 
   useEffect(() => {
-    async function loadNavbarData() {
-      const token =
-        localStorage.getItem(
-          'token',
-        )
+    if (suppliedTeamId) {
+      setResolvedTeamId(suppliedTeamId)
+    } else if (routeTeamId) {
+      setResolvedTeamId(routeTeamId)
+    }
+  }, [routeTeamId, suppliedTeamId])
 
+  useEffect(() => {
+    if (suppliedTeamName) {
+      setResolvedTeamName(suppliedTeamName)
+    }
+  }, [suppliedTeamName])
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadNavbarData() {
+      const token = localStorage.getItem('token')
       if (!token) return
 
       const headers = {
-        Accept:
-          'application/json',
-        Authorization:
-          token,
+        Accept: 'application/json',
+        Authorization: token,
       }
 
       try {
         const requests = [
-          fetch(
-            `${API_URL}/notifications`,
-            {
-              headers,
-            },
-          ),
+          fetch(`${API_URL}/notifications`, { headers }),
+          fetch(`${API_URL}/teams`, { headers }),
         ]
 
-        if (
-          !suppliedCurrentUser
-        ) {
+        if (!suppliedCurrentUser) {
           requests.push(
-            fetch(
-              `${API_URL}/users/me`,
-              {
-                headers,
-              },
-            ),
+            fetch(`${API_URL}/users/me`, { headers }),
           )
         }
 
-        const responses =
-          await Promise.all(
-            requests,
-          )
-
-        const notificationsResponse =
-          responses[0]
+        const responses = await Promise.all(requests)
 
         if (
-          notificationsResponse.status ===
-          401
+          responses.some(
+            (response) => response.status === 401,
+          )
         ) {
           clearSession()
           return
         }
 
-        if (
-          notificationsResponse.ok
-        ) {
+        const notificationsResponse = responses[0]
+        const teamsResponse = responses[1]
+        const userResponse = responses[2]
+
+        if (notificationsResponse.ok) {
           const notificationData =
             await notificationsResponse.json()
 
           const notifications =
-            Array.isArray(
-              notificationData,
-            )
+            Array.isArray(notificationData)
               ? notificationData
-              : notificationData
-                  .notifications ||
-                []
+              : notificationData.notifications || []
 
-          const unreadNotifications =
-            notifications.filter(
-              (notification) =>
-                !notification.read,
+          if (!cancelled) {
+            setUnreadCount(
+              notifications.filter(
+                (notification) => !notification.read,
+              ).length,
             )
-
-          setUnreadCount(
-            unreadNotifications.length,
-          )
+          }
         }
 
-        const userResponse =
-          responses[1]
+        if (teamsResponse.ok) {
+          const teamsData = await teamsResponse.json()
 
-        if (userResponse) {
-          if (
-            userResponse.status ===
-            401
-          ) {
-            clearSession()
-            return
+          const teams =
+            Array.isArray(teamsData)
+              ? teamsData
+              : teamsData.teams || []
+
+          const storedActiveTeamId =
+            readStoredTeamId()
+
+          const preferredTeamId =
+            suppliedTeamId ||
+            routeTeamId ||
+            storedActiveTeamId ||
+            resolvedTeamId ||
+            teams[0]?.id
+
+          const currentTeam =
+            teams.find(
+              (team) =>
+                String(team.id) === String(preferredTeamId),
+            ) ||
+            teams[0] ||
+            null
+
+          if (!cancelled) {
+            setTeams(teams)
           }
 
-          if (userResponse.ok) {
-            const userData =
-              await userResponse.json()
+          if (!cancelled && currentTeam) {
+            const currentTeamName =
+              suppliedTeamName || currentTeam.name || ''
 
-            const user =
-              userData.user ||
-              userData
+            setResolvedTeamId(currentTeam.id)
+            setResolvedTeamName(currentTeamName)
 
-            setCurrentUser(
-              user,
+            localStorage.setItem(
+              'activeTeamId',
+              String(currentTeam.id),
             )
 
             localStorage.setItem(
+              'activeTeamName',
+              currentTeamName,
+            )
+          }
+        }
+
+        if (userResponse?.ok) {
+          const userData = await userResponse.json()
+          const user = userData.user || userData
+
+          if (!cancelled) {
+            setCurrentUser(user)
+
+            localStorage.setItem(
               'currentUser',
-              JSON.stringify(
-                user,
-              ),
+              JSON.stringify(user),
             )
           }
         }
       } catch {
-        // Keep the navbar usable if its data cannot load.
+        // Keep navigation usable if optional data cannot load.
       }
     }
 
     loadNavbarData()
+
+    return () => {
+      cancelled = true
+    }
   }, [
     navigate,
+    resolvedTeamId,
+    routeTeamId,
     suppliedCurrentUser,
+    suppliedTeamId,
+    suppliedTeamName,
   ])
 
-  function clearSession() {
-    localStorage.removeItem(
-      'token',
-    )
-
-    localStorage.removeItem(
-      'currentUser',
-    )
-
-    navigate('/login')
-  }
-
-  function closeMenu() {
-    setMenuOpen(false)
-  }
-
-  function navLinkClass({
-    isActive,
-  }) {
-    return isActive
-      ? 'navbar-link navbar-link-active'
-      : 'navbar-link'
-  }
-
-  function userInitials() {
-    const firstName =
-      currentUser?.first_name ||
-      ''
-
-    const lastName =
-      currentUser?.last_name ||
-      ''
-
-    const initials =
-      `${firstName.charAt(
-        0,
-      )}${lastName.charAt(0)}`
-
-    return (
-      initials.toUpperCase() ||
-      'U'
-    )
-  }
-
-  async function handlePayments() {
-    if (
-      !teamId ||
-      openingStripe
-    ) {
+  useEffect(() => {
+    if (!resolvedTeamId) {
+      setNextMatchId(null)
       return
     }
 
-    const token =
-      localStorage.getItem(
-        'token',
-      )
+    let cancelled = false
 
-    setOpeningStripe(true)
-    setNavbarError('')
-    closeMenu()
+    async function loadNextMatch() {
+      const token = localStorage.getItem('token')
+      if (!token) return
 
-    const headers = {
-      Accept:
-        'application/json',
-      Authorization:
-        token,
-    }
-
-    try {
-      const statusResponse =
-        await fetch(
-          `${API_URL}/teams/${teamId}/stripe_status`,
+      try {
+        const response = await fetch(
+          `${API_URL}/teams/${resolvedTeamId}/matches`,
           {
-            headers,
+            headers: {
+              Accept: 'application/json',
+              Authorization: token,
+            },
           },
         )
 
-      if (
-        statusResponse.status ===
-        401
-      ) {
+        if (!response.ok) return
+
+        const data = await response.json()
+
+        const matches =
+          Array.isArray(data)
+            ? data
+            : data.matches || []
+
+        const nextMatch = matches
+          .filter(
+            (match) =>
+              match.kickoff_time &&
+              new Date(match.kickoff_time).getTime() >
+                Date.now(),
+          )
+          .sort(
+            (firstMatch, secondMatch) =>
+              new Date(firstMatch.kickoff_time).getTime() -
+              new Date(secondMatch.kickoff_time).getTime(),
+          )[0]
+
+        if (!cancelled) {
+          setNextMatchId(nextMatch?.id || null)
+        }
+      } catch {
+        // Bottom navigation can fall back to the fixture list.
+      }
+    }
+
+    loadNextMatch()
+
+    return () => {
+      cancelled = true
+    }
+  }, [resolvedTeamId])
+
+  function clearSession() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+    navigate('/login', { replace: true })
+  }
+
+  function handleTeamSwitch(nextTeamId) {
+    const nextTeam = teams.find(
+      (team) => String(team.id) === String(nextTeamId),
+    )
+
+    if (!nextTeam) return
+
+    const nextTeamName = nextTeam.name || ''
+
+    localStorage.setItem(
+      'activeTeamId',
+      String(nextTeam.id),
+    )
+
+    localStorage.setItem(
+      'activeTeamName',
+      nextTeamName,
+    )
+
+    setResolvedTeamId(nextTeam.id)
+    setResolvedTeamName(nextTeamName)
+    setNextMatchId(null)
+
+    window.dispatchEvent(
+      new CustomEvent('matchmuster:active-team-changed', {
+        detail: {
+          teamId: nextTeam.id,
+        },
+      }),
+    )
+
+    navigate('/dashboard')
+  }
+
+  async function handleSignOut() {
+    const token = localStorage.getItem('token')
+
+    setSigningOut(true)
+
+    try {
+      await fetch(`${API_URL}/users/sign_out`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          Authorization: token,
+        },
+      })
+    } catch {
+      // Local logout still succeeds if Rails is unavailable.
+    } finally {
+      clearSession()
+    }
+  }
+
+  async function handleStripeAction() {
+    if (!resolvedTeamId || openingStripe) return
+
+    const token = localStorage.getItem('token')
+
+    setOpeningStripe(true)
+    setNavbarError('')
+
+    const headers = {
+      Accept: 'application/json',
+      Authorization: token,
+    }
+
+    try {
+      const statusResponse = await fetch(
+        `${API_URL}/teams/${resolvedTeamId}/stripe_status`,
+        { headers },
+      )
+
+      if (statusResponse.status === 401) {
         clearSession()
         return
       }
 
-      const statusData =
-        await statusResponse.json()
+      const statusData = await statusResponse.json()
 
-      if (
-        !statusResponse.ok
-      ) {
+      if (!statusResponse.ok) {
         setNavbarError(
           statusData.error ||
             'Unable to check your Stripe account.',
         )
-
         return
       }
 
@@ -326,36 +393,26 @@ function Navbar({
           ? 'stripe_dashboard'
           : 'stripe_connect'
 
-      const stripeResponse =
-        await fetch(
-          `${API_URL}/teams/${teamId}/${endpoint}`,
-          {
-            method:
-              'POST',
+      const stripeResponse = await fetch(
+        `${API_URL}/teams/${resolvedTeamId}/${endpoint}`,
+        {
+          method: 'POST',
+          headers,
+        },
+      )
 
-            headers,
-          },
-        )
-
-      if (
-        stripeResponse.status ===
-        401
-      ) {
+      if (stripeResponse.status === 401) {
         clearSession()
         return
       }
 
-      const stripeData =
-        await stripeResponse.json()
+      const stripeData = await stripeResponse.json()
 
-      if (
-        !stripeResponse.ok
-      ) {
+      if (!stripeResponse.ok) {
         setNavbarError(
           stripeData.error ||
-            'Unable to open payments.',
+            'Unable to open your Stripe account.',
         )
-
         return
       }
 
@@ -367,474 +424,81 @@ function Navbar({
         setNavbarError(
           'Stripe did not provide a redirect URL.',
         )
-
         return
       }
 
-      window.location.assign(
-        stripeUrl,
-      )
+      window.location.assign(stripeUrl)
     } catch {
-      setNavbarError(
-        'Unable to connect to Stripe.',
-      )
+      setNavbarError('Unable to connect to Stripe.')
     } finally {
       setOpeningStripe(false)
     }
   }
 
-  async function handleSignOut() {
-    const token =
-      localStorage.getItem(
-        'token',
-      )
-
-    setSigningOut(true)
-    closeMenu()
-
-    try {
-      await fetch(
-        `${API_URL}/users/sign_out`,
-        {
-          method:
-            'DELETE',
-
-          headers: {
-            Accept:
-              'application/json',
-
-            Authorization:
-              token,
-          },
-        },
-      )
-    } catch {
-      // Clear the local session even if Rails is unavailable.
-    } finally {
-      clearSession()
-    }
-  }
+  const headerName = useMemo(() => {
+    if (resolvedTeamName) return resolvedTeamName
+    return 'MatchMuster'
+  }, [resolvedTeamName])
 
   return (
-    <header className="main-navbar">
-      <div className="navbar-container">
-        <Link
-          className="navbar-brand"
-          to="/dashboard"
-          onClick={closeMenu}
-          aria-label="Go to MatchMuster dashboard"
-          title="Dashboard"
-        >
-          <img
-            className="navbar-logo"
-            src={matchMusterLogo}
-            alt=""
-            aria-hidden="true"
-          />
-        </Link>
-
-        <button
-          className="navbar-menu-button"
-          type="button"
-          onClick={() => {
-            setMenuOpen(
-              (
-                currentMenuOpen,
-              ) =>
-                !currentMenuOpen,
-            )
-          }}
-          aria-label={
-            menuOpen
-              ? 'Close navigation menu'
-              : 'Open navigation menu'
-          }
-          aria-expanded={
-            menuOpen
-          }
-        >
-          {menuOpen ? (
-            <X
-              size={23}
+    <>
+      <header className="app-topbar">
+        <div className="app-topbar-inner">
+          <Link
+            className="app-topbar-brand"
+            to="/dashboard"
+            aria-label="Go to MatchMuster dashboard"
+          >
+            <img
+              src={matchMusterLogo}
+              alt=""
               aria-hidden="true"
             />
-          ) : (
-            <Menu
-              size={23}
+
+            <strong>{headerName}</strong>
+          </Link>
+
+          <Link
+            className="app-topbar-settings"
+            to="/profile/edit"
+            aria-label="Open settings"
+            title="Settings"
+          >
+            <Settings
+              size={22}
               aria-hidden="true"
             />
-          )}
-        </button>
+          </Link>
+        </div>
 
-        <nav
-          className={`navbar-navigation ${
-            menuOpen
-              ? 'navbar-navigation-open'
-              : ''
-          }`}
-          aria-label="Main navigation"
-        >
-          <div className="navbar-links">
-            {isApprovedManager &&
-              teamId && (
-                <NavLink
-                  className={
-                    navLinkClass
-                  }
-                  to="/team"
-                  onClick={
-                    closeMenu
-                  }
-                  aria-label="Team settings"
-                  title="Team settings"
-                >
-                  <Settings
-                    size={18}
-                    aria-hidden="true"
-                  />
-
-                  <span>
-                    Team
-                  </span>
-                </NavLink>
-              )}
-
-            {canUseTeamNavigation &&
-              teamId && (
-                <>
-                  <NavLink
-                    className={
-                      navLinkClass
-                    }
-                    to={`/teams/${teamId}/squad`}
-                    onClick={
-                      closeMenu
-                    }
-                    aria-label="Squad"
-                    title="Squad"
-                  >
-                    <Users
-                      size={18}
-                      aria-hidden="true"
-                    />
-
-                    <span>
-                      Squad
-                    </span>
-                  </NavLink>
-
-                  <NavLink
-                    className={
-                      navLinkClass
-                    }
-                    to={`/teams/${teamId}/matches`}
-                    onClick={
-                      closeMenu
-                    }
-                    aria-label="Fixtures"
-                    title="Fixtures"
-                  >
-                    <CalendarDays
-                      size={18}
-                      aria-hidden="true"
-                    />
-
-                    <span>
-                      Fixtures
-                    </span>
-                  </NavLink>
-
-                  <NavLink
-                    className={
-                      navLinkClass
-                    }
-                    to={`/teams/${teamId}/posts`}
-                    onClick={
-                      closeMenu
-                    }
-                    aria-label="Posts"
-                    title="Posts"
-                  >
-                    <FileText
-                      size={18}
-                      aria-hidden="true"
-                    />
-
-                    <span>
-                      Posts
-                    </span>
-                  </NavLink>
-
-                  {/* ========================================
-                      TEAM AWARDS
-                      Approved players + approved managers
-                  ======================================== */}
-
-                  <NavLink
-                    className={
-                      navLinkClass
-                    }
-                    to={`/teams/${teamId}/awards`}
-                    onClick={
-                      closeMenu
-                    }
-                    aria-label="Team awards"
-                    title="Team awards"
-                  >
-                    <Trophy
-                      size={18}
-                      aria-hidden="true"
-                    />
-
-                    <span>
-                      Awards
-                    </span>
-                  </NavLink>
-                </>
-              )}
-
-            {isApprovedManager &&
-              teamId && (
-                <button
-                  className="navbar-link navbar-payment-link"
-                  type="button"
-                  onClick={
-                    handlePayments
-                  }
-                  disabled={
-                    openingStripe
-                  }
-                  aria-label="Open club payments"
-                  title="Payments"
-                >
-                  <CreditCard
-                    size={18}
-                    aria-hidden="true"
-                  />
-
-                  <span>
-                    {openingStripe
-                      ? 'Opening...'
-                      : 'Payments'}
-                  </span>
-                </button>
-              )}
-
-            <NavLink
-              className={
-                navLinkClass
-              }
-              to="/notifications"
-              onClick={
-                closeMenu
-              }
-              aria-label={
-                unreadCount > 0
-                  ? `Notifications, ${unreadCount} unread`
-                  : 'Notifications'
-              }
-              title="Notifications"
-            >
-              <span className="navbar-bell-wrapper">
-                <Bell
-                  size={19}
-                  aria-hidden="true"
-                />
-
-                {unreadCount >
-                  0 && (
-                  <span
-                    className="navbar-notification-count"
-                    aria-hidden="true"
-                  >
-                    {unreadCount >
-                    99
-                      ? '99+'
-                      : unreadCount}
-                  </span>
-                )}
-              </span>
-
-              <span>
-                Notifications
-              </span>
-            </NavLink>
-          </div>
-
-          <div className="navbar-account">
-            <Link
-              className="navbar-profile-link"
-              to="/profile/edit"
-              onClick={
-                closeMenu
-              }
-              aria-label="Edit profile"
-              title="Edit profile"
-            >
-              <span
-                style={{
-                  display:
-                    'inline-flex',
-
-                  alignItems:
-                    'center',
-
-                  justifyContent:
-                    'center',
-
-                  width:
-                    '40px',
-
-                  height:
-                    '40px',
-
-                  minWidth:
-                    '40px',
-
-                  maxWidth:
-                    '40px',
-
-                  flex:
-                    '0 0 40px',
-
-                  overflow:
-                    'hidden',
-
-                  borderRadius:
-                    '50%',
-
-                  background:
-                    'linear-gradient(135deg, #ff0a78, #4f9cff)',
-
-                  color:
-                    '#ffffff',
-
-                  fontSize:
-                    '14px',
-
-                  fontWeight:
-                    '700',
-                }}
-              >
-                {currentUser
-                  ?.avatar_url ? (
-                  <img
-                    src={
-                      currentUser.avatar_url
-                    }
-                    alt="Profile"
-                    width={
-                      40
-                    }
-                    height={
-                      40
-                    }
-                    style={{
-                      display:
-                        'block',
-
-                      width:
-                        '40px',
-
-                      height:
-                        '40px',
-
-                      minWidth:
-                        '40px',
-
-                      maxWidth:
-                        '40px',
-
-                      minHeight:
-                        '40px',
-
-                      maxHeight:
-                        '40px',
-
-                      objectFit:
-                        'cover',
-
-                      objectPosition:
-                        'center',
-
-                      borderRadius:
-                        '50%',
-                    }}
-                  />
-                ) : (
-                  userInitials()
-                )}
-              </span>
-
-              <span className="navbar-user-details">
-                <strong>
-                  {currentUser
-                    ?.first_name ||
-                    'My account'}
-                </strong>
-
-                {currentUser
-                  ?.account_type && (
-                  <small>
-                    {isManager
-                      ? 'Manager'
-                      : 'Player'}
-                  </small>
-                )}
-              </span>
-            </Link>
+        {navbarError && (
+          <div className="app-topbar-error" role="alert">
+            {navbarError}
 
             <button
-              className="navbar-sign-out-button"
               type="button"
-              onClick={
-                handleSignOut
-              }
-              disabled={
-                signingOut
-              }
-              aria-label="Sign out"
-              title="Sign out"
+              onClick={() => setNavbarError('')}
             >
-              <LogOut
-                size={17}
-                aria-hidden="true"
-              />
-
-              <span>
-                {signingOut
-                  ? 'Signing out...'
-                  : 'Sign out'}
-              </span>
+              Dismiss
             </button>
           </div>
-        </nav>
-      </div>
+        )}
+      </header>
 
-      {navbarError && (
-        <div
-          className="navbar-error"
-          role="alert"
-        >
-          {navbarError}
-
-          <button
-            type="button"
-            onClick={() =>
-              setNavbarError(
-                '',
-              )
-            }
-            aria-label="Dismiss error"
-          >
-            <X
-              size={16}
-              aria-hidden="true"
-            />
-          </button>
-        </div>
-      )}
-    </header>
+      <BottomNav
+        teamId={resolvedTeamId}
+        teams={teams}
+        nextMatchId={nextMatchId}
+        canUseTeamNavigation={canUseTeamNavigation}
+        isApprovedManager={isApprovedManager}
+        unreadCount={unreadCount}
+        onTeamSwitch={handleTeamSwitch}
+        onSignOut={handleSignOut}
+        signingOut={signingOut}
+        onStripeAction={handleStripeAction}
+        openingStripe={openingStripe}
+      />
+    </>
   )
 }
 

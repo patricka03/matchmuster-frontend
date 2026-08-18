@@ -1,0 +1,389 @@
+/* ========================================
+   MATCHMUSTER HOME DASHBOARD
+======================================== */
+
+.home-dashboard-page {
+  min-height: 100vh;
+  padding-bottom: 104px;
+  background:
+    radial-gradient(
+      circle at 18% 0%,
+      rgba(255, 10, 120, 0.08),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 90% 12%,
+      rgba(79, 156, 255, 0.1),
+      transparent 30%
+    ),
+    #f8fafc;
+  color: #0f172a;
+}
+
+.home-dashboard-content {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 26px 18px 36px;
+}
+
+.home-dashboard-success {
+  margin-bottom: 16px;
+  padding: 13px 15px;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.home-dashboard-fixture-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 22px;
+  border: 0;
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      135deg,
+      #ff0a78,
+      #ef0b73 55%,
+      #da0b69
+    );
+  color: #ffffff;
+  box-shadow:
+    0 18px 34px rgba(255, 10, 120, 0.18);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.home-dashboard-fixture-card:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 22px 40px rgba(255, 10, 120, 0.24);
+}
+
+.home-dashboard-fixture-card:disabled {
+  cursor: default;
+  opacity: 0.92;
+}
+
+.home-dashboard-fixture-label {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+
+.home-dashboard-fixture-opponent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: clamp(24px, 6vw, 34px);
+  font-weight: 900;
+  letter-spacing: -0.7px;
+}
+
+.home-dashboard-fixture-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.home-dashboard-fixture-meta > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-dashboard-squad-status {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.home-dashboard-squad-status.selected,
+.home-dashboard-squad-status.substitute {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.home-dashboard-squad-status.pending,
+.home-dashboard-squad-status.muted {
+  background: rgba(15, 23, 42, 0.13);
+}
+
+.home-dashboard-no-fixture {
+  padding: 16px 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.home-dashboard-availability {
+  margin-top: 24px;
+}
+
+.home-dashboard-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.home-dashboard-section-heading h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.home-dashboard-section-heading button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #2563eb;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.home-dashboard-availability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+}
+
+.home-dashboard-availability-grid article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 10px;
+  border-right: 1px solid #e2e8f0;
+}
+
+.home-dashboard-availability-grid article:last-child {
+  border-right: 0;
+}
+
+.home-dashboard-availability-grid strong {
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.home-dashboard-availability-grid span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.home-dashboard-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.home-dashboard-action-card {
+  min-height: 148px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 19px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  text-align: left;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.home-dashboard-action-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 10, 120, 0.25);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.home-dashboard-card-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      #fff0f7,
+      #eff6ff
+    );
+  color: #ff0a78;
+}
+
+.home-dashboard-action-card strong {
+  margin-top: 2px;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.home-dashboard-action-card small {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.home-dashboard-state-card {
+  max-width: 590px;
+  margin: 42px auto 0;
+  padding: 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+  text-align: center;
+}
+
+.home-dashboard-state-icon {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  margin: 0 auto 16px;
+  place-items: center;
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      135deg,
+      #fff0f7,
+      #eff6ff
+    );
+  font-size: 30px;
+}
+
+.home-dashboard-state-card h1 {
+  margin: 0 0 10px;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.home-dashboard-state-card p {
+  margin: 0 auto;
+  max-width: 450px;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.home-dashboard-state-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.home-dashboard-state-actions button {
+  min-height: 46px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.home-dashboard-state-actions button.secondary {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+@media (max-width: 520px) {
+  .home-dashboard-content {
+    padding: 18px 14px 28px;
+  }
+
+  .home-dashboard-fixture-card {
+    padding: 19px;
+    border-radius: 19px;
+  }
+
+  .home-dashboard-fixture-opponent {
+    font-size: 25px;
+  }
+
+  .home-dashboard-action-grid {
+    gap: 11px;
+    margin-top: 18px;
+  }
+
+  .home-dashboard-action-card {
+    min-height: 137px;
+    padding: 15px;
+    border-radius: 17px;
+  }
+
+  .home-dashboard-card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
+
+  .home-dashboard-action-card strong {
+    font-size: 16px;
+  }
+
+  .home-dashboard-action-card small {
+    font-size: 12px;
+  }
+
+  .home-dashboard-availability-grid article {
+    padding: 16px 6px;
+  }
+
+  .home-dashboard-availability-grid strong {
+    font-size: 21px;
+  }
+
+  .home-dashboard-state-card {
+    margin-top: 24px;
+    padding: 24px 18px;
+  }
+
+  .home-dashboard-state-actions {
+    flex-direction: column;
+  }
+
+  .home-dashboard-state-actions button {
+    width: 100%;
+  }
+}
