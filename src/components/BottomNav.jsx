@@ -26,9 +26,11 @@ import './bottomNav.css'
 function BottomNav({
   teamId,
   teams,
-  nextMatchId,
+  latestPlayedMatchId,
+  playerPaymentMatchId,
   canUseTeamNavigation,
   isApprovedManager,
+  isApprovedPlayer,
   onTeamSwitch,
   onSignOut,
   signingOut,
@@ -70,10 +72,20 @@ function BottomNav({
       ? `/teams/${teamId}/squad`
       : null
 
+  const paymentTargetMatchId =
+    isApprovedManager
+      ? latestPlayedMatchId
+      : playerPaymentMatchId
+
   const paymentsPath =
-    teamId && nextMatchId
-      ? `/teams/${teamId}/matches/${nextMatchId}/payments`
-      : schedulePath
+    teamId && paymentTargetMatchId
+      ? `/teams/${teamId}/matches/${paymentTargetMatchId}/payments`
+      : null
+
+  const paymentsLabel =
+    isApprovedManager
+      ? 'Match Subs'
+      : 'Pay'
 
   const postsPath =
     teamId
@@ -193,7 +205,7 @@ function BottomNav({
                 size={22}
                 aria-hidden="true"
               />
-              <small>Pay</small>
+              <small>{paymentsLabel}</small>
             </NavLink>
           ) : (
             <DisabledItem
@@ -203,7 +215,7 @@ function BottomNav({
                   aria-hidden="true"
                 />
               }
-              label="Pay"
+              label={paymentsLabel}
             />
           )}
 

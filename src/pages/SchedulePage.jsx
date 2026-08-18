@@ -14,6 +14,8 @@ import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
+const COMPLETED_MATCH_DISPLAY_HOURS = 24
+
 function SchedulePage() {
   const navigate = useNavigate()
   const { teamId } = useParams()
@@ -24,10 +26,19 @@ function SchedulePage() {
 
   const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
+  const [currentTime, setCurrentTime] = useState(Date.now())
 
   const isApprovedManager =
     currentUser?.account_type === 'manager' &&
     currentUser?.manager_verification_status === 'approved'
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now())
+    }, 30000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     async function loadSchedule() {
@@ -45,6 +56,9 @@ function SchedulePage() {
         Accept: 'application/json',
         Authorization: token,
       }
+
+      setLoading(true)
+      setErrorMessage('')
 
       try {
         const [
@@ -85,7 +99,8 @@ function SchedulePage() {
 
         if (
           matchesResponse.status === 403 ||
-          trainingsResponse.status === 403
+          trainingsResponse.status === 403 ||
+          userResponse.status === 403
         ) {
           navigate('/dashboard', {
             replace: true,
@@ -94,14 +109,15 @@ function SchedulePage() {
           return
         }
 
-        const matchesData =
-          await matchesResponse.json()
-
-        const trainingsData =
-          await trainingsResponse.json()
-
-        const userData =
-          await userResponse.json()
+        const [
+          matchesData,
+          trainingsData,
+          userData,
+        ] = await Promise.all([
+          matchesResponse.json().catch(() => ({})),
+          trainingsResponse.json().catch(() => ({})),
+          userResponse.json().catch(() => ({})),
+        ])
 
         if (!matchesResponse.ok) {
           throw new Error(
@@ -124,6 +140,24 @@ function SchedulePage() {
           )
         }
 
+        const user =
+          userData.user || userData
+
+        const isPlayer =
+          user.account_type === 'player'
+
+        const isManager =
+          user.account_type === 'manager' &&
+          user.manager_verification_status === 'approved'
+
+        if (!isPlayer && !isManager) {
+          navigate('/dashboard', {
+            replace: true,
+          })
+
+          return
+        }
+
         setMatches(
           Array.isArray(matchesData)
             ? matchesData
@@ -136,9 +170,7 @@ function SchedulePage() {
             : trainingsData.trainings || [],
         )
 
-        setCurrentUser(
-          userData.user || userData,
-        )
+        setCurrentUser(user)
       } catch (error) {
         setErrorMessage(
           error.message ||
@@ -155,7 +187,7 @@ function SchedulePage() {
     teamId,
   ])
 
-  const schedule = useMemo(() => {
+  const upcomingSchedule = useMemo(() => {
     const fixtureItems =
       matches.map((match) => ({
         id: `match-${match.id}`,
@@ -164,6 +196,7 @@ function SchedulePage() {
         dateTime: match.kickoff_time,
         title: `vs ${match.opponent}`,
         location: match.location,
+        matchType: match.match_type,
       }))
 
     const trainingItems =
@@ -185,7 +218,7 @@ function SchedulePage() {
         (item) =>
           item.dateTime &&
           new Date(item.dateTime).getTime() >
-            Date.now(),
+            currentTime,
       )
       .sort(
         (firstItem, secondItem) =>
@@ -193,9 +226,100 @@ function SchedulePage() {
           new Date(secondItem.dateTime).getTime(),
       )
   }, [
+    currentTime,
     matches,
     trainings,
   ])
+
+  function hasResult(match) {
+    return (
+      match.team_score !== null &&
+      match.team_score !== undefined &&
+      match.opponent_score !== null &&
+      match.opponent_score !== undefined
+    )
+  }
+
+  function resultLabel(match) {
+    if (!hasResult(match)) {
+      return ''
+    }
+
+    if (
+      match.team_score >
+      match.opponent_score
+    ) {
+      return 'Win'
+    }
+
+    if (
+      match.team_score <
+      match.opponent_score
+    ) {
+      return 'Loss'
+    }
+
+    return 'Draw'
+  }
+
+  function hasMatchStarted(match) {
+    if (!match.kickoff_time) {
+      return false
+    }
+
+    const kickoff =
+      new Date(
+        match.kickoff_time,
+      ).getTime()
+
+    return (
+      !Number.isNaN(kickoff) &&
+      currentTime >= kickoff
+    )
+  }
+
+  function shouldDisplayRecentMatch(match) {
+    if (!hasMatchStarted(match)) {
+      return false
+    }
+
+    if (!match.ratings_finalised_at) {
+      return true
+    }
+
+    const finalisedAt =
+      new Date(
+        match.ratings_finalised_at,
+      ).getTime()
+
+    if (Number.isNaN(finalisedAt)) {
+      return true
+    }
+
+    const removeFromScheduleAt =
+      finalisedAt +
+      COMPLETED_MATCH_DISPLAY_HOURS *
+        60 *
+        60 *
+        1000
+
+    return currentTime < removeFromScheduleAt
+  }
+
+  const recentMatches =
+    matches
+      .filter(
+        shouldDisplayRecentMatch,
+      )
+      .sort(
+        (firstMatch, secondMatch) =>
+          new Date(
+            secondMatch.kickoff_time,
+          ).getTime() -
+          new Date(
+            firstMatch.kickoff_time,
+          ).getTime(),
+      )
 
   function formatDate(dateTime) {
     return new Intl.DateTimeFormat(
@@ -219,6 +343,22 @@ function SchedulePage() {
       },
     ).format(
       new Date(dateTime),
+    )
+  }
+
+  function formatKickoffTime(kickoffTime) {
+    return new Intl.DateTimeFormat(
+      'en-GB',
+      {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    ).format(
+      new Date(kickoffTime),
     )
   }
 
@@ -265,12 +405,12 @@ function SchedulePage() {
               </p>
 
               <h1>
-                Upcoming schedule
+                Schedule
               </h1>
 
               <p>
-                Matches and training,
-                together in one place.
+                Upcoming fixtures and training,
+                with recent match activity below.
               </p>
             </div>
 
@@ -313,14 +453,156 @@ function SchedulePage() {
           )}
 
           {!errorMessage &&
-            schedule.length === 0 && (
+            upcomingSchedule.length > 0 && (
+              <section className="matches-section">
+                <div className="matches-section-heading">
+                  <p className="dashboard-label">
+                    Upcoming
+                  </p>
+
+                  <h2>
+                    Upcoming schedule
+                  </h2>
+
+                  <p>
+                    Your next fixtures and training sessions,
+                    in date order.
+                  </p>
+                </div>
+
+                <div className="matches-list">
+                  {upcomingSchedule.map(
+                    (item) => (
+                      <article
+                        className="match-card"
+                        key={item.id}
+                      >
+                        <div className="match-date">
+                          <span>
+                            {item.type ===
+                            'match'
+                              ? 'Kick-off'
+                              : 'Training'}
+                          </span>
+
+                          <strong>
+                            {formatDate(
+                              item.dateTime,
+                            )}
+                            {' · '}
+                            {formatTime(
+                              item.dateTime,
+                            )}
+                          </strong>
+                        </div>
+
+                        <div className="match-details">
+                          {item.type === 'match' &&
+                            item.matchType && (
+                              <span className="match-type-badge">
+                                {item.matchType}
+                              </span>
+                            )}
+
+                          {item.type === 'training' && (
+                            <span className="match-type-badge">
+                              Training
+                            </span>
+                          )}
+
+                          <h2>
+                            {item.title}
+                          </h2>
+
+                          {item.type ===
+                          'training' ? (
+                            <>
+                              <p>
+                                <Dumbbell
+                                  size={15}
+                                  aria-hidden="true"
+                                />
+
+                                {' '}
+                                Starts{' '}
+                                {formatTime(
+                                  item.dateTime,
+                                )}
+                              </p>
+
+                              {item.meetTime && (
+                                <p>
+                                  <Clock
+                                    size={15}
+                                    aria-hidden="true"
+                                  />
+
+                                  {' '}
+                                  Meet{' '}
+                                  {formatTime(
+                                    item.meetTime,
+                                  )}
+                                </p>
+                              )}
+                            </>
+                          ) : (
+                            <p>
+                              <CalendarDays
+                                size={15}
+                                aria-hidden="true"
+                              />
+
+                              {' '}
+                              {formatKickoffTime(
+                                item.dateTime,
+                              )}
+                            </p>
+                          )}
+
+                          <p>
+                            <MapPin
+                              size={15}
+                              aria-hidden="true"
+                            />
+
+                            {' '}
+                            {item.location ||
+                              'Location TBC'}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="view-match-button"
+                          onClick={() =>
+                            openItem(item)
+                          }
+                        >
+                          {item.type === 'match'
+                            ? 'View fixture'
+                            : 'View training'}
+
+                          <ChevronRight
+                            size={16}
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </article>
+                    ),
+                  )}
+                </div>
+              </section>
+            )}
+
+          {!errorMessage &&
+            upcomingSchedule.length === 0 && (
               <article className="empty-team-card">
                 <div className="card-icon">
                   📅
                 </div>
 
                 <h2>
-                  Nothing scheduled
+                  Nothing upcoming
                 </h2>
 
                 <p>
@@ -332,100 +614,144 @@ function SchedulePage() {
             )}
 
           {!errorMessage &&
-            schedule.length > 0 && (
-              <section className="matches-list">
-                {schedule.map(
-                  (item) => (
-                    <article
-                      className="match-card"
-                      key={item.id}
-                    >
-                      <div className="match-date">
-                        <span>
-                          {item.type ===
-                          'match'
-                            ? 'Fixture'
-                            : 'Training'}
-                        </span>
+            recentMatches.length > 0 && (
+              <section className="matches-section recent-matches-section">
+                <div className="matches-section-heading">
+                  <p className="dashboard-label">
+                    Previous
+                  </p>
 
-                        <strong>
-                          {formatDate(
-                            item.dateTime,
-                          )}
-                        </strong>
-                      </div>
+                  <h2>
+                    Recent fixtures
+                  </h2>
 
-                      <div className="match-details">
-                        <h2>
-                          {item.title}
-                        </h2>
+                  <p>
+                    Recent match results, ratings and payment
+                    activity remain available here.
+                  </p>
+                </div>
 
-                        <p>
-                          {item.type ===
-                          'training' ? (
-                            <Dumbbell
-                              size={15}
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <CalendarDays
-                              size={15}
-                              aria-hidden="true"
-                            />
-                          )}
+                <div className="matches-list">
+                  {recentMatches.map(
+                    (match) => {
+                      const finalised =
+                        Boolean(
+                          match.ratings_finalised_at,
+                        )
 
-                          {' '}
-                          {formatTime(
-                            item.dateTime,
-                          )}
-                        </p>
+                      const resultAvailable =
+                        hasResult(match)
 
-                        {item.type ===
-                          'training' &&
-                          item.meetTime && (
+                      const outcome =
+                        resultLabel(match)
+
+                      return (
+                        <article
+                          className="match-card match-card-locked"
+                          key={match.id}
+                        >
+                          <div className="match-date">
+                            <span>
+                              {resultAvailable
+                                ? 'Final score'
+                                : finalised
+                                  ? 'Completed'
+                                  : 'Kick-off'}
+                            </span>
+
+                            {resultAvailable ? (
+                              <strong className="recent-match-score">
+                                {match.team_score}
+                                {' - '}
+                                {match.opponent_score}
+                              </strong>
+                            ) : (
+                              <strong>
+                                {formatKickoffTime(
+                                  match.kickoff_time,
+                                )}
+                              </strong>
+                            )}
+                          </div>
+
+                          <div className="match-details">
+                            <div className="match-card-badges">
+                              {match.match_type && (
+                                <span className="match-type-badge">
+                                  {match.match_type}
+                                </span>
+                              )}
+
+                              <span className="match-locked-badge">
+                                {finalised
+                                  ? '🏆 Completed'
+                                  : '🔒 Locked'}
+                              </span>
+
+                              {resultAvailable && (
+                                <span
+                                  className={`match-result-badge match-result-badge-${outcome.toLowerCase()}`}
+                                >
+                                  {outcome}
+                                </span>
+                              )}
+                            </div>
+
+                            <h2>
+                              vs {match.opponent}
+                            </h2>
+
+                            {resultAvailable && (
+                              <p className="recent-match-result">
+                                <strong>
+                                  {match.team_score}
+                                  {' - '}
+                                  {match.opponent_score}
+                                </strong>
+
+                                <span>
+                                  {' '}
+                                  · {outcome}
+                                </span>
+                              </p>
+                            )}
+
                             <p>
-                              <Clock
+                              <MapPin
                                 size={15}
                                 aria-hidden="true"
                               />
 
                               {' '}
-                              Meet{' '}
-                              {formatTime(
-                                item.meetTime,
-                              )}
+                              {match.location ||
+                                'Location TBC'}
                             </p>
-                          )}
+                          </div>
 
-                        <p>
-                          <MapPin
-                            size={15}
-                            aria-hidden="true"
-                          />
+                          <button
+                            className="view-match-button"
+                            type="button"
+                            onClick={() =>
+                              navigate(
+                                `/teams/${teamId}/matches/${match.id}`,
+                              )
+                            }
+                          >
+                            {resultAvailable ||
+                            finalised
+                              ? 'View match & results'
+                              : 'View match'}
 
-                          {' '}
-                          {item.location ||
-                            'Location TBC'}
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="view-match-button"
-                        onClick={() =>
-                          openItem(item)
-                        }
-                      >
-                        View
-
-                        <ChevronRight
-                          size={16}
-                          aria-hidden="true"
-                        />
-                      </button>
-                    </article>
-                  ),
-                )}
+                            <ChevronRight
+                              size={16}
+                              aria-hidden="true"
+                            />
+                          </button>
+                        </article>
+                      )
+                    },
+                  )}
+                </div>
               </section>
             )}
         </section>

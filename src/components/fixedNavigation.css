@@ -1,0 +1,64 @@
+/* ========================================
+   MATCHMUSTER FIXED APP NAVIGATION
+   Keeps the header and bottom navigation
+   locked in place in Safari and Capacitor.
+======================================== */
+
+.app-topbar {
+  position: fixed !important;
+  z-index: 1000 !important;
+  top: 0 !important;
+  right: 0;
+  left: 0;
+  width: 100%;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/*
+ * Because the top bar is fixed, this spacer keeps
+ * page content from sliding underneath it.
+ */
+.app-topbar-fixed-spacer {
+  width: 100%;
+  height: calc(
+    64px + env(safe-area-inset-top, 0px)
+  );
+  flex: 0 0 auto;
+}
+
+.bottom-nav {
+  position: fixed !important;
+  z-index: 1000 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100%;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/*
+ * Any authenticated page rendered after BottomNav
+ * receives enough clearance for the fixed iOS tab bar.
+ */
+.bottom-nav ~ main {
+  padding-bottom: calc(
+    112px + env(safe-area-inset-bottom, 0px)
+  ) !important;
+}
+
+/*
+ * Keep the More sheet above both fixed bars.
+ */
+.bottom-nav-sheet-backdrop {
+  z-index: 1200 !important;
+}
+
+@media (max-width: 520px) {
+  .app-topbar-fixed-spacer {
+    height: calc(
+      60px + env(safe-area-inset-top, 0px)
+    );
+  }
+}
