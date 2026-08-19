@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import DeveloperModerationPanel from '../components/DeveloperModerationPanel'
 import DeveloperAccountManagementPanel from '../components/DeveloperAccountManagementPanel'
 import './DeveloperDashboardPage.css'
+import './DeveloperDashboardPage.mobile.css'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 

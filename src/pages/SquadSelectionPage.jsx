@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import '../styles/SquadSelectionPage.css'
+import '../styles/SquadSelectionPage.mobile.css'
 import '../styles/MatchdaySquadReadOnly.css'
+import '../styles/MatchdaySquad.mobile.css'
 import API_URL from '../config/api'
 
 const benchPositions = [

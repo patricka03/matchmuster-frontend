@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './DeveloperLoginPage.css'
+import './DeveloperLoginPage.mobile.css'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 

@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
+import './App.mobile.css'
 
 import WelcomePage from './pages/WelcomePage'
 import LoginPage from './pages/LoginPage'

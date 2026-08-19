@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { SearchBox } from '@mapbox/search-js-react'
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+const MAPBOX_TOKEN =
+  import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
 function CreateTrainingPage() {
   const navigate = useNavigate()
@@ -13,6 +17,8 @@ function CreateTrainingPage() {
     starts_at: '',
     meet_time: '',
     location: '',
+    latitude: null,
+    longitude: null,
     description: '',
   })
 
@@ -28,6 +34,77 @@ function CreateTrainingPage() {
     }))
   }
 
+  // ========================================
+  // MAPBOX LOCATION
+  // ========================================
+
+  function handleLocationChange(value) {
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      location: value,
+      latitude: null,
+      longitude: null,
+    }))
+  }
+
+  function handleLocationRetrieve(result) {
+    const feature = result?.features?.[0]
+
+    if (!feature) {
+      return
+    }
+
+    const coordinates =
+      feature.geometry?.coordinates
+
+    if (
+      !Array.isArray(coordinates) ||
+      coordinates.length < 2
+    ) {
+      return
+    }
+
+    // GeoJSON stores coordinates as:
+    // [longitude, latitude]
+    const [longitude, latitude] = coordinates
+
+    const properties =
+      feature.properties || {}
+
+    const locationName =
+      properties.full_address ||
+      [
+        properties.name,
+        properties.place_formatted,
+      ]
+        .filter(Boolean)
+        .join(', ')
+
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      location:
+        locationName ||
+        currentFormData.location,
+      latitude,
+      longitude,
+    }))
+
+    setErrorMessage('')
+  }
+
+  function handleLocationClear() {
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      location: '',
+      latitude: null,
+      longitude: null,
+    }))
+  }
+
+  // ========================================
+  // CREATE TRAINING
+  // ========================================
+
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -37,6 +114,17 @@ function CreateTrainingPage() {
       navigate('/login', {
         replace: true,
       })
+
+      return
+    }
+
+    if (
+      formData.latitude === null ||
+      formData.longitude === null
+    ) {
+      setErrorMessage(
+        'Please select the training location from the location suggestions.',
+      )
 
       return
     }
@@ -141,6 +229,10 @@ function CreateTrainingPage() {
             className="match-form"
             onSubmit={handleSubmit}
           >
+            {/* ========================================
+                TITLE
+            ======================================== */}
+
             <div className="form-group">
               <label htmlFor="training-title">
                 Title
@@ -157,6 +249,10 @@ function CreateTrainingPage() {
               />
             </div>
 
+            {/* ========================================
+                START TIME
+            ======================================== */}
+
             <div className="form-group">
               <label htmlFor="training-starts">
                 Starts
@@ -171,6 +267,10 @@ function CreateTrainingPage() {
                 required
               />
             </div>
+
+            {/* ========================================
+                MEET TIME
+            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="training-meet-time">
@@ -187,21 +287,69 @@ function CreateTrainingPage() {
               />
             </div>
 
+            {/* ========================================
+                MAPBOX LOCATION
+            ======================================== */}
+
             <div className="form-group">
-              <label htmlFor="training-location">
+              <label>
                 Location
               </label>
 
-              <input
-                id="training-location"
-                name="location"
-                type="text"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="Goals Soccer Centre"
-                required
-              />
+              {MAPBOX_TOKEN ? (
+                <SearchBox
+                  accessToken={MAPBOX_TOKEN}
+                  value={formData.location}
+                  onChange={handleLocationChange}
+                  onRetrieve={handleLocationRetrieve}
+                  onClear={handleLocationClear}
+                  placeholder="Search for a training ground, football centre, park or address"
+                  options={{
+                    country: 'GB',
+                    language: 'en',
+                    limit: 8,
+                  }}
+                  theme={{
+                    icons: {
+                      search: `
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 18 18"
+                          xmlns="http://www.w3.org/2000/svg"
+                        ></svg>
+                      `,
+                    },
+                  }}
+                />
+              ) : (
+                <p
+                  className="team-error"
+                  role="alert"
+                >
+                  Mapbox is not configured.
+                  Check your frontend environment
+                  variables.
+                </p>
+              )}
+
+              {formData.latitude !== null &&
+                formData.longitude !== null && (
+                  <div className="selected-match-location">
+                    <span>
+                      📍 Location selected
+                    </span>
+
+                    <strong>
+                      {formData.location}
+                    </strong>
+                  </div>
+                )}
             </div>
+
+            {/* ========================================
+                DESCRIPTION
+            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="training-description">
@@ -217,6 +365,10 @@ function CreateTrainingPage() {
                 rows="5"
               />
             </div>
+
+            {/* ========================================
+                ACTIONS
+            ======================================== */}
 
             <div className="match-form-actions">
               <button

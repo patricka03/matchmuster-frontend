@@ -1,0 +1,226 @@
+/* ==========================================================
+   MATCHMUSTER FIXED NAVIGATION — MOBILE APP POLISH
+   File: src/components/fixedNavigation.mobile.css
+
+   Import this AFTER fixedNavigation.css.
+
+   Keeps the existing fixed top navbar + bottom navigation
+   behaviour intact.
+
+   Adds:
+   - stronger Capacitor / WebKit fixed positioning
+   - iOS / Android safe-area handling
+   - Dynamic Island / status-bar clearance
+   - home-indicator / gesture-bar clearance
+   - dynamic viewport support
+   - safer page spacing beneath both fixed bars
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   ROOT VIEWPORT
+======================================== */
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body,
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ========================================
+   FIXED TOP NAVIGATION
+======================================== */
+
+.app-topbar {
+  position: fixed !important;
+  z-index: 1000 !important;
+
+  top: 0 !important;
+  right: 0 !important;
+  left: 0 !important;
+
+  width: 100%;
+  max-width: 100%;
+
+  box-sizing: border-box;
+
+  /*
+   * WebKit/Capacitor compositing support.
+   * Helps prevent the navbar drifting during scroll.
+   */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ========================================
+   TOP SAFE AREA
+======================================== */
+
+.app-topbar-fixed-spacer {
+  width: 100%;
+
+  height: calc(
+    64px + env(safe-area-inset-top, 0px)
+  );
+
+  flex: 0 0 auto;
+
+  pointer-events: none;
+}
+
+/*
+ * If the app-topbar itself owns the visible background,
+ * make sure the status-bar / Dynamic Island area is
+ * covered by that same app surface.
+ */
+.app-topbar {
+  padding-top: env(
+    safe-area-inset-top,
+    0px
+  );
+}
+
+/* ========================================
+   FIXED BOTTOM NAVIGATION
+======================================== */
+
+.bottom-nav {
+  position: fixed !important;
+  z-index: 1000 !important;
+
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  width: 100%;
+  max-width: 100%;
+
+  box-sizing: border-box;
+
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ========================================
+   AUTHENTICATED PAGE CLEARANCE
+======================================== */
+
+.bottom-nav ~ main,
+.dashboard-page,
+.home-dashboard-page {
+  box-sizing: border-box;
+
+  padding-bottom: calc(
+    116px + env(safe-area-inset-bottom, 0px)
+  ) !important;
+}
+
+/* ========================================
+   MORE SHEET STACKING
+======================================== */
+
+.bottom-nav-sheet-backdrop {
+  z-index: 1200 !important;
+}
+
+/* ========================================
+   IOS APP POLISH
+======================================== */
+
+html.platform-ios .app-topbar,
+html.platform-ios .bottom-nav {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   ANDROID APP POLISH
+======================================== */
+
+html.platform-android .app-topbar,
+html.platform-android .bottom-nav {
+  /*
+   * Keep both bars isolated from page transforms
+   * and scrolling layers in Android WebView.
+   */
+  contain: layout paint;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 520px) {
+  .app-topbar-fixed-spacer {
+    height: calc(
+      60px + env(safe-area-inset-top, 0px)
+    );
+  }
+
+  .bottom-nav ~ main,
+  .dashboard-page,
+  .home-dashboard-page {
+    padding-bottom: calc(
+      112px + env(safe-area-inset-bottom, 0px)
+    ) !important;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .app-topbar-fixed-spacer {
+    height: calc(
+      58px + env(safe-area-inset-top, 0px)
+    );
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .app-topbar-fixed-spacer {
+    height: calc(
+      56px + env(safe-area-inset-top, 0px)
+    );
+  }
+
+  .bottom-nav ~ main,
+  .dashboard-page,
+  .home-dashboard-page {
+    padding-bottom: calc(
+      94px + env(safe-area-inset-bottom, 0px)
+    ) !important;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .app-topbar,
+  .bottom-nav {
+    transition: none;
+  }
+}

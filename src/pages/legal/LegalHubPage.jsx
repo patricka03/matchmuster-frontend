@@ -79,7 +79,7 @@ function LegalHubPage() {
           className="app-back-button"
           onClick={handleBack}
         >
-          ← Back
+          Back
         </button>
 
         <header className="legal-header">

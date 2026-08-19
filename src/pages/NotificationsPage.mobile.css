@@ -1,0 +1,643 @@
+/* ==========================================================
+   MATCHMUSTER NOTIFICATIONS — MOBILE APP POLISH
+   File: src/styles/NotificationsPage.mobile.css
+
+   Import this AFTER NotificationsPage.css.
+
+   Keeps the current MatchMuster notification centre,
+   filter tabs, unread states, modal, MOTM card and
+   game-squad destination cards unchanged.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - safer swipeable filters
+   - touch-first notification cards
+   - bottom-sheet modal improvements
+   - home-indicator / gesture-bar clearance
+   - better long-text handling
+   - bottom-nav clearance
+   - very-small-phone / landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / VIEWPORT
+======================================== */
+
+.updates-page {
+  min-height: calc(100vh - 72px);
+  min-height: calc(100dvh - 72px);
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(52px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(40px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(40px, env(safe-area-inset-left, 0px));
+}
+
+.updates-container,
+.updates-heading,
+.updates-list,
+.notification-groups,
+.update-card,
+.notification-game-squad,
+.notification-motm-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   TEXT / CONTENT SAFETY
+======================================== */
+
+.updates-heading,
+.updates-heading > div,
+.update-card-content,
+.update-card-heading,
+.update-modal-heading-copy,
+.notification-squad-list,
+.notification-squad-list li {
+  min-width: 0;
+}
+
+.updates-heading h1,
+.updates-description,
+.update-card-heading h2,
+.update-card-heading h3,
+.update-message,
+.update-modal-header h2,
+.update-modal-message p,
+.notification-motm-card h3,
+.notification-motm-card > span,
+.notification-game-squad header h3 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   TOP ACTIONS / FILTERS
+======================================== */
+
+.updates-mark-read,
+.updates-refresh,
+.updates-error button,
+.updates-filters button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .updates-mark-read,
+html.platform-android .updates-refresh,
+html.platform-android .updates-error button,
+html.platform-android .updates-filters button {
+  min-height: 48px;
+}
+
+.updates-filters {
+  max-width: 100%;
+
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: none;
+}
+
+.updates-filters::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   NOTIFICATION CARDS
+======================================== */
+
+.update-card {
+  min-height: 72px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.update-inline-action,
+.update-context-button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .update-inline-action,
+html.platform-android .update-context-button {
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .update-card:hover,
+  .update-card-read:hover,
+  .updates-mark-read:hover:not(:disabled),
+  .updates-refresh:hover:not(:disabled),
+  .update-inline-action:hover,
+  .update-context-button:hover,
+  .update-modal-actions button:hover,
+  .update-availability-button:hover {
+    transform: none;
+  }
+
+  .update-card:active,
+  .updates-mark-read:active:not(:disabled),
+  .updates-refresh:active:not(:disabled),
+  .update-inline-action:active,
+  .update-context-button:active,
+  .update-modal-actions button:active:not(:disabled),
+  .update-availability-button:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   AVATARS / BADGES
+======================================== */
+
+.notification-avatar,
+.notification-avatar-photo img,
+.notification-motm-avatar {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.notification-avatar-badge,
+.update-card-chevron {
+  pointer-events: none;
+}
+
+/* ========================================
+   MODAL BACKDROP
+======================================== */
+
+.update-modal-backdrop {
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(32px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(32px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    max(32px, env(safe-area-inset-bottom, 0px));
+
+  padding-left:
+    max(32px, env(safe-area-inset-left, 0px));
+
+  overscroll-behavior: contain;
+}
+
+/* ========================================
+   MODAL
+======================================== */
+
+.update-modal {
+  max-width: 100%;
+  box-sizing: border-box;
+
+  max-height: calc(
+    100dvh -
+    max(64px, env(safe-area-inset-top, 0px)) -
+    max(64px, env(safe-area-inset-bottom, 0px))
+  );
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.update-modal-close,
+.update-modal-actions button,
+.update-modal-actions a,
+.update-availability-button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.update-modal-close {
+  min-width: 44px;
+}
+
+html.platform-android .update-modal-close,
+html.platform-android .update-modal-actions button,
+html.platform-android .update-modal-actions a,
+html.platform-android .update-availability-button {
+  min-height: 48px;
+}
+
+html.platform-android .update-modal-close {
+  min-width: 48px;
+}
+
+/* ========================================
+   GAME SQUAD CARD SAFETY
+======================================== */
+
+.notification-squad-columns {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.notification-squad-list li strong {
+  min-width: 0;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .updates-mark-read,
+html.platform-ios .updates-refresh,
+html.platform-ios .updates-filters button,
+html.platform-ios .update-card,
+html.platform-ios .update-inline-action,
+html.platform-ios .update-context-button,
+html.platform-ios .update-modal-close,
+html.platform-ios .update-modal-actions button,
+html.platform-ios .update-modal-actions a {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   TABLET / MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+  .updates-page {
+    padding-top:
+      max(28px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      calc(
+        116px + env(safe-area-inset-bottom, 0px)
+      );
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+  }
+
+  .updates-heading {
+    gap: 18px;
+  }
+
+  .updates-heading-actions {
+    width: 100%;
+  }
+
+  .updates-mark-read,
+  .updates-refresh {
+    min-height: 44px;
+  }
+
+  .update-card {
+    min-height: 76px;
+  }
+
+  .update-inline-action,
+  .update-context-button {
+    min-height: 44px;
+  }
+
+  .update-modal-backdrop {
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(18px, env(safe-area-inset-bottom, 0px));
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+  }
+}
+
+/* ========================================
+   PHONE BOTTOM SHEET
+======================================== */
+
+@media (max-width: 480px) {
+  .updates-page {
+    padding-top:
+      max(20px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(14px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      calc(
+        116px + env(safe-area-inset-bottom, 0px)
+      );
+
+    padding-left:
+      max(14px, env(safe-area-inset-left, 0px));
+  }
+
+  .updates-heading h1 {
+    font-size: 29px;
+    line-height: 1.1;
+  }
+
+  .updates-summary {
+    width: 100%;
+  }
+
+  .updates-heading-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+  }
+
+  .updates-mark-read {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .updates-refresh {
+    width: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .updates-filters {
+    gap: 5px;
+  }
+
+  .updates-filters button {
+    min-height: 44px;
+  }
+
+  .update-card {
+    min-height: 76px;
+    padding: 15px 13px;
+  }
+
+  .update-card-footer {
+    gap: 8px;
+  }
+
+  .update-inline-action {
+    min-height: 44px;
+  }
+
+  .update-modal-backdrop {
+    align-items: flex-end;
+
+    padding-top:
+      max(12px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      env(safe-area-inset-right, 0px);
+
+    padding-bottom: 0;
+
+    padding-left:
+      env(safe-area-inset-left, 0px);
+  }
+
+  .update-modal {
+    width: 100%;
+    max-width: none;
+
+    max-height: min(
+      92dvh,
+      calc(
+        100dvh -
+        max(12px, env(safe-area-inset-top, 0px))
+      )
+    );
+
+    padding-top: 21px;
+
+    padding-right:
+      max(17px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(
+        20px,
+        calc(
+          18px + env(safe-area-inset-bottom, 0px)
+        )
+      );
+
+    padding-left:
+      max(17px, env(safe-area-inset-left, 0px));
+
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .update-modal-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .update-modal-actions {
+    padding-bottom:
+      env(safe-area-inset-bottom, 0px);
+  }
+
+  .update-modal-actions button,
+  .update-modal-actions a,
+  .update-availability-button,
+  .update-context-button {
+    min-height: 48px;
+  }
+
+  .notification-motm-card {
+    min-height: 270px;
+    padding: 26px 16px;
+  }
+
+  .notification-game-squad > header {
+    gap: 12px;
+    padding: 17px;
+  }
+
+  .notification-squad-columns {
+    gap: 12px;
+    padding: 14px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .updates-page {
+    padding-right:
+      max(12px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(12px, env(safe-area-inset-left, 0px));
+  }
+
+  .updates-heading h1 {
+    font-size: 27px;
+  }
+
+  .updates-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .update-card {
+    grid-template-columns:
+      38px minmax(0, 1fr);
+    gap: 10px;
+    padding: 13px 11px;
+  }
+
+  .notification-avatar,
+  .notification-avatar-photo img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .update-modal {
+    padding-right:
+      max(14px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(14px, env(safe-area-inset-left, 0px));
+  }
+
+  .notification-motm-trophy {
+    width: 68px;
+    height: 68px;
+  }
+
+  .notification-motm-avatar {
+    width: 58px;
+    height: 58px;
+  }
+
+  .notification-game-squad > header {
+    flex-direction: column;
+  }
+
+  .notification-game-squad > header > span {
+    align-self: flex-start;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .updates-page {
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(22px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(22px, env(safe-area-inset-left, 0px));
+  }
+
+  .updates-heading {
+    flex-direction: row;
+  }
+
+  .updates-heading-actions {
+    width: auto;
+  }
+
+  .update-modal-backdrop {
+    align-items: center;
+
+    padding-top:
+      max(12px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(12px, env(safe-area-inset-bottom, 0px));
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+  }
+
+  .update-modal {
+    width: min(100%, 760px);
+
+    max-height: calc(
+      100dvh -
+      max(24px, env(safe-area-inset-top, 0px)) -
+      max(24px, env(safe-area-inset-bottom, 0px))
+    );
+
+    border-radius: 20px;
+  }
+
+  .notification-squad-columns {
+    grid-template-columns:
+      minmax(0, 1.5fr)
+      minmax(190px, 0.85fr);
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .updates-spinner {
+    animation: none;
+  }
+
+  .updates-mark-read,
+  .updates-refresh,
+  .updates-filters button,
+  .update-card,
+  .update-inline-action,
+  .update-context-button,
+  .update-modal,
+  .update-modal-backdrop,
+  .update-modal-close,
+  .update-modal-actions button,
+  .update-modal-actions a {
+    transition: none;
+    animation: none;
+  }
+}

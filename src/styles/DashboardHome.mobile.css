@@ -1,0 +1,338 @@
+/* ==========================================================
+   MATCHMUSTER HOME DASHBOARD — MOBILE APP POLISH
+   Import this AFTER DashboardHome.css.
+
+   Keeps the existing MatchMuster layout, pink fixture card,
+   blue training card, and card positions unchanged.
+
+   Adds:
+   - dynamic viewport support
+   - iOS / Android safe-area spacing
+   - fixed-bottom-nav clearance
+   - native touch/press behaviour
+   - 44pt iOS / 48dp Android touch targets
+   - better small-screen spacing
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   APP VIEWPORT + BOTTOM NAV CLEARANCE
+======================================== */
+
+.home-dashboard-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  /*
+   * Existing bottom navigation is fixed.
+   * This keeps the final blue Training card safely
+   * above the iPhone home indicator / Android gesture bar.
+   */
+  padding-bottom: calc(
+    112px + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+/* ========================================
+   SAFE CONTENT WIDTH
+======================================== */
+
+.home-dashboard-content {
+  box-sizing: border-box;
+
+  padding-left: max(
+    18px,
+    env(safe-area-inset-left, 0px)
+  );
+
+  padding-right: max(
+    18px,
+    env(safe-area-inset-right, 0px)
+  );
+}
+
+/* ========================================
+   NATIVE TOUCH TARGETS
+======================================== */
+
+.home-dashboard-fixture-card,
+.home-dashboard-training-card,
+.home-dashboard-action-card,
+.home-dashboard-state-actions button,
+.home-dashboard-section-heading button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home-dashboard-state-actions button {
+  min-height: 44px;
+}
+
+html.platform-android
+  .home-dashboard-state-actions button {
+  min-height: 48px;
+}
+
+/*
+ * "View all" is visually a text action, but the tappable
+ * region should still be comfortable on a phone.
+ */
+.home-dashboard-section-heading button {
+  min-width: 44px;
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html.platform-android
+  .home-dashboard-section-heading button {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH PRESS FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .home-dashboard-fixture-card:not(:disabled):hover,
+  .home-dashboard-training-card:not(:disabled):hover,
+  .home-dashboard-action-card:hover {
+    transform: none;
+  }
+
+  .home-dashboard-fixture-card:not(:disabled):active,
+  .home-dashboard-training-card:not(:disabled):active,
+  .home-dashboard-action-card:active,
+  .home-dashboard-state-actions button:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   DISABLED HERO CARDS
+======================================== */
+
+.home-dashboard-fixture-card:disabled,
+.home-dashboard-training-card:disabled {
+  /*
+   * Keep empty-state cards visually present and readable.
+   * They should still look intentional, not "greyed out".
+   */
+  opacity: 1;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios
+  .home-dashboard-fixture-card,
+html.platform-ios
+  .home-dashboard-training-card,
+html.platform-ios
+  .home-dashboard-action-card,
+html.platform-ios
+  .home-dashboard-state-card,
+html.platform-ios
+  .home-dashboard-availability-grid {
+  -webkit-touch-callout: none;
+}
+
+html.platform-ios
+  .home-dashboard-fixture-card,
+html.platform-ios
+  .home-dashboard-training-card {
+  border-radius: 22px;
+}
+
+/* ========================================
+   ANDROID POLISH
+======================================== */
+
+html.platform-android
+  .home-dashboard-fixture-card,
+html.platform-android
+  .home-dashboard-training-card,
+html.platform-android
+  .home-dashboard-action-card {
+  min-height: 48px;
+}
+
+/* ========================================
+   MOBILE PHONE LAYOUT
+======================================== */
+
+@media (max-width: 520px) {
+  .home-dashboard-page {
+    padding-bottom: calc(
+      108px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .home-dashboard-content {
+    padding-top: 18px;
+
+    padding-left: max(
+      14px,
+      env(safe-area-inset-left, 0px)
+    );
+
+    padding-right: max(
+      14px,
+      env(safe-area-inset-right, 0px)
+    );
+
+    padding-bottom: 32px;
+  }
+
+  .home-dashboard-fixture-card,
+  .home-dashboard-training-card {
+    /*
+     * Preserve current positions and colours;
+     * only tighten sizing for smaller phones.
+     */
+    gap: 12px;
+  }
+
+  .home-dashboard-fixture-meta,
+  .home-dashboard-training-meta {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .home-dashboard-fixture-meta > span,
+  .home-dashboard-training-meta > span {
+    min-width: 0;
+  }
+
+  .home-dashboard-fixture-opponent,
+  .home-dashboard-training-title {
+    min-width: 0;
+  }
+
+  .home-dashboard-fixture-opponent > span,
+  .home-dashboard-training-title > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .home-dashboard-action-card {
+    /*
+     * Two-column grid stays exactly as designed.
+     * Give cards a comfortable mobile press area.
+     */
+    min-height: 140px;
+  }
+
+  .home-dashboard-card-icon {
+    flex: 0 0 auto;
+  }
+
+  .home-dashboard-availability-grid article {
+    min-width: 0;
+  }
+
+  .home-dashboard-availability-grid span {
+    text-align: center;
+    line-height: 1.25;
+  }
+
+  .home-dashboard-state-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 360px) {
+  .home-dashboard-content {
+    padding-left: max(
+      12px,
+      env(safe-area-inset-left, 0px)
+    );
+
+    padding-right: max(
+      12px,
+      env(safe-area-inset-right, 0px)
+    );
+  }
+
+  .home-dashboard-action-grid {
+    gap: 9px;
+  }
+
+  .home-dashboard-action-card {
+    min-height: 134px;
+    padding: 14px;
+  }
+
+  .home-dashboard-fixture-card,
+  .home-dashboard-training-card {
+    padding: 17px;
+  }
+
+  .home-dashboard-fixture-opponent,
+  .home-dashboard-training-title {
+    font-size: 23px;
+  }
+
+  .home-dashboard-card-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .home-dashboard-content {
+    width: min(100%, 900px);
+
+    padding-left: max(
+      20px,
+      env(safe-area-inset-left, 0px)
+    );
+
+    padding-right: max(
+      20px,
+      env(safe-area-inset-right, 0px)
+    );
+  }
+
+  .home-dashboard-action-grid {
+    grid-template-columns: repeat(
+      4,
+      minmax(0, 1fr)
+    );
+  }
+
+  .home-dashboard-action-card {
+    min-height: 128px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .home-dashboard-fixture-card,
+  .home-dashboard-training-card,
+  .home-dashboard-action-card,
+  .home-dashboard-state-actions button {
+    transition: none;
+  }
+}

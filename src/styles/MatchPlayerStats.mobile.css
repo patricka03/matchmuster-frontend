@@ -1,0 +1,377 @@
+/* ==========================================================
+   MATCHMUSTER MATCH PLAYER STATS — MOBILE APP POLISH
+   Import this AFTER the existing MatchPlayerStats.css.
+
+   Keeps the current MatchMuster colours, card styling,
+   summary layout and score-entry design unchanged.
+
+   Adds:
+   - iOS / Android touch target sizing
+   - safe-area support
+   - keyboard-friendly form behaviour
+   - iOS input zoom prevention
+   - fixed bottom-nav clearance for the sticky save bar
+   - better very-small-phone behaviour
+   - touch press feedback
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / FORM SAFETY
+======================================== */
+
+.match-player-stats-form {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  /*
+   * Extra room for the sticky Save bar and the
+   * fixed MatchMuster bottom navigation.
+   */
+  padding-bottom: calc(
+    132px + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+/* ========================================
+   SUMMARY CARDS
+======================================== */
+
+.match-stats-summary,
+.match-player-stats-list {
+  width: 100%;
+  max-width: 100%;
+}
+
+.match-stats-summary article,
+.match-player-stat-card,
+.match-result-card {
+  box-sizing: border-box;
+}
+
+/* ========================================
+   TOUCH INTERACTION
+======================================== */
+
+.match-player-stat-card,
+.clean-sheet-toggle,
+.save-match-stats-button,
+.match-stats-button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .match-player-stat-card:hover,
+  .save-match-stats-button:hover:not(:disabled),
+  .match-stats-button:hover {
+    transform: none;
+  }
+
+  .save-match-stats-button:active:not(:disabled),
+  .match-stats-button:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   TOUCH TARGETS
+======================================== */
+
+.save-match-stats-button,
+.match-stats-button,
+.clean-sheet-toggle {
+  min-height: 44px;
+}
+
+html.platform-android .save-match-stats-button,
+html.platform-android .match-stats-button,
+html.platform-android .clean-sheet-toggle {
+  min-height: 48px;
+}
+
+/* ========================================
+   FORM CONTROLS
+======================================== */
+
+.match-stat-field input,
+.match-stat-field select,
+.match-result-team input {
+  box-sizing: border-box;
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+/*
+ * Prevent iOS Safari/Capacitor from zooming the page
+ * when a manager taps into a stats field.
+ */
+@media (max-width: 950px) {
+  .match-stat-field input,
+  .match-stat-field select,
+  .match-result-team input {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   CLEAN SHEET CONTROL
+======================================== */
+
+.clean-sheet-toggle {
+  box-sizing: border-box;
+}
+
+.clean-sheet-toggle input {
+  flex-shrink: 0;
+}
+
+/* ========================================
+   STICKY SAVE BAR
+======================================== */
+
+.match-stats-save-bar {
+  /*
+   * The MatchMuster bottom navigation is fixed,
+   * so keep Save above it rather than at the
+   * physical bottom of the viewport.
+   */
+  bottom: calc(
+    88px + env(safe-area-inset-bottom, 0px)
+  );
+
+  box-sizing: border-box;
+
+  /*
+   * Slightly stronger blur helps this feel like an
+   * app action bar while content scrolls underneath.
+   */
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .match-stats-save-bar {
+  border-radius: 18px;
+}
+
+html.platform-ios .save-match-stats-button,
+html.platform-ios .match-stats-button,
+html.platform-ios .clean-sheet-toggle {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   ANDROID POLISH
+======================================== */
+
+html.platform-android .match-stat-field input,
+html.platform-android .match-stat-field select {
+  min-height: 48px;
+}
+
+/* ========================================
+   TABLET / PHONE
+======================================== */
+
+@media (max-width: 850px) {
+  .match-player-stats-form {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .match-player-stats-form {
+    gap: 18px;
+
+    padding-bottom: calc(
+      152px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .match-stats-summary {
+    gap: 10px;
+  }
+
+  .match-stats-summary article {
+    min-width: 0;
+  }
+
+  .match-stats-summary span {
+    line-height: 1.25;
+  }
+
+  .match-player-stat-card {
+    width: 100%;
+  }
+
+  .match-stat-player-header {
+    min-width: 0;
+  }
+
+  .match-stat-player-header > div {
+    min-width: 0;
+  }
+
+  .match-stat-player-header h2,
+  .match-stat-player-header p {
+    overflow-wrap: anywhere;
+  }
+
+  /*
+   * Keep the existing two-field row where it fits,
+   * but prevent controls from overflowing.
+   */
+  .match-stat-fields {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .match-stat-field {
+    min-width: 0;
+  }
+
+  .match-stat-field input,
+  .match-stat-field select {
+    min-width: 0;
+  }
+
+  .match-stats-save-bar {
+    bottom: calc(
+      82px + env(safe-area-inset-bottom, 0px)
+    );
+
+    gap: 12px;
+    margin-right:
+      max(0px, env(safe-area-inset-right, 0px));
+    margin-left:
+      max(0px, env(safe-area-inset-left, 0px));
+
+    padding: 14px;
+  }
+
+  .match-stats-save-bar strong {
+    font-size: 14px;
+  }
+
+  .match-stats-save-bar p {
+    line-height: 1.4;
+  }
+
+  .save-match-stats-button {
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  /*
+   * Two stats fields can become cramped on SE-sized
+   * devices. Collapse only at this narrow breakpoint.
+   */
+  .match-stat-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .match-stats-summary article {
+    padding: 14px;
+  }
+
+  .match-stats-summary strong {
+    font-size: 22px;
+  }
+
+  .match-player-stat-card {
+    padding: 18px 15px;
+  }
+
+  .match-result-card {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .match-result-scoreboard {
+    gap: 8px;
+  }
+
+  .match-result-team input {
+    width: 58px;
+    height: 56px;
+  }
+}
+
+/* ========================================
+   SCOREBOARD MOBILE SAFETY
+======================================== */
+
+@media (max-width: 600px) {
+  .match-result-scoreboard {
+    width: 100%;
+  }
+
+  .match-result-team {
+    min-width: 0;
+  }
+
+  .match-result-team strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .match-result-team input {
+    flex: 0 0 auto;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .match-player-stats-list {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .match-stats-save-bar {
+    bottom: calc(
+      76px + env(safe-area-inset-bottom, 0px)
+    );
+
+    flex-direction: row;
+  }
+
+  .save-match-stats-button {
+    width: auto;
+    min-width: 170px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .match-player-stat-card,
+  .save-match-stats-button,
+  .match-stats-button,
+  .match-stat-field input,
+  .match-stat-field select {
+    transition: none;
+  }
+}

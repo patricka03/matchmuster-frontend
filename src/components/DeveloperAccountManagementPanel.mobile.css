@@ -1,0 +1,323 @@
+/* ==========================================================
+   MATCHMUSTER DEVELOPER ACCOUNT MANAGEMENT — MOBILE APP POLISH
+   File: src/styles/DeveloperAccountManagementPanel.mobile.css
+
+   Import this AFTER DeveloperAccountManagementPanel.css.
+
+   Keeps the existing developer admin design, colours,
+   account cards, filters and status badges unchanged.
+
+   Adds:
+   - iOS / Android touch target sizing
+   - safer mobile filter controls
+   - iOS input zoom prevention
+   - better long-email / long-name wrapping
+   - touch-first action buttons
+   - very-small-phone layouts
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PANEL WIDTH SAFETY
+======================================== */
+
+.developer-accounts-panel,
+.developer-accounts-summary,
+.developer-accounts-filters,
+.developer-accounts-list,
+.developer-account-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   TOUCH INTERACTION
+======================================== */
+
+.developer-accounts-header > button,
+.developer-accounts-filters button,
+.developer-account-actions button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android
+  .developer-accounts-header > button,
+html.platform-android
+  .developer-accounts-filters button,
+html.platform-android
+  .developer-account-actions button {
+  min-height: 48px;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .developer-accounts-header > button:hover,
+  .developer-accounts-filters button:hover,
+  .developer-account-actions button:hover {
+    transform: none;
+  }
+
+  .developer-accounts-header > button:active:not(:disabled),
+  .developer-accounts-filters button:active:not(:disabled),
+  .developer-account-actions button:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   FILTER CONTROLS
+======================================== */
+
+.developer-accounts-filters input,
+.developer-accounts-filters select {
+  box-sizing: border-box;
+
+  min-height: 44px;
+
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(160px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android
+  .developer-accounts-filters input,
+html.platform-android
+  .developer-accounts-filters select {
+  min-height: 48px;
+}
+
+/*
+ * Prevent iOS Safari / Capacitor from zooming
+ * the admin screen when a filter input is focused.
+ */
+@media (max-width: 950px) {
+  .developer-accounts-filters input,
+  .developer-accounts-filters select {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   ACCOUNT CONTENT SAFETY
+======================================== */
+
+.developer-account-main,
+.developer-account-main > div,
+.developer-account-name-row {
+  min-width: 0;
+}
+
+.developer-account-name-row h2,
+.developer-account-main p,
+.developer-account-main small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.developer-account-meta span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   ACTIONS
+======================================== */
+
+.developer-account-actions {
+  min-width: 0;
+}
+
+.developer-account-actions button {
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios
+  .developer-accounts-header > button,
+html.platform-ios
+  .developer-accounts-filters button,
+html.platform-ios
+  .developer-account-actions button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 1050px) {
+  .developer-accounts-filters {
+    gap: 10px;
+  }
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 760px) {
+  .developer-accounts-header {
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .developer-accounts-header h1 {
+    font-size: 30px;
+    line-height: 1.15;
+  }
+
+  .developer-accounts-header span {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .developer-accounts-header > button {
+    width: 100%;
+  }
+
+  .developer-accounts-summary {
+    gap: 10px;
+  }
+
+  .developer-accounts-summary article {
+    min-width: 0;
+    padding: 15px;
+  }
+
+  .developer-accounts-summary strong {
+    font-size: 22px;
+  }
+
+  .developer-accounts-filters {
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .developer-accounts-filters > div {
+    width: 100%;
+  }
+
+  .developer-accounts-filters > div button {
+    flex: 1;
+  }
+
+  .developer-account-card {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .developer-account-main {
+    width: 100%;
+  }
+
+  .developer-account-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .developer-account-actions button {
+    flex: 1 1 120px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 390px) {
+  .developer-accounts-summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .developer-accounts-summary article {
+    padding: 13px;
+  }
+
+  .developer-accounts-summary span {
+    font-size: 10px;
+  }
+
+  .developer-accounts-summary strong {
+    font-size: 20px;
+  }
+
+  .developer-account-card {
+    padding: 14px;
+  }
+
+  .developer-account-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .developer-account-name-row h2 {
+    font-size: 16px;
+  }
+
+  .developer-account-actions {
+    flex-direction: column;
+  }
+
+  .developer-account-actions button {
+    width: 100%;
+    flex: none;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .developer-accounts-summary {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  }
+
+  .developer-accounts-filters {
+    grid-template-columns:
+      minmax(220px, 2fr)
+      1fr
+      1fr
+      auto;
+  }
+
+  .developer-account-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .developer-account-actions {
+    width: auto;
+    justify-content: flex-end;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .developer-accounts-header > button,
+  .developer-accounts-filters button,
+  .developer-account-actions button {
+    transition: none;
+  }
+}

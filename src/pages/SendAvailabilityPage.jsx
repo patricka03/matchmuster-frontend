@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import './SendAvailabilityPage.css'
+import './SendAvailabilityPage.mobile.css'
 import API_URL from '../config/api'
 
 function SendAvailabilityPage() {

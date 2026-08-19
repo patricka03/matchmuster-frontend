@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API_URL from '../config/api'
 import './DeveloperModerationPanel.css'
+import './DeveloperModerationPanel.mobile.css'
+
 
 const STATUS_FILTERS = [
   { value: 'all', label: 'All reports' },

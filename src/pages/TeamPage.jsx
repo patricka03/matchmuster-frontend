@@ -236,7 +236,6 @@ function TeamPage() {
             type="button"
             onClick={() => navigate('/dashboard')}
           >
-            <span>←</span>
             Back to dashboard
           </button>
 

@@ -186,7 +186,7 @@ function EditPostPage() {
             className="app-back-button"
             to={`/teams/${teamId}/posts/${postId}`}
           >
-            ← Back to post
+            Back to post
           </Link>
 
           <header className="create-post-header">

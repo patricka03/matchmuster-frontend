@@ -1,0 +1,484 @@
+/* ==========================================================
+   MATCHMUSTER DEVELOPER DASHBOARD — MOBILE APP POLISH
+   File: src/styles/DeveloperDashboardPage.mobile.css
+
+   Import this AFTER DeveloperDashboardPage.css.
+
+   Keeps the existing developer dashboard layout, sidebar,
+   approval cards, activity feed and app-update form intact.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - iOS form zoom prevention
+   - safer mobile sidebar/navigation behaviour
+   - better long-name / activity wrapping
+   - touch-first actions
+   - very-small-phone layouts
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   ROOT / VIEWPORT
+======================================== */
+
+.developer-dashboard,
+.developer-loading {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.developer-dashboard,
+.developer-content,
+.developer-sidebar,
+.developer-stat-grid,
+.developer-manager-list,
+.developer-app-update-card,
+.developer-activity-list {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   SIDEBAR SAFE AREAS
+======================================== */
+
+.developer-sidebar {
+  padding-top:
+    max(28px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(20px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    max(28px, env(safe-area-inset-bottom, 0px));
+
+  padding-left:
+    max(20px, env(safe-area-inset-left, 0px));
+}
+
+/* ========================================
+   TOUCH TARGETS
+======================================== */
+
+.developer-navigation button,
+.developer-logout,
+.developer-refresh-button,
+.developer-manager-actions button,
+.developer-app-update-footer button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .developer-navigation button,
+html.platform-android .developer-logout,
+html.platform-android .developer-refresh-button,
+html.platform-android .developer-manager-actions button,
+html.platform-android .developer-app-update-footer button {
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .developer-navigation button:active:not(:disabled),
+  .developer-logout:active:not(:disabled),
+  .developer-refresh-button:active:not(:disabled),
+  .developer-manager-actions button:active:not(:disabled),
+  .developer-app-update-footer button:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   CONTENT / TEXT SAFETY
+======================================== */
+
+.developer-header,
+.developer-header > div,
+.developer-manager-card,
+.developer-manager-details,
+.developer-manager-details > div,
+.developer-activity-details,
+.developer-activity-heading {
+  min-width: 0;
+}
+
+.developer-header h1,
+.developer-header div > span,
+.developer-manager-details h2,
+.developer-manager-details p,
+.developer-manager-details span,
+.developer-activity-heading strong,
+.developer-activity-details p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   APP UPDATE FORM
+======================================== */
+
+.developer-app-update-card input,
+.developer-app-update-card textarea {
+  min-height: 44px;
+
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android .developer-app-update-card input,
+html.platform-android .developer-app-update-card textarea {
+  min-height: 48px;
+}
+
+/*
+ * Prevent iOS Safari / Capacitor zoom when the
+ * developer focuses update title/body fields.
+ */
+@media (max-width: 950px) {
+  .developer-app-update-card input,
+  .developer-app-update-card textarea {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .developer-navigation button,
+html.platform-ios .developer-logout,
+html.platform-ios .developer-refresh-button,
+html.platform-ios .developer-manager-actions button,
+html.platform-ios .developer-app-update-footer button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 900px) {
+  .developer-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .developer-sidebar {
+    min-height: auto;
+
+    /*
+     * On tablet/phone the sidebar becomes a top panel.
+     * Keep it comfortably inside the status-bar area.
+     */
+    padding-top:
+      max(20px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+
+    padding-bottom: 20px;
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-navigation {
+    gap: 6px;
+    margin-top: 20px;
+  }
+
+  .developer-content {
+    padding-top: 26px;
+
+    padding-right:
+      max(20px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      calc(
+        40px + env(safe-area-inset-bottom, 0px)
+      );
+
+    padding-left:
+      max(20px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-stat-grid {
+    gap: 14px;
+  }
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 560px) {
+  .developer-sidebar {
+    padding-right:
+      max(15px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(15px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-brand {
+    min-width: 0;
+  }
+
+  .developer-brand > div {
+    min-width: 0;
+  }
+
+  .developer-brand strong,
+  .developer-brand span {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .developer-navigation button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .developer-logout {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .developer-content {
+    padding-top: 22px;
+
+    padding-right:
+      max(15px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(15px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-header {
+    margin-bottom: 24px;
+  }
+
+  .developer-header h1 {
+    font-size: 29px;
+    line-height: 1.15;
+  }
+
+  .developer-live-status {
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  .developer-stat-grid {
+    gap: 10px;
+  }
+
+  .developer-stat-grid article {
+    min-height: 104px;
+    padding: 18px;
+  }
+
+  .developer-stat-grid article strong {
+    margin-top: 14px;
+    font-size: 27px;
+  }
+
+  .developer-manager-card {
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .developer-manager-details {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .developer-manager-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .developer-manager-actions button {
+    flex: 1 1 120px;
+    min-height: 48px;
+  }
+
+  .developer-app-update-card {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .developer-app-update-footer {
+    gap: 12px;
+  }
+
+  .developer-app-update-footer button {
+    min-height: 48px;
+  }
+
+  .developer-activity-item {
+    min-width: 0;
+    gap: 13px;
+  }
+
+  .developer-activity-heading {
+    min-width: 0;
+  }
+
+  .developer-activity-heading time {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .developer-sidebar {
+    padding-right:
+      max(12px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(12px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-content {
+    padding-right:
+      max(12px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(12px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-brand-mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .developer-header h1 {
+    font-size: 27px;
+  }
+
+  .developer-stat-grid article {
+    padding: 16px;
+  }
+
+  .developer-manager-card {
+    padding: 15px;
+  }
+
+  .developer-manager-actions {
+    flex-direction: column;
+  }
+
+  .developer-manager-actions button {
+    width: 100%;
+    flex: none;
+  }
+
+  .developer-app-update-card {
+    padding: 17px;
+  }
+
+  .developer-activity-item {
+    padding: 15px;
+  }
+
+  .developer-activity-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .developer-dashboard {
+    grid-template-columns:
+      220px minmax(0, 1fr);
+  }
+
+  .developer-sidebar {
+    min-height: 100dvh;
+
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right: 16px;
+
+    padding-bottom:
+      max(18px, env(safe-area-inset-bottom, 0px));
+
+    padding-left:
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-navigation {
+    margin-top: 20px;
+  }
+
+  .developer-content {
+    padding-top: 24px;
+
+    padding-right:
+      max(22px, env(safe-area-inset-right, 0px));
+
+    padding-left: 22px;
+  }
+
+  .developer-stat-grid {
+    grid-template-columns:
+      repeat(3, minmax(140px, 1fr));
+  }
+
+  .developer-manager-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .developer-manager-actions {
+    width: auto;
+  }
+
+  .developer-app-update-footer {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .developer-app-update-footer button {
+    width: auto;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .developer-navigation button,
+  .developer-logout,
+  .developer-refresh-button,
+  .developer-manager-actions button,
+  .developer-app-update-footer button,
+  .developer-app-update-card input,
+  .developer-app-update-card textarea {
+    transition: none;
+  }
+}

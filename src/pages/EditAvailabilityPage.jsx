@@ -8,6 +8,7 @@ import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 import './EditAvailabilityPage.css'
+import './EditAvailabilityPage.mobile.css'
 
 function EditAvailabilityPage() {
   const navigate = useNavigate()

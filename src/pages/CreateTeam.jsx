@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import './CreateTeam.css'
+import './CreateTeam.mobile.css'
 import API_URL from '../config/api'
-
 
 function CreatTeam() {
   const navigate = useNavigate()

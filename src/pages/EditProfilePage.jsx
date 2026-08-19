@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import BlockedUsersModal from '../components/BlockedUsersModal'
 import './EditProfilePage.css'
+import './EditProfilePage.mobile.css'
 import API_URL from '../config/api'
 
 const POSITIONS = ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'LW', 'RW', 'ST']
@@ -814,7 +815,7 @@ function EditProfilePage() {
               className="app-back-button"
               to="/dashboard"
             >
-              ← Back to dashboard
+              Back to dashboard
             </Link>
           </div>
 

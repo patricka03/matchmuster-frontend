@@ -158,7 +158,7 @@ function SignupPage() {
           className="app-back-button"
           to="/"
         >
-          ← Back
+          Back
         </Link>
 
         <img

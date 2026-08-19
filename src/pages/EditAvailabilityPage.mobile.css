@@ -1,0 +1,305 @@
+/* ==========================================================
+   MATCHMUSTER EDIT AVAILABILITY — MOBILE APP POLISH
+   File: src/styles/EditAvailabilityPage.mobile.css
+
+   Import this AFTER EditAvailabilityPage.css.
+
+   Keeps the current MatchMuster availability cards,
+   selected-state gradient, colours and action layout unchanged.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - safer touch-first availability options
+   - better small-phone spacing
+   - bottom-nav clearance
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / VIEWPORT
+======================================== */
+
+.edit-availability-page {
+  min-height: calc(100vh - 72px);
+  min-height: calc(100dvh - 72px);
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(48px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(20px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(20px, env(safe-area-inset-left, 0px));
+}
+
+.edit-availability-container,
+.edit-availability-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   HEADING SAFETY
+======================================== */
+
+.edit-availability-heading h1,
+.edit-availability-heading p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   AVAILABILITY OPTIONS
+======================================== */
+
+.availability-option {
+  min-height: 44px;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .availability-option {
+  min-height: 48px;
+}
+
+.availability-option > div,
+.availability-option > span {
+  min-width: 0;
+}
+
+.availability-option strong,
+.availability-option small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .availability-option:hover {
+    border-color: #dfe5ec;
+  }
+
+  .availability-option-selected {
+    border-color: var(--color-brand-blue);
+
+    background:
+      linear-gradient(
+        135deg,
+        #fff0f7,
+        #eff6ff
+      );
+  }
+
+  .availability-option:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   ACTIONS
+======================================== */
+
+.edit-availability-cancel,
+.edit-availability-submit,
+.edit-availability-back {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .edit-availability-cancel,
+html.platform-android .edit-availability-submit,
+html.platform-android .edit-availability-back {
+  min-height: 48px;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .availability-option,
+html.platform-ios .edit-availability-cancel,
+html.platform-ios .edit-availability-submit,
+html.platform-ios .edit-availability-back {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+  .edit-availability-page {
+    padding-top:
+      max(28px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(16px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      calc(
+        116px + env(safe-area-inset-bottom, 0px)
+      );
+
+    padding-left:
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .edit-availability-heading {
+    margin-bottom: 20px;
+  }
+
+  .edit-availability-heading h1 {
+    font-size: 1.75rem;
+    line-height: 1.15;
+  }
+
+  .edit-availability-heading p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .edit-availability-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .edit-availability-card fieldset {
+    gap: 12px;
+  }
+
+  .edit-availability-card legend {
+    margin-bottom: 15px;
+  }
+
+  .availability-option {
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .availability-option-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .edit-availability-actions {
+    gap: 9px;
+    margin-top: 24px;
+  }
+
+  .edit-availability-cancel,
+  .edit-availability-submit,
+  .edit-availability-back {
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .edit-availability-page {
+    padding-right:
+      max(13px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(13px, env(safe-area-inset-left, 0px));
+  }
+
+  .edit-availability-card {
+    padding: 16px;
+  }
+
+  .availability-option {
+    padding: 13px;
+  }
+
+  .availability-option-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1.15rem;
+  }
+
+  .availability-option small {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .edit-availability-page {
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(22px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(22px, env(safe-area-inset-left, 0px));
+  }
+
+  .edit-availability-container {
+    max-width: 760px;
+  }
+
+  .edit-availability-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .edit-availability-cancel,
+  .edit-availability-submit,
+  .edit-availability-back {
+    width: auto;
+    min-width: 150px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .availability-option,
+  .edit-availability-cancel,
+  .edit-availability-submit,
+  .edit-availability-back {
+    transition: none;
+  }
+}

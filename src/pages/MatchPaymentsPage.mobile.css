@@ -1,0 +1,413 @@
+/* ==========================================================
+   MATCHMUSTER MATCH PAYMENTS — MOBILE APP POLISH
+   File: src/styles/MatchPaymentsPage.mobile.css
+
+   Import this AFTER MatchPaymentsPage.css.
+
+   Keeps the current MatchMuster finance overview,
+   collection progress, payment cards, filters and
+   manager/player actions unchanged.
+
+   Adds:
+   - iOS / Android touch target sizing
+   - iOS form zoom prevention
+   - keyboard-friendly amount entry
+   - safer horizontal payment filters
+   - better long-name / payment-detail wrapping
+   - touch-first button feedback
+   - bottom-nav clearance
+   - very-small-phone handling
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / SECTION WIDTH SAFETY
+======================================== */
+
+.payment-page-heading,
+.payment-finance-overview,
+.payment-collection-card,
+.payment-summary,
+.payment-request-form,
+.payment-list-section,
+.payment-filter-tabs,
+.match-payment-list,
+.match-payment-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/*
+ * Leave comfortable room after the last payment card
+ * so it can scroll above MatchMuster's fixed bottom nav.
+ */
+.match-payment-list {
+  padding-bottom: calc(
+    116px + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+/* ========================================
+   CONTENT SAFETY
+======================================== */
+
+.payment-collection-heading,
+.payment-collection-heading > div,
+.payment-request-copy,
+.payment-player-information,
+.match-payment-player,
+.match-payment-status-area {
+  min-width: 0;
+}
+
+.payment-collection-heading h2,
+.collection-progress-caption,
+.payment-request-copy h2,
+.payment-request-copy p,
+.payment-player-information h2,
+.payment-player-information p,
+.payment-player-information small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   AMOUNT INPUT
+======================================== */
+
+.payment-amount-input {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.payment-amount-input input {
+  min-height: 44px;
+  box-sizing: border-box;
+
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android .payment-amount-input,
+html.platform-android .payment-amount-input input {
+  min-height: 48px;
+}
+
+/*
+ * Prevent iOS Safari / Capacitor from zooming
+ * when the amount field receives focus.
+ */
+@media (max-width: 950px) {
+  .payment-amount-input input {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   PRIMARY / SECONDARY TOUCH TARGETS
+======================================== */
+
+.manage-payments-button,
+.request-payments-button,
+.pay-now-button,
+.clear-payment-filter-button,
+.payment-filter-tabs button,
+.match-payment-actions button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .manage-payments-button,
+html.platform-android .request-payments-button,
+html.platform-android .pay-now-button,
+html.platform-android .clear-payment-filter-button,
+html.platform-android .payment-filter-tabs button,
+html.platform-android .match-payment-actions button {
+  min-height: 48px;
+}
+
+/* ========================================
+   PAYMENT FILTER TABS
+======================================== */
+
+.payment-filter-tabs {
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+
+  /*
+   * Keeps first/last tabs from touching the screen edge
+   * while still allowing natural horizontal swiping.
+   */
+  scroll-padding-inline: 0.35rem;
+}
+
+.payment-filter-tabs button {
+  white-space: nowrap;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .match-payment-card:hover,
+  .request-payments-button:hover:not(:disabled),
+  .pay-now-button:hover:not(:disabled),
+  .clear-payment-filter-button:hover:not(:disabled),
+  .match-payment-actions button:hover:not(:disabled),
+  .payment-filter-tabs button:hover,
+  .manage-payments-button:hover {
+    transform: none;
+  }
+
+  .request-payments-button:active:not(:disabled),
+  .pay-now-button:active:not(:disabled),
+  .clear-payment-filter-button:active:not(:disabled),
+  .match-payment-actions button:active:not(:disabled),
+  .payment-filter-tabs button:active,
+  .manage-payments-button:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   PAYMENT CARDS
+======================================== */
+
+.match-payment-card,
+.match-payment-player,
+.payment-player-information,
+.match-payment-actions {
+  min-width: 0;
+}
+
+.payment-player-information h2 {
+  /*
+   * Desktop keeps the single-line ellipsis.
+   * Mobile can wrap naturally below.
+   */
+  max-width: 100%;
+}
+
+.payment-status {
+  flex-shrink: 0;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .manage-payments-button,
+html.platform-ios .request-payments-button,
+html.platform-ios .pay-now-button,
+html.platform-ios .clear-payment-filter-button,
+html.platform-ios .payment-filter-tabs button,
+html.platform-ios .match-payment-actions button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 640px) {
+  .payment-collection-card {
+    padding: 1.1rem;
+  }
+
+  .payment-collection-heading {
+    gap: 0.75rem;
+  }
+
+  .collection-percentage {
+    flex: 0 0 auto;
+  }
+
+  .payment-summary {
+    gap: 0.6rem;
+  }
+
+  .payment-summary article {
+    min-width: 0;
+  }
+
+  .payment-request-form {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .payment-request-controls {
+    width: 100%;
+  }
+
+  .payment-amount-input {
+    width: 100%;
+  }
+
+  .request-payments-button,
+  .pay-now-button,
+  .clear-payment-filter-button {
+    min-height: 48px;
+  }
+
+  .payment-list-heading {
+    min-width: 0;
+    gap: 0.75rem;
+  }
+
+  .payment-list-heading > div {
+    min-width: 0;
+  }
+
+  .payment-list-heading h2 {
+    overflow-wrap: anywhere;
+  }
+
+  .payment-filter-tabs button {
+    min-height: 44px;
+  }
+
+  .match-payment-card {
+    width: 100%;
+  }
+
+  .payment-player-information h2 {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.25;
+  }
+
+  .match-payment-status-area {
+    width: 100%;
+  }
+
+  .match-payment-actions button {
+    min-height: 48px;
+  }
+
+  .match-payment-list {
+    padding-bottom: calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .payment-collection-card {
+    padding: 0.95rem;
+  }
+
+  .payment-collection-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .collection-percentage {
+    align-self: flex-start;
+  }
+
+  .payment-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-summary article {
+    padding: 0.9rem;
+  }
+
+  .payment-request-form {
+    padding: 0.9rem;
+  }
+
+  .payment-list-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .outstanding-payment-count {
+    align-self: flex-start;
+  }
+
+  .match-payment-card {
+    padding: 0.9rem;
+  }
+
+  .match-payment-player {
+    align-items: flex-start;
+  }
+
+  .player-avatar {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .match-payment-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .payment-summary {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  }
+
+  .payment-request-form {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(240px, 300px);
+  }
+
+  .match-payment-card {
+    display: flex;
+    align-items: center;
+  }
+
+  .match-payment-status-area {
+    width: auto;
+    max-width: 55%;
+    align-items: flex-end;
+  }
+
+  .match-payment-actions {
+    display: flex;
+    width: auto;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-progress-fill,
+  .match-payment-card,
+  .request-payments-button,
+  .pay-now-button,
+  .clear-payment-filter-button,
+  .payment-filter-tabs button,
+  .match-payment-actions button {
+    transition: none;
+  }
+}

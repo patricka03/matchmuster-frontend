@@ -1,19 +1,33 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+
 import {
   CalendarDays,
   Check,
   Clock,
-  MapPin,
   X,
 } from 'lucide-react'
+
 import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
+
+import mapboxgl from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
 import './TrainingPage.css'
+import './TrainingPage.mobile.css'
+
+const MAPBOX_TOKEN =
+  import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
 function TrainingPage() {
   const navigate = useNavigate()
@@ -38,14 +52,35 @@ function TrainingPage() {
   const [loading, setLoading] =
     useState(true)
 
-  const [savingAvailability, setSavingAvailability] =
-    useState(false)
+  const [
+    savingAvailability,
+    setSavingAvailability,
+  ] = useState(false)
 
-  const [deletingTraining, setDeletingTraining] =
-    useState(false)
+  const [
+    deletingTraining,
+    setDeletingTraining,
+  ] = useState(false)
 
   const [errorMessage, setErrorMessage] =
     useState('')
+
+  // ========================================
+  // MAP
+  // ========================================
+
+  const [showMap, setShowMap] =
+    useState(false)
+
+  const mapContainerRef =
+    useRef(null)
+
+  const mapRef =
+    useRef(null)
+
+  // ========================================
+  // USER TYPES
+  // ========================================
 
   const isPlayer =
     currentUser?.account_type ===
@@ -57,6 +92,10 @@ function TrainingPage() {
     currentUser
       ?.manager_verification_status ===
       'approved'
+
+  // ========================================
+  // LOAD TRAINING
+  // ========================================
 
   useEffect(() => {
     async function loadTraining() {
@@ -97,10 +136,14 @@ function TrainingPage() {
         ])
 
         if (
-          trainingResponse.status === 401 ||
+          trainingResponse.status ===
+            401 ||
           userResponse.status === 401
         ) {
-          localStorage.removeItem('token')
+          localStorage.removeItem(
+            'token',
+          )
+
           localStorage.removeItem(
             'currentUser',
           )
@@ -113,7 +156,8 @@ function TrainingPage() {
         }
 
         if (
-          trainingResponse.status === 403
+          trainingResponse.status ===
+          403
         ) {
           navigate('/dashboard', {
             replace: true,
@@ -152,6 +196,10 @@ function TrainingPage() {
         const availabilityUrl =
           `${API_URL}/teams/${teamId}/trainings/${trainingId}/training_availabilities`
 
+        // ========================================
+        // PLAYER AVAILABILITY
+        // ========================================
+
         if (
           user.account_type ===
           'player'
@@ -174,6 +222,10 @@ function TrainingPage() {
             )
           }
         }
+
+        // ========================================
+        // MANAGER ATTENDANCE
+        // ========================================
 
         if (
           user.account_type ===
@@ -214,6 +266,121 @@ function TrainingPage() {
     teamId,
     trainingId,
   ])
+
+  // ========================================
+  // LOCATION COORDINATES
+  // ========================================
+
+  const latitude =
+    training?.latitude !== null &&
+    training?.latitude !== undefined
+      ? Number(training.latitude)
+      : null
+
+  const longitude =
+    training?.longitude !== null &&
+    training?.longitude !== undefined
+      ? Number(training.longitude)
+      : null
+
+  const hasCoordinates =
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude)
+
+  // ========================================
+  // MAPBOX MAP
+  // ========================================
+
+  useEffect(() => {
+    if (
+      !showMap ||
+      !hasCoordinates ||
+      !MAPBOX_TOKEN ||
+      !mapContainerRef.current
+    ) {
+      return
+    }
+
+    if (mapRef.current) {
+      return
+    }
+
+    const map =
+      new mapboxgl.Map({
+        accessToken:
+          MAPBOX_TOKEN,
+
+        container:
+          mapContainerRef.current,
+
+        style:
+          'mapbox://styles/mapbox/streets-v12',
+
+        center: [
+          longitude,
+          latitude,
+        ],
+
+        zoom: 15,
+      })
+
+    map.addControl(
+      new mapboxgl.NavigationControl(),
+      'top-right',
+    )
+
+    new mapboxgl.Marker()
+      .setLngLat([
+        longitude,
+        latitude,
+      ])
+      .addTo(map)
+
+    mapRef.current = map
+
+    return () => {
+      map.remove()
+      mapRef.current = null
+    }
+  }, [
+    showMap,
+    hasCoordinates,
+    latitude,
+    longitude,
+  ])
+
+  // ========================================
+  // DIRECTIONS
+  // ========================================
+
+  const directionCoordinates =
+    hasCoordinates
+      ? `${latitude},${longitude}`
+      : ''
+
+  const encodedDirectionCoordinates =
+    encodeURIComponent(
+      directionCoordinates,
+    )
+
+  const appleMapsUrl =
+    hasCoordinates
+      ? `https://maps.apple.com/directions?destination=${encodedDirectionCoordinates}&mode=driving`
+      : null
+
+  const googleMapsUrl =
+    hasCoordinates
+      ? `https://www.google.com/maps/dir/?api=1&destination=${encodedDirectionCoordinates}&travelmode=driving`
+      : null
+
+  const wazeUrl =
+    hasCoordinates
+      ? `https://waze.com/ul?ll=${encodedDirectionCoordinates}&navigate=yes&utm_source=matchmuster`
+      : null
+
+  // ========================================
+  // PLAYER AVAILABILITY
+  // ========================================
 
   async function handleAvailability(
     status,
@@ -295,6 +462,10 @@ function TrainingPage() {
       setSavingAvailability(false)
     }
   }
+
+  // ========================================
+  // DELETE TRAINING
+  // ========================================
 
   async function handleDeleteTraining() {
     if (
@@ -409,6 +580,10 @@ function TrainingPage() {
     }
   }
 
+  // ========================================
+  // DATE / TIME
+  // ========================================
+
   function formatDate(dateTime) {
     return new Intl.DateTimeFormat(
       'en-GB',
@@ -434,6 +609,10 @@ function TrainingPage() {
     )
   }
 
+  // ========================================
+  // AVAILABILITY LABEL
+  // ========================================
+
   function availabilityLabel() {
     if (
       myAvailability?.status ===
@@ -451,6 +630,10 @@ function TrainingPage() {
 
     return 'Awaiting response'
   }
+
+  // ========================================
+  // MANAGER COUNTS
+  // ========================================
 
   const availableCount =
     attendance.filter(
@@ -472,6 +655,10 @@ function TrainingPage() {
         player.status ===
         'pending',
     ).length
+
+  // ========================================
+  // LOADING
+  // ========================================
 
   if (loading) {
     return (
@@ -506,6 +693,10 @@ function TrainingPage() {
 
           {training && (
             <>
+              {/* ========================================
+                  PAGE HEADING
+              ======================================== */}
+
               <div className="dashboard-welcome">
                 <p className="dashboard-label">
                   Training
@@ -515,6 +706,10 @@ function TrainingPage() {
                   {training.title}
                 </h1>
               </div>
+
+              {/* ========================================
+                  TRAINING DETAILS
+              ======================================== */}
 
               <article className="fixture-details-card">
                 <div className="fixture-details-header">
@@ -528,6 +723,10 @@ function TrainingPage() {
                 </div>
 
                 <div className="fixture-information">
+                  {/* ========================================
+                      DATE
+                  ======================================== */}
+
                   <div className="fixture-information-item">
                     <span>
                       Date
@@ -539,6 +738,10 @@ function TrainingPage() {
                       )}
                     </strong>
                   </div>
+
+                  {/* ========================================
+                      START TIME
+                  ======================================== */}
 
                   <div className="fixture-information-item">
                     <span>
@@ -557,6 +760,10 @@ function TrainingPage() {
                     </strong>
                   </div>
 
+                  {/* ========================================
+                      MEET TIME
+                  ======================================== */}
+
                   <div className="fixture-information-item">
                     <span>
                       Meet time
@@ -574,20 +781,9 @@ function TrainingPage() {
                     </strong>
                   </div>
 
-                  <div className="fixture-information-item fixture-location-item">
-                    <span>
-                      Location
-                    </span>
-
-                    <strong className="training-detail-value">
-                      <MapPin
-                        size={16}
-                        aria-hidden="true"
-                      />
-
-                      {training.location}
-                    </strong>
-                  </div>
+                  {/* ========================================
+                      TRAINING INFORMATION
+                  ======================================== */}
 
                   {training.description && (
                     <div className="fixture-information-item fixture-description">
@@ -600,8 +796,125 @@ function TrainingPage() {
                       </strong>
                     </div>
                   )}
+
+                  {/* ========================================
+                      LOCATION
+                  ======================================== */}
+
+                  <div className="fixture-information-item fixture-location-item">
+                    <span>
+                      Location
+                    </span>
+
+                    <div className="match-location-content">
+                      <div className="match-location-address">
+                        <span
+                          className="match-location-pin"
+                          aria-hidden="true"
+                        >
+                          📍
+                        </span>
+
+                        <strong>
+                          {training.location ||
+                            'Location TBC'}
+                        </strong>
+                      </div>
+
+                      {hasCoordinates && (
+                        <>
+                          {/* ========================================
+                              VIEW MAP
+                          ======================================== */}
+
+                          <button
+                            className="view-map-button"
+                            type="button"
+                            aria-expanded={
+                              showMap
+                            }
+                            onClick={() =>
+                              setShowMap(
+                                (
+                                  currentValue,
+                                ) =>
+                                  !currentValue,
+                              )
+                            }
+                          >
+                            {showMap
+                              ? 'Hide map'
+                              : 'View map'}
+                          </button>
+
+                          {/* ========================================
+                              MAPBOX MAP
+                          ======================================== */}
+
+                          {showMap && (
+                            <div
+                              className="match-map-container"
+                              ref={
+                                mapContainerRef
+                              }
+                              aria-label={`Map showing ${training.location}`}
+                            />
+                          )}
+
+                          {/* ========================================
+                              DIRECTIONS
+                          ======================================== */}
+
+                          <div className="match-directions">
+                            <span className="match-directions-label">
+                              Get directions:
+                            </span>
+
+                            <div className="match-directions-links">
+                              <a
+                                className="match-direction-link"
+                                href={
+                                  appleMapsUrl
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Apple Maps
+                              </a>
+
+                              <a
+                                className="match-direction-link"
+                                href={
+                                  googleMapsUrl
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Google Maps
+                              </a>
+
+                              <a
+                                className="match-direction-link"
+                                href={
+                                  wazeUrl
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Waze
+                              </a>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </article>
+
+              {/* ========================================
+                  MANAGER ACTIONS
+              ======================================== */}
 
               {isApprovedManager && (
                 <div className="fixture-management-actions">
@@ -633,6 +946,10 @@ function TrainingPage() {
                   </button>
                 </div>
               )}
+
+              {/* ========================================
+                  PLAYER AVAILABILITY
+              ======================================== */}
 
               {isPlayer && (
                 <section className="training-player-availability">
@@ -708,6 +1025,10 @@ function TrainingPage() {
                   </div>
                 </section>
               )}
+
+              {/* ========================================
+                  MANAGER AVAILABILITY
+              ======================================== */}
 
               {isApprovedManager && (
                 <>

@@ -1,0 +1,326 @@
+/* ==========================================================
+   MATCHMUSTER DEVELOPER MODERATION — MOBILE APP POLISH
+   File: src/styles/DeveloperModerationPanel.mobile.css
+
+   Import this AFTER DeveloperModerationPanel.css.
+
+   Keeps the existing moderation colours, report cards,
+   status badges, filters and action hierarchy unchanged.
+
+   Adds:
+   - iOS / Android touch target sizing
+   - safer mobile search / notes inputs
+   - iOS zoom prevention
+   - better long-content wrapping
+   - touch-first moderation actions
+   - very-small-phone layouts
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PANEL / CARD WIDTH SAFETY
+======================================== */
+
+.moderation-summary,
+.moderation-toolbar,
+.moderation-report-list,
+.moderation-report-card,
+.moderation-people-grid {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   TOUCH TARGETS
+======================================== */
+
+.moderation-filters button,
+.moderation-actions button {
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .moderation-filters button,
+html.platform-android .moderation-actions button {
+  min-height: 48px;
+}
+
+/* ========================================
+   SEARCH + NOTES INPUTS
+======================================== */
+
+.moderation-search input,
+.moderation-notes-field textarea {
+  box-sizing: border-box;
+  min-height: 44px;
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android .moderation-search input,
+html.platform-android .moderation-notes-field textarea {
+  min-height: 48px;
+}
+
+@media (max-width: 950px) {
+  .moderation-search input,
+  .moderation-notes-field textarea {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   CONTENT WRAPPING
+======================================== */
+
+.moderation-report-heading,
+.moderation-report-heading > div,
+.moderation-report-meta,
+.moderation-people-grid > div,
+.moderation-report-details,
+.moderation-reported-content,
+.moderation-existing-notes,
+.moderation-action-history > article {
+  min-width: 0;
+}
+
+.moderation-report-heading h2,
+.moderation-report-details p,
+.moderation-reported-content p,
+.moderation-existing-notes p,
+.moderation-action-history p,
+.moderation-people-grid strong,
+.moderation-people-grid small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   FILTER CHIPS
+======================================== */
+
+.moderation-filters button {
+  white-space: nowrap;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .moderation-filters button:hover {
+    border-color: #d8e4f8;
+    background: #ffffff;
+    color: #526078;
+  }
+
+  .moderation-filters button.active {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  .moderation-filters button:active,
+  .moderation-actions button:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   ACTION BUTTONS
+======================================== */
+
+.moderation-actions button {
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .moderation-filters button,
+html.platform-ios .moderation-actions button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 760px) {
+  .moderation-summary {
+    gap: 10px;
+  }
+
+  .moderation-summary article {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .moderation-summary strong {
+    font-size: 23px;
+  }
+
+  .moderation-toolbar {
+    gap: 12px;
+  }
+
+  .moderation-filters {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .moderation-filters button {
+    flex: 1 1 auto;
+  }
+
+  .moderation-search {
+    width: 100%;
+  }
+
+  .moderation-report-card {
+    padding: 18px;
+  }
+
+  .moderation-report-heading h2 {
+    line-height: 1.3;
+  }
+
+  .moderation-report-heading time {
+    width: 100%;
+  }
+
+  .moderation-people-grid {
+    gap: 10px;
+  }
+
+  .moderation-actions {
+    gap: 8px;
+  }
+
+  .moderation-actions button {
+    flex: 1 1 150px;
+  }
+
+  .moderation-action-history > article {
+    box-sizing: border-box;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 390px) {
+  .moderation-summary {
+    gap: 8px;
+  }
+
+  .moderation-summary article {
+    padding: 14px;
+  }
+
+  .moderation-summary span {
+    font-size: 11px;
+  }
+
+  .moderation-summary strong {
+    font-size: 21px;
+  }
+
+  .moderation-filters {
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .moderation-filters button {
+    width: 100%;
+  }
+
+  .moderation-report-card {
+    padding: 15px;
+  }
+
+  .moderation-report-meta {
+    gap: 5px;
+  }
+
+  .moderation-report-meta > span:not(.moderation-status),
+  .moderation-status {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .moderation-people-grid > div,
+  .moderation-report-details,
+  .moderation-reported-content,
+  .moderation-existing-notes {
+    padding: 12px;
+  }
+
+  .moderation-actions {
+    flex-direction: column;
+  }
+
+  .moderation-actions button {
+    width: 100%;
+    flex: none;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .moderation-summary {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .moderation-toolbar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .moderation-search {
+    flex: 0 1 280px;
+    width: auto;
+  }
+
+  .moderation-people-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .moderation-actions {
+    flex-direction: row;
+  }
+
+  .moderation-actions button {
+    width: auto;
+    flex: 0 1 auto;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .moderation-filters button,
+  .moderation-actions button,
+  .moderation-search input,
+  .moderation-notes-field textarea {
+    transition: none;
+  }
+}

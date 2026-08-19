@@ -1,0 +1,350 @@
+/* ==========================================================
+   MATCHMUSTER TEAM AWARDS — MOBILE APP POLISH
+   File: src/styles/TeamAwardsPage.mobile.css
+
+   Import this AFTER TeamAwardsPage.css.
+
+   Keeps the current MatchMuster award cards, leaderboards,
+   team record, MOTM styling, colours and layout unchanged.
+
+   Adds:
+   - safer mobile widths
+   - iOS / Android safe-area friendly spacing
+   - better long-name handling
+   - tighter very-small-phone layouts
+   - landscape improvements
+   - app-like touch behaviour for any interactive rows/buttons
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE WIDTH SAFETY
+======================================== */
+
+.team-awards-hero-grid,
+.team-award-hero-card,
+.team-awards-section,
+.team-stat-grid {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   HERO CARDS
+======================================== */
+
+.team-award-hero-card {
+  /*
+   * Prevent long player/team names from forcing
+   * the card wider than the phone viewport.
+   */
+  min-width: 0;
+}
+
+.team-award-leader {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.team-award-leader > div:last-child {
+  min-width: 0;
+}
+
+.team-award-leader strong,
+.team-award-leader span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   AWARD / MOTM AVATARS
+======================================== */
+
+.team-award-hero-avatar,
+.team-award-avatar,
+.recent-motm-avatar {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ========================================
+   LEADERBOARDS
+======================================== */
+
+.team-awards-leaderboard-row,
+.team-stat-row,
+.recent-motm-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.team-awards-player-info strong,
+.team-awards-player-info span,
+.recent-motm-player strong,
+.recent-motm-player p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.team-awards-count,
+.team-stat-total,
+.recent-motm-result {
+  flex-shrink: 0;
+}
+
+/* ========================================
+   TEAM RECORD GRID
+======================================== */
+
+.team-record-grid {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.team-record-grid article {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.team-record-grid span,
+.team-record-grid small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   TOUCH BEHAVIOUR
+======================================== */
+
+/*
+ * Most of this page is read-only, but these rules
+ * keep any future clickable award rows/buttons feeling
+ * native on iOS and Android without changing layout.
+ */
+.team-awards-leaderboard-row,
+.team-stat-row,
+.recent-motm-card,
+.team-award-leader {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .team-awards-leaderboard-row:hover,
+  .team-stat-row:hover,
+  .recent-motm-card:hover,
+  .team-award-leader:hover {
+    transform: none;
+  }
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .team-award-hero-card,
+html.platform-ios .team-awards-section {
+  -webkit-touch-callout: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 520px) {
+  .team-awards-hero-grid {
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .team-award-hero-card {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .team-award-icon {
+    margin-bottom: 12px;
+    font-size: 36px;
+  }
+
+  .team-award-hero-card h2 {
+    margin-bottom: 18px;
+    line-height: 1.2;
+  }
+
+  .team-award-leader {
+    gap: 12px;
+    padding: 13px;
+  }
+
+  .team-award-leader strong {
+    font-size: 16px;
+  }
+
+  .team-awards-section {
+    margin-top: 22px;
+    border-radius: 18px;
+  }
+
+  .team-awards-section-heading {
+    padding: 18px 16px;
+  }
+
+  .team-awards-section-heading h2 {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  .team-awards-leaderboard-row,
+  .team-stat-row,
+  .recent-motm-card {
+    min-height: 70px;
+    padding: 13px 14px;
+  }
+
+  .team-awards-player-info strong,
+  .recent-motm-player strong {
+    line-height: 1.25;
+  }
+
+  .team-awards-count,
+  .team-stat-total {
+    min-width: 50px;
+    padding: 7px 9px;
+  }
+
+  .recent-motm-result strong {
+    min-width: 46px;
+    height: 36px;
+  }
+
+  .team-awards-empty-state {
+    padding: 32px 18px;
+  }
+
+  .team-awards-no-results {
+    padding: 24px 18px;
+  }
+
+  .team-record-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .team-record-grid article {
+    padding: 15px 8px;
+  }
+
+  .team-record-grid strong {
+    font-size: 21px;
+  }
+
+  .team-stat-grid {
+    gap: 0;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .team-award-hero-card {
+    padding: 20px 15px;
+  }
+
+  .team-award-hero-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .team-award-avatar,
+  .recent-motm-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .team-awards-position {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .team-awards-leaderboard-row,
+  .team-stat-row,
+  .recent-motm-card {
+    gap: 8px;
+    padding-right: 11px;
+    padding-left: 11px;
+  }
+
+  .team-awards-count,
+  .team-stat-total {
+    min-width: 46px;
+    padding-right: 7px;
+    padding-left: 7px;
+  }
+
+  .team-awards-count strong,
+  .team-stat-total strong {
+    font-size: 16px;
+  }
+
+  .recent-motm-result strong {
+    min-width: 42px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .team-record-grid article {
+    padding: 14px 6px;
+  }
+
+  .team-record-grid span {
+    font-size: 10px;
+  }
+
+  .team-record-grid strong {
+    font-size: 20px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .team-awards-hero-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .team-award-hero-card {
+    min-height: 240px;
+  }
+
+  .team-stat-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .team-awards-leaderboard-row,
+  .team-stat-row,
+  .recent-motm-card,
+  .team-award-leader {
+    transition: none;
+  }
+}

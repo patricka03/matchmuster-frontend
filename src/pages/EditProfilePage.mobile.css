@@ -1,0 +1,556 @@
+/* ==========================================================
+   MATCHMUSTER EDIT PROFILE — MOBILE APP POLISH
+   File: src/styles/EditProfilePage.mobile.css
+
+   Import this AFTER EditProfilePage.css.
+
+   Keeps the current MatchMuster profile layout, avatar,
+   settings rows, account danger zone and modal styling intact.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - iOS form zoom prevention
+   - keyboard-friendly modal forms
+   - safer file-upload/profile actions
+   - bottom-sheet modal clearance
+   - bottom-nav clearance
+   - very-small-phone / landscape handling
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / VIEWPORT
+======================================== */
+
+.edit-profile-page {
+  min-height: calc(100vh - 72px);
+  min-height: calc(100dvh - 72px);
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(48px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(20px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(20px, env(safe-area-inset-left, 0px));
+}
+
+.edit-profile-card,
+.profile-overview,
+.profile-settings-list,
+.profile-danger-section {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   CONTENT SAFETY
+======================================== */
+
+.edit-profile-heading,
+.edit-profile-heading > div,
+.profile-overview-details,
+.profile-picture-section,
+.profile-setting-row,
+.profile-setting-row > div,
+.profile-danger-heading,
+.profile-danger-heading > div {
+  min-width: 0;
+}
+
+.edit-profile-heading h1,
+.edit-profile-heading p,
+.profile-overview-details h2,
+.profile-overview-details p,
+.profile-setting-row strong,
+.profile-setting-row small,
+.profile-danger-heading h2,
+.profile-danger-heading p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   TOUCH TARGETS
+======================================== */
+
+.profile-dashboard-link,
+.profile-file-label,
+.profile-secondary-button,
+.profile-edit-button,
+.profile-primary-button,
+.profile-delete-button,
+.profile-delete-confirm-button,
+.profile-modal-close,
+.profile-delete-confirmation {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .profile-dashboard-link,
+html.platform-android .profile-file-label,
+html.platform-android .profile-secondary-button,
+html.platform-android .profile-edit-button,
+html.platform-android .profile-primary-button,
+html.platform-android .profile-delete-button,
+html.platform-android .profile-delete-confirm-button,
+html.platform-android .profile-modal-close,
+html.platform-android .profile-delete-confirmation {
+  min-height: 48px;
+}
+
+/* ========================================
+   FORM CONTROLS
+======================================== */
+
+.profile-form-group input,
+.profile-form-group select {
+  min-height: 44px;
+
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android .profile-form-group input,
+html.platform-android .profile-form-group select {
+  min-height: 48px;
+}
+
+/*
+ * Prevent iOS Safari / Capacitor from zooming
+ * when profile modal form fields receive focus.
+ */
+@media (max-width: 950px) {
+  .profile-form-group input,
+  .profile-form-group select {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   PROFILE PICTURE ACTIONS
+======================================== */
+
+.profile-picture-actions {
+  min-width: 0;
+}
+
+.profile-file-label,
+.profile-secondary-button,
+.profile-edit-button,
+.profile-primary-button {
+  box-sizing: border-box;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .profile-file-label:hover,
+  .profile-secondary-button:hover,
+  .profile-edit-button:hover,
+  .profile-primary-button:hover:not(:disabled),
+  .profile-delete-button:hover,
+  .profile-delete-confirm-button:hover:not(:disabled),
+  .profile-modal-close:hover {
+    transform: none;
+  }
+
+  .profile-file-label:active,
+  .profile-secondary-button:active,
+  .profile-edit-button:active,
+  .profile-primary-button:active:not(:disabled),
+  .profile-delete-button:active,
+  .profile-delete-confirm-button:active:not(:disabled),
+  .profile-modal-close:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   PROFILE MODAL OVERLAY
+======================================== */
+
+.profile-modal-overlay {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(20px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(20px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    max(20px, env(safe-area-inset-bottom, 0px));
+
+  padding-left:
+    max(20px, env(safe-area-inset-left, 0px));
+
+  overscroll-behavior: contain;
+}
+
+/* ========================================
+   PROFILE MODAL
+======================================== */
+
+.profile-modal,
+.profile-modal-small {
+  max-width: 100%;
+  box-sizing: border-box;
+
+  max-height: calc(
+    100dvh -
+    max(40px, env(safe-area-inset-top, 0px)) -
+    max(40px, env(safe-area-inset-bottom, 0px))
+  );
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.profile-modal-heading,
+.profile-modal-heading > div {
+  min-width: 0;
+}
+
+.profile-modal-heading h2,
+.profile-modal-heading p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   DELETE ACCOUNT CONFIRMATION
+======================================== */
+
+.profile-delete-confirmation {
+  box-sizing: border-box;
+}
+
+.profile-delete-confirmation span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .profile-file-label,
+html.platform-ios .profile-secondary-button,
+html.platform-ios .profile-edit-button,
+html.platform-ios .profile-primary-button,
+html.platform-ios .profile-delete-button,
+html.platform-ios .profile-delete-confirm-button,
+html.platform-ios .profile-modal-close {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 640px) {
+  .edit-profile-page {
+    padding-top:
+      max(24px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(14px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      calc(
+        116px + env(safe-area-inset-bottom, 0px)
+      );
+
+    padding-left:
+      max(14px, env(safe-area-inset-left, 0px));
+  }
+
+  .edit-profile-card {
+    padding: 21px 17px;
+    border-radius: 16px;
+  }
+
+  .edit-profile-heading {
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .edit-profile-heading h1 {
+    font-size: 26px;
+  }
+
+  .profile-dashboard-link {
+    min-height: 44px;
+
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .profile-overview {
+    gap: 16px;
+    padding: 22px 18px;
+  }
+
+  .profile-avatar-preview {
+    flex-basis: 92px;
+    width: 92px;
+    height: 92px;
+    font-size: 27px;
+  }
+
+  .profile-picture-section {
+    gap: 16px;
+    margin-top: 22px;
+    padding-bottom: 24px;
+  }
+
+  .profile-picture-actions {
+    flex-wrap: wrap;
+  }
+
+  .profile-file-label,
+  .profile-secondary-button,
+  .profile-primary-button,
+  .profile-edit-button {
+    min-height: 48px;
+  }
+
+  .profile-setting-row {
+    min-height: 86px;
+    gap: 16px;
+    padding: 16px 17px;
+  }
+
+  .profile-danger-section {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .profile-delete-button,
+  .profile-delete-confirm-button {
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   PHONE MODALS / BOTTOM SHEETS
+======================================== */
+
+@media (max-width: 460px) {
+  .profile-modal-overlay {
+    align-items: flex-end;
+
+    padding-top:
+      max(12px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      env(safe-area-inset-right, 0px);
+
+    padding-bottom: 0;
+
+    padding-left:
+      env(safe-area-inset-left, 0px);
+  }
+
+  .profile-modal,
+  .profile-modal-small {
+    width: 100%;
+
+    max-height: min(
+      92dvh,
+      calc(
+        100dvh -
+        max(12px, env(safe-area-inset-top, 0px))
+      )
+    );
+
+    padding-top: 22px;
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(
+        22px,
+        calc(
+          18px + env(safe-area-inset-bottom, 0px)
+        )
+      );
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .profile-modal-close {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .profile-modal-actions {
+    gap: 9px;
+
+    padding-bottom:
+      env(safe-area-inset-bottom, 0px);
+  }
+
+  .profile-modal-actions button {
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .edit-profile-page {
+    padding-right:
+      max(12px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(12px, env(safe-area-inset-left, 0px));
+  }
+
+  .edit-profile-card {
+    padding: 18px 15px;
+  }
+
+  .profile-overview {
+    padding: 18px 14px;
+  }
+
+  .profile-avatar-preview {
+    flex-basis: 84px;
+    width: 84px;
+    height: 84px;
+  }
+
+  .profile-setting-row {
+    padding: 15px;
+  }
+
+  .profile-danger-section {
+    padding: 16px;
+  }
+
+  .profile-delete-warning {
+    padding: 14px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .edit-profile-page {
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(22px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(22px, env(safe-area-inset-left, 0px));
+  }
+
+  .edit-profile-card {
+    max-width: 900px;
+  }
+
+  .profile-overview {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .profile-picture-section {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .profile-modal-overlay {
+    align-items: center;
+
+    padding-top:
+      max(12px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(12px, env(safe-area-inset-bottom, 0px));
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+  }
+
+  .profile-modal,
+  .profile-modal-small {
+    width: min(100%, 620px);
+
+    max-height: calc(
+      100dvh -
+      max(24px, env(safe-area-inset-top, 0px)) -
+      max(24px, env(safe-area-inset-bottom, 0px))
+    );
+
+    border-radius: 16px;
+  }
+
+  .profile-modal-actions {
+    flex-direction: row;
+  }
+
+  .profile-modal-actions button {
+    width: auto;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-file-label,
+  .profile-secondary-button,
+  .profile-edit-button,
+  .profile-primary-button,
+  .profile-delete-button,
+  .profile-delete-confirm-button,
+  .profile-modal-close,
+  .profile-form-group input,
+  .profile-form-group select {
+    transition: none;
+  }
+}

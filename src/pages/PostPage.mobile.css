@@ -1,0 +1,345 @@
+/* ==========================================================
+   MATCHMUSTER POST PAGE — MOBILE APP POLISH
+   File: src/styles/PostPage.mobile.css
+
+   Import this AFTER PostPage.css.
+
+   Keeps the existing MatchMuster post layout, badges,
+   management actions, read receipts and safety controls intact.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - touch-first post actions
+   - safer long-title / author / reader wrapping
+   - bottom-nav clearance
+   - very-small-phone handling
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / VIEWPORT
+======================================== */
+
+.post-page {
+  min-height: calc(100vh - 72px);
+  min-height: calc(100dvh - 72px);
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(42px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(24px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(24px, env(safe-area-inset-left, 0px));
+}
+
+.post-page-container,
+.post-details-card,
+.post-read-section {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   TEXT SAFETY
+======================================== */
+
+.post-details-header,
+.post-details-header > div,
+.post-author-details,
+.post-reader,
+.post-reader > div:nth-child(2),
+.post-safety-actions,
+.post-safety-actions > div {
+  min-width: 0;
+}
+
+.post-details-card h1,
+.post-content,
+.post-author-details,
+.post-reader strong,
+.post-reader p,
+.post-page-safety-success,
+.post-safety-actions > span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   BACK LINK
+======================================== */
+
+.post-back-link {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .post-back-link {
+  min-height: 48px;
+}
+
+/* ========================================
+   POST MANAGEMENT ACTIONS
+======================================== */
+
+.post-edit-link,
+.post-delete-button,
+.post-report-button,
+.post-block-button {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .post-edit-link,
+html.platform-android .post-delete-button,
+html.platform-android .post-report-button,
+html.platform-android .post-block-button {
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .post-edit-link:hover,
+  .post-delete-button:hover,
+  .post-report-button:hover,
+  .post-block-button:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .post-edit-link:active,
+  .post-delete-button:active:not(:disabled),
+  .post-report-button:active,
+  .post-block-button:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   READ RECEIPTS
+======================================== */
+
+.post-read-list,
+.post-reader {
+  min-width: 0;
+}
+
+.post-read-count,
+.post-read-tick,
+.post-reader-avatar {
+  flex-shrink: 0;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .post-back-link,
+html.platform-ios .post-edit-link,
+html.platform-ios .post-delete-button,
+html.platform-ios .post-report-button,
+html.platform-ios .post-block-button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 650px) {
+  .post-page {
+    padding-top:
+      max(28px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(16px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      calc(
+        116px + env(safe-area-inset-bottom, 0px)
+      );
+
+    padding-left:
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .post-details-card {
+    padding: 21px 18px;
+    border-radius: 16px;
+  }
+
+  .post-details-header {
+    gap: 14px;
+  }
+
+  .post-management-actions {
+    gap: 8px;
+  }
+
+  .post-edit-link,
+  .post-delete-button {
+    min-height: 48px;
+  }
+
+  .post-details-card h1 {
+    font-size: 28px;
+    line-height: 1.18;
+  }
+
+  .post-content {
+    margin-top: 24px;
+    padding-top: 22px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .post-read-section {
+    padding: 19px 17px;
+    border-radius: 14px;
+  }
+
+  .post-read-header {
+    gap: 14px;
+  }
+
+  .post-reader {
+    gap: 11px;
+    padding: 12px;
+  }
+
+  .post-reader-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .post-safety-actions {
+    gap: 14px;
+  }
+
+  .post-report-button,
+  .post-block-button {
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .post-page {
+    padding-right:
+      max(13px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(13px, env(safe-area-inset-left, 0px));
+  }
+
+  .post-details-card {
+    padding: 18px 15px;
+  }
+
+  .post-details-badges {
+    flex-wrap: wrap;
+  }
+
+  .post-details-card h1 {
+    font-size: 25px;
+  }
+
+  .post-read-section {
+    padding: 16px 14px;
+  }
+
+  .post-read-header {
+    align-items: flex-start;
+  }
+
+  .post-safety-actions > div {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .post-page {
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(22px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(22px, env(safe-area-inset-left, 0px));
+  }
+
+  .post-page-container {
+    max-width: 980px;
+  }
+
+  .post-details-header {
+    flex-direction: row;
+  }
+
+  .post-management-actions {
+    width: auto;
+  }
+
+  .post-safety-actions {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .post-safety-actions > div {
+    display: flex;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .post-back-link,
+  .post-edit-link,
+  .post-delete-button,
+  .post-report-button,
+  .post-block-button {
+    transition: none;
+  }
+}

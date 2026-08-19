@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams,} from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import ReportModal from '../components/ReportModal'
 import './PostPage.css'
+import './PostPage.mobile.css'
 import API_URL from '../config/api'
 
 function PostPage() {
@@ -294,7 +295,7 @@ function PostPage() {
             className="app-back-button"
             to={`/teams/${teamId}/posts`}
           >
-            ← Back to posts
+            Back to posts
           </Link>
 
           {errorMessage && (

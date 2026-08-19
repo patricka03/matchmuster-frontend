@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 import '../styles/MatchRatingsPage.css'
+import '../styles/MatchRatings.mobile.css'
 
 function MatchRatingsPage() {
   const navigate = useNavigate()

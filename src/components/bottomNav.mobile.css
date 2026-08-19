@@ -1,0 +1,334 @@
+/* ==========================================================
+   MATCHMUSTER BOTTOM NAVIGATION — MOBILE APP POLISH
+   File: src/components/bottomNav.mobile.css
+
+   Import this AFTER bottomNav.css.
+
+   Keeps the existing MatchMuster bottom navigation,
+   pink active state, More sheet, and team switcher intact.
+
+   Adds:
+   - iOS / Android safe-area support
+   - 44pt iOS / 48dp Android touch targets
+   - stronger fixed positioning in Capacitor
+   - safer bottom-sheet sizing
+   - touch-first press behaviour
+   - home-indicator / gesture-bar clearance
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   FIXED NAV SHELL
+======================================== */
+
+.bottom-nav {
+  position: fixed !important;
+  z-index: 1000 !important;
+
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+
+  /*
+   * Helps WebKit/Capacitor keep the nav locked
+   * during scroll and compositing.
+   */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* ========================================
+   SAFE AREA / HOME INDICATOR
+======================================== */
+
+.bottom-nav-inner {
+  box-sizing: border-box;
+
+  min-height: calc(
+    70px + env(safe-area-inset-bottom, 0px)
+  );
+
+  padding-right:
+    max(8px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    max(7px, env(safe-area-inset-bottom, 0px));
+
+  padding-left:
+    max(8px, env(safe-area-inset-left, 0px));
+}
+
+/* ========================================
+   TAB TOUCH TARGETS
+======================================== */
+
+.bottom-nav-item {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .bottom-nav-item {
+  min-height: 48px;
+}
+
+/*
+ * Give the icon area a reliable tap region
+ * without changing the current visual layout.
+ */
+.bottom-nav-item > svg,
+.bottom-nav-more-icon {
+  flex-shrink: 0;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .bottom-nav-item:hover:not(.disabled) {
+    background: transparent;
+  }
+
+  .bottom-nav-item:active:not(.disabled) {
+    background: #fff7fb;
+    transform: scale(0.97);
+  }
+
+  .bottom-nav-team-option:hover {
+    border-color: transparent;
+    background: #ffffff;
+    color: #475569;
+  }
+
+  .bottom-nav-team-option:active {
+    background: #f8fbff;
+    transform: scale(0.985);
+  }
+
+  .bottom-nav-sheet-links a:hover,
+  .bottom-nav-sheet-links > button:hover:not(:disabled) {
+    background: transparent;
+  }
+
+  .bottom-nav-sheet-links a:active,
+  .bottom-nav-sheet-links > button:active:not(:disabled) {
+    background:
+      linear-gradient(
+        135deg,
+        #fff7fb,
+        #f5f9ff
+      );
+  }
+}
+
+/* ========================================
+   ACTIVE TAB
+======================================== */
+
+.bottom-nav-item.active::before {
+  /*
+   * Keep the active marker clear of the icon
+   * even on compact iPhone sizes.
+   */
+  top: -5px;
+}
+
+/* ========================================
+   MORE SHEET BACKDROP
+======================================== */
+
+.bottom-nav-sheet-backdrop {
+  z-index: 1200 !important;
+
+  padding-top:
+    max(20px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(12px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    calc(
+      84px + env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(12px, env(safe-area-inset-left, 0px));
+
+  overscroll-behavior: contain;
+}
+
+/* ========================================
+   MORE SHEET
+======================================== */
+
+.bottom-nav-sheet {
+  box-sizing: border-box;
+
+  max-height: min(
+    72dvh,
+    620px
+  );
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/*
+ * Helps the sheet feel like an iOS / Android
+ * bottom sheet while staying true to your design.
+ */
+html.platform-ios .bottom-nav-sheet {
+  border-radius: 24px;
+}
+
+html.platform-android .bottom-nav-sheet {
+  border-radius: 22px;
+}
+
+/* ========================================
+   SHEET CONTROLS
+======================================== */
+
+.bottom-nav-sheet-heading > button,
+.bottom-nav-sheet-links a,
+.bottom-nav-sheet-links > button,
+.bottom-nav-team-option {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android
+  .bottom-nav-sheet-heading > button,
+html.platform-android
+  .bottom-nav-sheet-links a,
+html.platform-android
+  .bottom-nav-sheet-links > button,
+html.platform-android
+  .bottom-nav-team-option {
+  min-height: 48px;
+}
+
+/* ========================================
+   TEAM SWITCHER
+======================================== */
+
+.bottom-nav-team-switcher,
+.bottom-nav-team-option {
+  box-sizing: border-box;
+}
+
+.bottom-nav-team-option {
+  min-width: 0;
+}
+
+.bottom-nav-team-option > span,
+.bottom-nav-team-switcher-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================
+   PAGE CLEARANCE
+======================================== */
+
+/*
+ * Standard authenticated pages must always
+ * scroll beyond the fixed tab bar.
+ */
+.dashboard-page,
+.home-dashboard-page {
+  padding-bottom: calc(
+    116px + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+/* ========================================
+   SMALL PHONES
+======================================== */
+
+@media (max-width: 390px) {
+  .bottom-nav-inner {
+    padding-right:
+      max(5px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(5px, env(safe-area-inset-left, 0px));
+  }
+
+  .bottom-nav-item {
+    gap: 3px;
+    padding-right: 2px;
+    padding-left: 2px;
+  }
+
+  .bottom-nav-item small {
+    font-size: 9px;
+  }
+
+  .bottom-nav-item.active::before {
+    width: 30px;
+  }
+
+  .bottom-nav-sheet {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .bottom-nav-sheet-heading h2 {
+    font-size: 21px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .bottom-nav-inner {
+    min-height: calc(
+      60px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .bottom-nav-item {
+    min-height: 40px;
+    gap: 2px;
+  }
+
+  .bottom-nav-sheet-backdrop {
+    padding-bottom:
+      calc(
+        70px + env(safe-area-inset-bottom, 0px)
+      );
+  }
+
+  .bottom-nav-sheet {
+    max-height: 68dvh;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-item,
+  .bottom-nav-team-option,
+  .bottom-nav-sheet-links a,
+  .bottom-nav-sheet-links > button {
+    transition: none;
+  }
+}

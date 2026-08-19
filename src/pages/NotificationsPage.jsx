@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import './NotificationsPage.css'
+import './NotificationsPage.mobile.css'
 import API_URL from '../config/api'
 
 const TYPE_META = {

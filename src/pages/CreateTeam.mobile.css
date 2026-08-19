@@ -1,0 +1,296 @@
+/* ==========================================================
+   MATCHMUSTER CREATE TEAM — MOBILE APP POLISH
+   File: src/styles/CreateTeam.mobile.css
+
+   Import this AFTER CreateTeam.css.
+
+   Keeps the current MatchMuster create-team card,
+   badge upload layout, colours and button styling unchanged.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport friendliness
+   - 44pt iOS / 48dp Android touch targets
+   - iOS form zoom prevention
+   - keyboard-friendly fields
+   - better file-upload control sizing
+   - safer badge layout on small phones
+   - bottom-nav clearance
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   CARD WIDTH / PAGE SAFETY
+======================================== */
+
+.create-team-card {
+  width: 100%;
+  max-width: 680px;
+  box-sizing: border-box;
+
+  /*
+   * Extra room beneath the form so the final button
+   * can scroll comfortably above the fixed bottom nav.
+   */
+  margin-bottom: calc(
+    116px + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+/* ========================================
+   FORM CONTROLS
+======================================== */
+
+.create-team-form input,
+.create-team-form textarea,
+.create-team-badge-controls input[type='file'] {
+  box-sizing: border-box;
+
+  min-height: 44px;
+
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android .create-team-form input,
+html.platform-android .create-team-form textarea,
+html.platform-android
+  .create-team-badge-controls input[type='file'] {
+  min-height: 48px;
+}
+
+/*
+ * Prevent iOS Safari / Capacitor from zooming
+ * when the user focuses a form field.
+ */
+@media (max-width: 950px) {
+  .create-team-form input,
+  .create-team-form textarea,
+  .create-team-badge-controls input[type='file'] {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   BADGE UPLOAD
+======================================== */
+
+.create-team-badge-row,
+.create-team-badge-controls {
+  min-width: 0;
+}
+
+.create-team-badge-preview {
+  box-sizing: border-box;
+}
+
+.create-team-badge-controls input[type='file'] {
+  width: 100%;
+  max-width: 100%;
+}
+
+.create-team-badge-controls
+  input[type='file']::file-selector-button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android
+  .create-team-badge-controls
+  input[type='file']::file-selector-button {
+  min-height: 48px;
+}
+
+/* ========================================
+   TEXT ACTIONS
+======================================== */
+
+.remove-team-badge-button,
+.skip-team-badge-button {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .remove-team-badge-button,
+html.platform-android .skip-team-badge-button {
+  min-height: 48px;
+}
+
+/* ========================================
+   PRIMARY ACTION
+======================================== */
+
+.create-team-button {
+  min-height: 48px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .create-team-button:hover:not(:disabled) {
+    background: #2563eb;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .create-team-button:active:not(:disabled),
+  .remove-team-badge-button:active:not(:disabled),
+  .skip-team-badge-button:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+
+  .remove-team-badge-button:hover:not(:disabled),
+  .skip-team-badge-button:hover:not(:disabled) {
+    color: #475569;
+    text-decoration: none;
+  }
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .create-team-button,
+html.platform-ios .remove-team-badge-button,
+html.platform-ios .skip-team-badge-button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 640px) {
+  .create-team-card {
+    width: 100%;
+
+    margin-top: 18px;
+
+    margin-bottom: calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+
+    padding: 20px 17px;
+
+    border-radius: 16px;
+  }
+
+  .create-team-form {
+    gap: 18px;
+  }
+
+  .create-team-form label {
+    gap: 7px;
+  }
+
+  .create-team-form input,
+  .create-team-form textarea {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .create-team-badge-row {
+    gap: 14px;
+  }
+
+  .create-team-badge-preview {
+    flex-basis: 92px;
+    width: 92px;
+    height: 92px;
+  }
+
+  .create-team-badge-controls {
+    width: 100%;
+  }
+
+  .create-team-badge-controls
+    input[type='file']::file-selector-button {
+    margin-right: 8px;
+    padding: 9px 11px;
+  }
+
+  .create-team-help {
+    padding: 13px 14px;
+    font-size: 14px;
+  }
+
+  .create-team-button {
+    min-height: 50px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .create-team-card {
+    padding: 17px 14px;
+  }
+
+  .create-team-badge-preview {
+    flex-basis: 84px;
+    width: 84px;
+    height: 84px;
+  }
+
+  .create-team-badge-controls small {
+    font-size: 12px;
+  }
+
+  .create-team-help {
+    padding: 12px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .create-team-card {
+    max-width: 760px;
+  }
+
+  .create-team-badge-row {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .create-team-badge-controls {
+    width: auto;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .create-team-form input,
+  .create-team-form textarea,
+  .create-team-button {
+    transition: none;
+  }
+}

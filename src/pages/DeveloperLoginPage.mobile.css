@@ -1,0 +1,256 @@
+/* ==========================================================
+   MATCHMUSTER DEVELOPER LOGIN — MOBILE APP POLISH
+   File: src/styles/DeveloperLoginPage.mobile.css
+
+   Import this AFTER DeveloperLoginPage.css.
+
+   Keeps the current developer login card, colours,
+   typography and button styling unchanged.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - iOS input zoom prevention
+   - keyboard-friendly form behaviour
+   - safer small-phone spacing
+   - touch-first button feedback
+   - landscape support
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / VIEWPORT
+======================================== */
+
+.developer-login-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(24px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(24px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    max(24px, env(safe-area-inset-bottom, 0px));
+
+  padding-left:
+    max(24px, env(safe-area-inset-left, 0px));
+}
+
+/* ========================================
+   LOGIN CARD
+======================================== */
+
+.developer-login-card {
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   CONTENT SAFETY
+======================================== */
+
+.developer-login-card h1,
+.developer-login-intro,
+.developer-login-notice {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.developer-login-logo {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ========================================
+   FORM CONTROLS
+======================================== */
+
+.developer-login-card input {
+  min-height: 44px;
+
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android .developer-login-card input {
+  min-height: 48px;
+}
+
+/*
+ * Prevent iOS Safari / Capacitor from zooming
+ * when the email/password fields receive focus.
+ */
+@media (max-width: 950px) {
+  .developer-login-card input {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   LOGIN BUTTON
+======================================== */
+
+.developer-login-card button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .developer-login-card button {
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .developer-login-card button:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .developer-login-card button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 560px) {
+  .developer-login-page {
+    align-items: start;
+
+    padding-top:
+      max(28px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(16px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(28px, env(safe-area-inset-bottom, 0px));
+
+    padding-left:
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-login-card {
+    max-width: 100%;
+    padding: 28px 22px;
+    border-radius: 16px;
+  }
+
+  .developer-login-logo {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 20px;
+  }
+
+  .developer-login-card h1 {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  .developer-login-intro {
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .developer-login-card form {
+    gap: 9px;
+  }
+
+  .developer-login-card button {
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .developer-login-page {
+    padding-right:
+      max(13px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(13px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-login-card {
+    padding: 24px 18px;
+  }
+
+  .developer-login-card h1 {
+    font-size: 26px;
+  }
+
+  .developer-login-notice {
+    font-size: 11px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .developer-login-page {
+    align-items: start;
+
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(22px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(18px, env(safe-area-inset-bottom, 0px));
+
+    padding-left:
+      max(22px, env(safe-area-inset-left, 0px));
+  }
+
+  .developer-login-card {
+    max-width: 500px;
+    padding: 24px;
+  }
+
+  .developer-login-intro {
+    margin-bottom: 20px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .developer-login-card input,
+  .developer-login-card button {
+    transition: none;
+  }
+}

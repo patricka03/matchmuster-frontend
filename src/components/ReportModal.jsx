@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import API_URL from '../config/api'
 import './SafetyModals.css'
+import './SafetyModals.mobile.css'
 
 const REPORT_REASONS = [
   {

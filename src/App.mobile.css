@@ -1,0 +1,401 @@
+/* ==========================================================
+   MATCHMUSTER MOBILE APP POLISH LAYER
+   Import this AFTER App.css.
+
+   Purpose:
+   - iOS / Android safe-area support
+   - Native-feeling touch targets
+   - Better Capacitor viewport behaviour
+   - Prevent iOS form zoom
+   - Better press states on touch devices
+   - Keyboard/focus scroll clearance
+   - Landscape inset support
+   - Reduced-motion accessibility
+
+   Platform hooks supported:
+   html.platform-ios
+   html.platform-android
+
+   The shared rules work immediately even before platform
+   classes are added to <html>.
+========================================================== */
+
+/* ========================================
+   APP VIEWPORT + SAFE AREA TOKENS
+======================================== */
+
+:root {
+  --app-safe-top: env(safe-area-inset-top, 0px);
+  --app-safe-right: env(safe-area-inset-right, 0px);
+  --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --app-safe-left: env(safe-area-inset-left, 0px);
+  --app-touch-target: 44px;
+}
+
+html.platform-ios {
+  --app-touch-target: 44px;
+}
+
+html.platform-android {
+  --app-touch-target: 48px;
+}
+
+/* ========================================
+   ROOT / CAPACITOR VIEWPORT
+======================================== */
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ========================================
+   NATIVE APP SCROLLING
+======================================== */
+
+html.platform-ios body,
+html.platform-android body {
+  overscroll-behavior-y: none;
+}
+
+html.platform-ios body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   FULL-SCREEN PAGE HEIGHTS
+======================================== */
+
+.welcome-page,
+.auth-page,
+.dashboard-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.forgot-password-link {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.forgot-password-link:hover {
+  text-decoration: none;
+}
+
+/* ========================================
+   SAFE AREA — WELCOME / AUTH
+======================================== */
+
+@media (max-width: 950px) {
+  .welcome-page {
+    padding-top: max(16px, var(--app-safe-top));
+    padding-right: max(16px, var(--app-safe-right));
+    padding-bottom: max(16px, var(--app-safe-bottom));
+    padding-left: max(16px, var(--app-safe-left));
+  }
+
+  .auth-page {
+    padding-top: max(18px, var(--app-safe-top));
+    padding-right: max(14px, var(--app-safe-right));
+    padding-bottom: max(18px, var(--app-safe-bottom));
+    padding-left: max(14px, var(--app-safe-left));
+  }
+
+  .dashboard-content {
+    padding-left: max(14px, var(--app-safe-left));
+    padding-right: max(14px, var(--app-safe-right));
+  }
+}
+
+/* ========================================
+   TOUCH TARGETS
+======================================== */
+
+button,
+input[type='button'],
+input[type='submit'],
+input[type='reset'],
+select,
+[role='button'],
+.signup-button,
+.login-button,
+.create-account-button,
+.create-match-button,
+.view-match-button,
+.view-map-button,
+.match-direction-link,
+.app-back-button,
+.navbar-menu-button,
+.navbar-sign-out-button,
+.navbar-link,
+.view-squad-button,
+.edit-team-button,
+.delete-team-button,
+.leave-team-button,
+.approve-button,
+.reject-button,
+.remove-button,
+.select-squad-button,
+.save-squad-player-button,
+.remove-squad-player-button,
+.save-team-button,
+.cancel-edit-team-button,
+.upload-team-badge-button,
+.cancel-match-link,
+.edit-match-button,
+.cancel-fixture-button,
+.keep-fixture-link,
+.confirm-cancel-button,
+.send-availability-button {
+  min-height: var(--app-touch-target);
+}
+
+
+/* Icon-only / compact controls need a square touch target too. */
+.navbar-menu-button,
+.password-toggle {
+  min-width: var(--app-touch-target);
+  min-height: var(--app-touch-target);
+}
+
+/* ========================================
+   TOUCH INTERACTION
+======================================== */
+
+button,
+[role='button'],
+a[class*='button'],
+.navbar-link,
+.account-type-card,
+.signup-legal-option {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .signup-button:hover,
+  .account-type-card:hover,
+  .create-account-button:hover,
+  .login-button:hover,
+  .dashboard-card button:hover,
+  .empty-team-card button:hover,
+  .view-squad-button:hover,
+  .create-match-button:hover,
+  .view-match-button:hover,
+  .view-map-button:hover,
+  .match-direction-link:hover,
+  .app-back-button:hover,
+  .navbar-brand:hover,
+  .navbar-menu-button:hover,
+  .edit-match-button:hover,
+  .cancel-fixture-button:hover,
+  .approve-button:hover,
+  .reject-button:hover,
+  .remove-button:hover,
+  .save-squad-player-button:hover,
+  .remove-squad-player-button:hover,
+  .save-team-button:hover,
+  .cancel-edit-team-button:hover,
+  .upload-team-badge-button:hover {
+    transform: none;
+  }
+
+  button:active,
+  [role='button']:active,
+  a[class*='button']:active,
+  .navbar-link:active,
+  .account-type-card:active,
+  .signup-legal-option:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   IOS FORM ZOOM PREVENTION
+======================================== */
+
+@media (max-width: 950px) {
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .auth-form input,
+  .auth-form select,
+  .auth-form textarea,
+  .match-form input,
+  .match-form select,
+  .match-form textarea,
+  .edit-team-form-group input,
+  .edit-team-form-group textarea,
+  .squad-player-fields select {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   FORM / KEYBOARD CLEARANCE
+======================================== */
+
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+}
+
+input,
+select,
+textarea {
+  scroll-margin-top: calc(84px + var(--app-safe-top));
+  scroll-margin-bottom: calc(180px + var(--app-safe-bottom));
+}
+
+textarea {
+  max-width: 100%;
+}
+
+/* ========================================
+   IOS SPECIFIC
+======================================== */
+
+html.platform-ios button,
+html.platform-ios [role='button'],
+html.platform-ios a[class*='button'],
+html.platform-ios .navbar-link {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+html.platform-ios input,
+html.platform-ios textarea,
+html.platform-ios select {
+  border-radius: 10px;
+}
+
+/* ========================================
+   ANDROID SPECIFIC
+======================================== */
+
+html.platform-android button,
+html.platform-android [role='button'],
+html.platform-android a[class*='button'],
+html.platform-android .navbar-link {
+  min-height: 48px;
+}
+
+/* ========================================
+   MOBILE CARDS
+======================================== */
+
+@media (max-width: 600px) {
+  .welcome-card,
+  .auth-card,
+  .match-form,
+  .fixture-details-card,
+  .cancel-fixture-card,
+  .edit-team-card,
+  .squad-section,
+  .match-card,
+  .availability-player-card,
+  .squad-player-card,
+  .match-result-display {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  html.platform-ios .welcome-card,
+  html.platform-ios .auth-card,
+  html.platform-ios .match-card,
+  html.platform-ios .fixture-details-card,
+  html.platform-ios .match-form,
+  html.platform-ios .edit-team-card,
+  html.platform-ios .squad-section {
+    border-radius: 18px;
+  }
+}
+
+/* ========================================
+   MOBILE ACTION LAYOUTS
+======================================== */
+
+@media (max-width: 600px) {
+  .fixture-management-actions button,
+  .fixture-management-actions a,
+  .membership-actions button,
+  .team-card-actions button,
+  .match-form-actions button,
+  .match-form-actions a,
+  .edit-team-actions button,
+  .cancel-fixture-actions button,
+  .cancel-fixture-actions a {
+    min-height: var(--app-touch-target);
+  }
+}
+
+/* ========================================
+   CHECKBOX / RADIO TOUCH SPACE
+======================================== */
+
+@media (pointer: coarse) {
+  .signup-legal-option,
+  .squad-responsibilities label {
+    min-height: var(--app-touch-target);
+  }
+
+  .auth-form .signup-legal-option input[type='checkbox'],
+  .squad-responsibilities input {
+    flex-shrink: 0;
+  }
+}
+
+/* ========================================
+   LANDSCAPE SAFE AREAS
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .welcome-page,
+  .auth-page {
+    align-items: flex-start;
+    padding-left: max(18px, var(--app-safe-left));
+    padding-right: max(18px, var(--app-safe-right));
+  }
+
+  .dashboard-content {
+    padding-left: max(18px, var(--app-safe-left));
+    padding-right: max(18px, var(--app-safe-right));
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

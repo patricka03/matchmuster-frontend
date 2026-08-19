@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import './CreatePostPage.css'
+import './CreatePostPage.mobile.css'
 import API_URL from '../config/api'
 
 
@@ -164,7 +165,7 @@ function CreatePostPage() {
             className="app-back-button"
             to={`/teams/${teamId}/posts`}
           >
-            ← Back to posts
+            Back to posts
           </Link>
 
           <header className="create-post-header">

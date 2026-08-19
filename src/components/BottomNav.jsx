@@ -22,6 +22,7 @@ import {
   useLocation,
 } from 'react-router-dom'
 import './bottomNav.css'
+import './bottomNav.mobile.css'
 
 function BottomNav({
   teamId,

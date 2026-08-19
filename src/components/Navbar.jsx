@@ -5,7 +5,10 @@ import matchMusterLogo from '../assets/matchmuster-logo.png'
 import API_URL from '../config/api'
 import BottomNav from './BottomNav'
 import './navbar.css'
+import './navbar.mobile.css'
 import './fixedNavigation.css'
+import './fixedNavigation.mobile.css'
+
 
 function readStoredTeamId() {
   return localStorage.getItem('activeTeamId') || null

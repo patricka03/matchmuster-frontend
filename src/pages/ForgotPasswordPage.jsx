@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './ForgotPasswordPage.css'
+import './ForgotPasswordPage.mobile.css'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
+import BackButton from '../components/BackButton'
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -35,7 +37,9 @@ function ForgotPasswordPage() {
       )
 
       if (!response.ok) {
-        throw new Error('Unable to send password reset instructions.')
+        throw new Error(
+          'Unable to send password reset instructions.',
+        )
       }
 
       setSuccessMessage(
@@ -43,7 +47,8 @@ function ForgotPasswordPage() {
       )
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to send password reset instructions.',
+        error.message ||
+          'Unable to send password reset instructions.',
       )
     } finally {
       setIsSubmitting(false)
@@ -53,9 +58,10 @@ function ForgotPasswordPage() {
   return (
     <main className="forgot-password-page">
       <section className="forgot-password-card">
-        <Link className="fapp-back-button" to="/login">
-          ← Back to login
-        </Link>
+        <BackButton
+          to="/login"
+          label="Back to login"
+        />
 
         <img
           className="matchmuster-page-logo"
@@ -67,18 +73,25 @@ function ForgotPasswordPage() {
         <h1>Forgot your password?</h1>
 
         <p className="forgot-password-description">
-          Enter the email address linked to your MatchMuster account and
-          we'll send you a link to reset your password.
+          Enter the email address linked to your
+          MatchMuster account and we'll send you a link
+          to reset your password.
         </p>
 
         {successMessage && (
-          <p className="forgot-success" role="status">
+          <p
+            className="forgot-success"
+            role="status"
+          >
             {successMessage}
           </p>
         )}
 
         {errorMessage && (
-          <p className="forgot-error" role="alert">
+          <p
+            className="forgot-error"
+            role="alert"
+          >
             {errorMessage}
           </p>
         )}
@@ -87,18 +100,25 @@ function ForgotPasswordPage() {
           className="forgot-password-form"
           onSubmit={handleSubmit}
         >
-          <label htmlFor="email">Email address</label>
+          <label htmlFor="email">
+            Email address
+          </label>
 
           <input
             id="email"
             type="email"
             placeholder="you@example.com"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) =>
+              setEmail(event.target.value)
+            }
             required
           />
 
-          <button type="submit" disabled={isSubmitting}>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting
               ? 'Sending instructions...'
               : 'Send reset link'}
@@ -107,7 +127,9 @@ function ForgotPasswordPage() {
 
         <p className="forgot-password-footer">
           Remembered your password?{' '}
-          <Link to="/login">Log in</Link>
+          <Link to="/login">
+            Log in
+          </Link>
         </p>
       </section>
     </main>

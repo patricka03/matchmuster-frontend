@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import './MatchPaymentsPage.css'
+import './MatchPaymentsPage.mobile.css'
 import API_URL from '../config/api'
 
 

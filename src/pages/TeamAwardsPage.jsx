@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 import '../styles/TeamAwardsPage.css'
+import '../styles/TeamAwardsPage.mobile.css'
 
 function TeamAwardsPage() {
   const navigate = useNavigate()

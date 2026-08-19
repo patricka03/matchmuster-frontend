@@ -15,7 +15,7 @@ function LegalPage() {
           <h1>Document not found</h1>
 
           <Link to="/legal" className="app-back-button">
-            ← Back to Legal & Privacy
+            Back to Legal & Privacy
           </Link>
         </div>
       </main>
@@ -26,7 +26,7 @@ function LegalPage() {
     <main className="legal-page">
       <div className="legal-container">
         <Link to="/legal" className="app-back-button">
-          ← Legal & Privacy
+          Legal & Privacy
         </Link>
 
         <header className="legal-document-header">

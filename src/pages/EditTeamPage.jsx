@@ -361,7 +361,6 @@ function EditTeamPage() {
             type="button"
             onClick={() => navigate('/team')}
           >
-            <span>←</span>
             Back to my teams
           </button>
 

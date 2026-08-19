@@ -79,7 +79,7 @@ function LoginPage() {
     <main className="auth-page">
       <section className="auth-card">
         <Link className="app-back-button" to="/">
-          ← Back
+          Back
         </Link>
 
         <img
@@ -121,7 +121,7 @@ function LoginPage() {
 
           <div className="form-group">
             <div className="password-label-row">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">Password{' '}</label>
 
               <Link
                 className="forgot-password-link"
@@ -162,7 +162,7 @@ function LoginPage() {
         </form>
 
         <div className="account-recovery">
-          <span>Forgot which email you used?</span>
+          <span>Forgot which email you used?{' '}</span>
           <Link to="/help">Need help signing in?</Link>
         </div>
 

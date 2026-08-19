@@ -1,0 +1,403 @@
+/* ==========================================================
+   MATCHMUSTER SAFETY MODALS — MOBILE APP POLISH
+   File: SafetyModals.mobile.css
+
+   Import this AFTER SafetyModals.css.
+
+   Keeps the current MatchMuster safety/reporting design,
+   colours, blocked-user list, and mobile bottom-sheet style.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - safer keyboard/form behaviour
+   - iOS zoom prevention
+   - better bottom-sheet scrolling
+   - home-indicator / gesture-bar clearance
+   - touch-first button feedback
+   - very-small-phone / landscape handling
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   OVERLAY
+======================================== */
+
+.safety-modal-overlay {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(22px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(22px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    max(22px, env(safe-area-inset-bottom, 0px));
+
+  padding-left:
+    max(22px, env(safe-area-inset-left, 0px));
+
+  overscroll-behavior: contain;
+
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+/* ========================================
+   MODAL SHELL
+======================================== */
+
+.safety-modal,
+.safety-modal-wide {
+  max-width: 100%;
+  box-sizing: border-box;
+
+  max-height: calc(
+    100dvh -
+    max(44px, env(safe-area-inset-top, 0px)) -
+    max(44px, env(safe-area-inset-bottom, 0px))
+  );
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   HEADER SAFETY
+======================================== */
+
+.safety-modal-heading,
+.safety-modal-heading > div {
+  min-width: 0;
+}
+
+.safety-modal-heading h2,
+.safety-modal-heading p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   CLOSE BUTTON
+======================================== */
+
+.safety-modal-close {
+  min-width: 44px;
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .safety-modal-close {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* ========================================
+   FORM CONTROLS
+======================================== */
+
+.safety-modal-form select,
+.safety-modal-form textarea {
+  min-height: 44px;
+
+  scroll-margin-top:
+    calc(76px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android .safety-modal-form select,
+html.platform-android .safety-modal-form textarea {
+  min-height: 48px;
+}
+
+/*
+ * Prevent iOS Safari / Capacitor from zooming
+ * when select/textarea controls receive focus.
+ */
+@media (max-width: 950px) {
+  .safety-modal-form select,
+  .safety-modal-form textarea {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   ACTION BUTTONS
+======================================== */
+
+.safety-secondary-button,
+.safety-primary-button,
+.safety-danger-button,
+.blocked-user-unblock {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .safety-secondary-button,
+html.platform-android .safety-primary-button,
+html.platform-android .safety-danger-button,
+html.platform-android .blocked-user-unblock {
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .safety-modal-close:hover:not(:disabled),
+  .safety-secondary-button:hover:not(:disabled),
+  .safety-primary-button:hover:not(:disabled),
+  .safety-danger-button:hover:not(:disabled),
+  .blocked-user-unblock:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .safety-modal-close:active:not(:disabled),
+  .safety-secondary-button:active:not(:disabled),
+  .safety-primary-button:active:not(:disabled),
+  .safety-danger-button:active:not(:disabled),
+  .blocked-user-unblock:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   BLOCKED USERS
+======================================== */
+
+.blocked-users-list,
+.blocked-user-row,
+.blocked-user-details,
+.blocked-user-details > div {
+  min-width: 0;
+}
+
+.blocked-user-details strong,
+.blocked-user-details span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .safety-modal-close,
+html.platform-ios .safety-secondary-button,
+html.platform-ios .safety-primary-button,
+html.platform-ios .safety-danger-button,
+html.platform-ios .blocked-user-unblock {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE BOTTOM SHEET
+======================================== */
+
+@media (max-width: 600px) {
+  .safety-modal-overlay {
+    align-items: flex-end;
+
+    padding-top:
+      max(12px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      env(safe-area-inset-right, 0px);
+
+    padding-bottom: 0;
+
+    padding-left:
+      env(safe-area-inset-left, 0px);
+  }
+
+  .safety-modal,
+  .safety-modal-wide {
+    width: 100%;
+
+    max-height: min(
+      92dvh,
+      calc(
+        100dvh -
+        max(12px, env(safe-area-inset-top, 0px))
+      )
+    );
+
+    /*
+     * Leave room inside the sheet for the
+     * iPhone home indicator / Android gesture bar.
+     */
+    padding-top: 22px;
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(
+        22px,
+        calc(
+          18px + env(safe-area-inset-bottom, 0px)
+        )
+      );
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .safety-modal-heading {
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .safety-modal-close {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .safety-modal-form {
+    gap: 16px;
+  }
+
+  .safety-modal-actions {
+    gap: 9px;
+
+    /*
+     * Keeps action buttons comfortably clear
+     * of the device gesture area.
+     */
+    padding-bottom:
+      env(safe-area-inset-bottom, 0px);
+  }
+
+  .safety-secondary-button,
+  .safety-primary-button,
+  .safety-danger-button {
+    min-height: 48px;
+  }
+
+  .blocked-user-row {
+    gap: 14px;
+  }
+
+  .blocked-user-unblock {
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .safety-modal,
+  .safety-modal-wide {
+    padding-top: 19px;
+
+    padding-right:
+      max(15px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(15px, env(safe-area-inset-left, 0px));
+  }
+
+  .safety-modal-heading h2 {
+    font-size: 20px;
+  }
+
+  .safety-modal-heading > div > p:last-child {
+    font-size: 13px;
+  }
+
+  .blocked-user-row {
+    padding: 13px;
+  }
+
+  .blocked-user-avatar {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .safety-modal-overlay {
+    align-items: center;
+
+    padding-top:
+      max(12px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      max(12px, env(safe-area-inset-bottom, 0px));
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+  }
+
+  .safety-modal,
+  .safety-modal-wide {
+    width: min(100%, 660px);
+
+    max-height: calc(
+      100dvh -
+      max(24px, env(safe-area-inset-top, 0px)) -
+      max(24px, env(safe-area-inset-bottom, 0px))
+    );
+
+    border-radius: 20px;
+  }
+
+  .safety-modal-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .safety-secondary-button,
+  .safety-primary-button,
+  .safety-danger-button {
+    width: auto;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .safety-modal-close,
+  .safety-secondary-button,
+  .safety-primary-button,
+  .safety-danger-button,
+  .blocked-user-unblock,
+  .safety-modal-form select,
+  .safety-modal-form textarea {
+    transition: none;
+  }
+}

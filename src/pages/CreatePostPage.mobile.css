@@ -1,0 +1,353 @@
+/* ==========================================================
+   MATCHMUSTER CREATE POST — MOBILE APP POLISH
+   File: src/styles/CreatePostPage.mobile.css
+
+   Import this AFTER CreatePostPage.css.
+
+   Keeps the current MatchMuster create-post layout,
+   post-type cards, pin option, colours and actions unchanged.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - iOS form zoom prevention
+   - keyboard-friendly input / textarea behaviour
+   - safer post-type option tapping
+   - bottom-nav clearance
+   - small-phone / landscape handling
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / VIEWPORT
+======================================== */
+
+.create-post-page {
+  min-height: calc(100vh - 72px);
+  min-height: calc(100dvh - 72px);
+
+  box-sizing: border-box;
+
+  padding-right:
+    max(24px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(24px, env(safe-area-inset-left, 0px));
+}
+
+.create-post-container,
+.create-post-form {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   BACK LINK
+======================================== */
+
+.create-post-back-link {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .create-post-back-link {
+  min-height: 48px;
+}
+
+/* ========================================
+   FORM CONTROLS
+======================================== */
+
+.create-post-field input,
+.create-post-field textarea {
+  min-height: 44px;
+
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-android .create-post-field input,
+html.platform-android .create-post-field textarea {
+  min-height: 48px;
+}
+
+/*
+ * Prevent iOS Safari / Capacitor zoom when
+ * focusing post title/body fields.
+ */
+@media (max-width: 950px) {
+  .create-post-field input,
+  .create-post-field textarea {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   CHARACTER COUNT
+======================================== */
+
+.create-post-character-count {
+  pointer-events: none;
+}
+
+/* ========================================
+   POST TYPE OPTIONS
+======================================== */
+
+.post-type-option,
+.create-post-pin-option {
+  min-height: 44px;
+
+  box-sizing: border-box;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .post-type-option,
+html.platform-android .create-post-pin-option {
+  min-height: 48px;
+}
+
+.post-type-option > span:last-child,
+.create-post-pin-option > span {
+  min-width: 0;
+}
+
+.post-type-option strong,
+.post-type-option small,
+.create-post-pin-option strong,
+.create-post-pin-option small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .post-type-option:hover {
+    border-color: #e2e8f0;
+  }
+
+  .post-type-option-selected {
+    border-color: var(--color-brand-blue);
+    background:
+      linear-gradient(
+        135deg,
+        #fff0f7,
+        #eff6ff
+      );
+  }
+
+  .post-type-option:active,
+  .create-post-pin-option:active,
+  .create-post-submit:active:not(:disabled),
+  .create-post-cancel:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   ACTIONS
+======================================== */
+
+.create-post-cancel,
+.create-post-submit {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .create-post-cancel,
+html.platform-android .create-post-submit {
+  min-height: 48px;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .post-type-option,
+html.platform-ios .create-post-pin-option,
+html.platform-ios .create-post-cancel,
+html.platform-ios .create-post-submit,
+html.platform-ios .create-post-back-link {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 700px) {
+  .create-post-page {
+    padding-top:
+      max(24px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(16px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      calc(
+        116px + env(safe-area-inset-bottom, 0px)
+      );
+
+    padding-left:
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .create-post-header {
+    margin-bottom: 22px;
+  }
+
+  .create-post-header h1 {
+    font-size: 30px;
+    line-height: 1.15;
+  }
+
+  .create-post-header > p:last-child {
+    font-size: 14px;
+  }
+
+  .create-post-form {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .create-post-field {
+    margin-bottom: 22px;
+  }
+
+  .create-post-field textarea {
+    min-height: 180px;
+  }
+
+  .post-type-options {
+    gap: 9px;
+  }
+
+  .post-type-option {
+    padding: 14px;
+  }
+
+  .create-post-pin-option {
+    padding: 14px;
+  }
+
+  .create-post-actions {
+    gap: 9px;
+    margin-top: 24px;
+    padding-top: 20px;
+  }
+
+  .create-post-cancel,
+  .create-post-submit {
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .create-post-page {
+    padding-right:
+      max(13px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(13px, env(safe-area-inset-left, 0px));
+  }
+
+  .create-post-form {
+    padding: 17px;
+  }
+
+  .create-post-header h1 {
+    font-size: 27px;
+  }
+
+  .create-post-field input {
+    padding-right: 58px;
+  }
+
+  .post-type-option,
+  .create-post-pin-option {
+    padding: 12px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .create-post-page {
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(22px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(22px, env(safe-area-inset-left, 0px));
+  }
+
+  .post-type-options {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .create-post-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .create-post-cancel,
+  .create-post-submit {
+    width: auto;
+    min-width: 150px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .post-type-option,
+  .create-post-pin-option,
+  .create-post-cancel,
+  .create-post-submit,
+  .create-post-field input,
+  .create-post-field textarea {
+    transition: none;
+  }
+}

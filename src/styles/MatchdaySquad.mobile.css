@@ -1,0 +1,188 @@
+/* ==========================================================
+   MATCHMUSTER MATCHDAY SQUAD — MOBILE APP POLISH
+   Import this AFTER the existing matchday squad CSS.
+
+   Keeps the current pitch/read-only layout intact.
+
+   Adds:
+   - iOS / Android safe-area friendly sizing
+   - better small-screen player labels
+   - touch-safe read-only controls
+   - improved landscape behaviour
+   - clearer readonly visual treatment
+   - dynamic mobile sizing without changing colours
+========================================================== */
+
+/* ========================================
+   READ-ONLY MATCHDAY SHELL
+======================================== */
+
+.matchday-squad-readonly {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   READ-ONLY CARDS
+======================================== */
+
+.matchday-squad-readonly .lineup-builder,
+.matchday-squad-readonly .substitute-selection-panel {
+  border-color: #dbeafe;
+
+  /*
+   * Keeps readonly sections feeling intentional
+   * rather than disabled.
+   */
+  background-clip: padding-box;
+}
+
+/* ========================================
+   FORMATION READOUT
+======================================== */
+
+.matchday-formation-readout {
+  min-width: 0;
+}
+
+.matchday-formation-readout strong {
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   PITCH PLAYERS
+======================================== */
+
+.matchday-squad-readonly .pitch-player-slot,
+.matchday-player-avatar {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/*
+ * Read-only pitch items should not give
+ * misleading interactive feedback.
+ */
+.matchday-squad-readonly .pitch-player-slot:active,
+.matchday-player-avatar:active {
+  transform: none;
+}
+
+/* ========================================
+   PLAYER NAMES
+======================================== */
+
+.matchday-player-name {
+  max-width: clamp(72px, 22vw, 120px);
+
+  /*
+   * Preserve the compact pitch layout while
+   * preventing long names from breaking it.
+   */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================
+   ROLE READOUT
+======================================== */
+
+.matchday-role-readout {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+html.platform-android .matchday-role-readout {
+  min-height: 48px;
+}
+
+/* ========================================
+   SUBSTITUTE CARDS
+======================================== */
+
+.matchday-squad-readonly
+  .substitute-player-card.selected {
+  border-color: #bfdbfe;
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f8fbff
+    );
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 700px) {
+  .matchday-formation-readout {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .matchday-formation-readout strong {
+    font-size: 18px;
+  }
+
+  .matchday-player-name {
+    max-width: 82px;
+    font-size: 10px;
+  }
+
+  .matchday-role-readout {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .matchday-player-name {
+    max-width: 68px;
+    font-size: 9px;
+  }
+
+  .matchday-formation-readout strong {
+    font-size: 17px;
+  }
+
+  .matchday-role-readout {
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .matchday-player-name {
+    max-width: 90px;
+  }
+
+  .matchday-formation-readout {
+    min-width: 150px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .matchday-squad-readonly .pitch-player-slot,
+  .matchday-player-avatar,
+  .matchday-squad-readonly .substitute-player-card {
+    transition: none;
+  }
+}

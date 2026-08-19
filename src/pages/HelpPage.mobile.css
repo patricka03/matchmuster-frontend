@@ -1,0 +1,170 @@
+/* ==========================================================
+   MATCHMUSTER HELP PAGE — MOBILE APP POLISH
+   File: src/styles/HelpPage.mobile.css
+
+   Import this AFTER HelpPage.css.
+
+   Keeps the current Help page cards, support box,
+   colours and typography unchanged.
+
+   Adds:
+   - iOS / Android safe-area friendly spacing
+   - 44pt iOS / 48dp Android touch targets
+   - safer support-email tapping
+   - better small-phone text wrapping
+   - landscape handling
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   CARD WIDTH SAFETY
+======================================== */
+
+.help-card,
+.support-box {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   TEXT SAFETY
+======================================== */
+
+.help-card h2,
+.help-card p,
+.support-title,
+.support-email,
+.support-text {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   SUPPORT EMAIL TOUCH TARGET
+======================================== */
+
+.support-email {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .support-email {
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .support-email:hover {
+    text-decoration: none;
+  }
+
+  .support-email:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .support-email {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+  .help-card {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .help-card h2 {
+    font-size: 17px;
+    line-height: 1.25;
+  }
+
+  .help-card p,
+  .support-text {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .support-box {
+    margin-top: 22px;
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .support-title {
+    font-size: 12px;
+  }
+
+  .support-email {
+    min-height: 48px;
+    margin-bottom: 10px;
+    font-size: 19px;
+    line-height: 1.3;
+    text-align: center;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .help-card {
+    padding: 14px;
+  }
+
+  .support-box {
+    padding: 18px 14px;
+  }
+
+  .support-email {
+    font-size: 17px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .support-box {
+    padding: 18px 22px;
+  }
+
+  .support-email {
+    font-size: 20px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .support-email {
+    transition: none;
+  }
+}

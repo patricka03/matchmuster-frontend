@@ -534,6 +534,10 @@
   text-decoration: underline;
 }
 
+.account-recovery {
+  margin-top: 20px
+}
+
 /* FOOTER */
 
 .auth-footer {

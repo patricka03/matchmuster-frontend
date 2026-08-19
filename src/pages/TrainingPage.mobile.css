@@ -1,0 +1,242 @@
+/* ==========================================================
+   MATCHMUSTER TRAINING PAGE — MOBILE APP POLISH
+   File: src/styles/TrainingPage.mobile.css
+
+   Import this AFTER TrainingPage.css.
+
+   Keeps the current MatchMuster training details and
+   player availability layout unchanged.
+
+   Adds:
+   - iOS / Android safe-area support
+   - stronger bottom-nav clearance
+   - 44pt iOS / 48dp Android touch targets
+   - touch-first availability behaviour
+   - safer status/action wrapping
+   - very-small-phone support
+   - landscape handling
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / SAFE AREA
+======================================== */
+
+.training-page {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  padding-right:
+    max(0px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(0px, env(safe-area-inset-left, 0px));
+}
+
+/* ========================================
+   TRAINING DETAIL VALUES
+======================================== */
+
+.training-detail-value {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.training-detail-value,
+.training-detail-value strong,
+.training-detail-value span {
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   PLAYER AVAILABILITY CARD
+======================================== */
+
+.training-player-availability {
+  width: 100%;
+  max-width: 850px;
+  box-sizing: border-box;
+}
+
+.training-player-availability-status,
+.training-player-availability-actions {
+  min-width: 0;
+}
+
+.training-availability-status-text {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   AVAILABILITY BUTTONS
+======================================== */
+
+.training-availability-button {
+  min-height: 44px;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .training-availability-button {
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .training-availability-button:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .training-availability-button.available.selected {
+    border-color: #16a34a;
+    background: #f0fdf4;
+    color: #15803d;
+    box-shadow: 0 7px 18px rgba(22, 163, 74, 0.1);
+  }
+
+  .training-availability-button.unavailable.selected {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #b91c1c;
+    box-shadow: 0 7px 18px rgba(220, 38, 38, 0.1);
+  }
+
+  .training-availability-button:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .training-availability-button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 650px) {
+  .training-page {
+    padding-bottom:
+      calc(
+        116px + env(safe-area-inset-bottom, 0px)
+      );
+  }
+
+  .training-player-availability {
+    gap: 14px;
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .training-player-availability-status {
+    gap: 4px;
+  }
+
+  .training-availability-status-text {
+    font-size: 17px;
+  }
+
+  /*
+   * Keep Available / Unavailable on one horizontal line,
+   * as requested for the MatchMuster mobile UX.
+   */
+  .training-player-availability-actions {
+    width: 100%;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+  }
+
+  .training-availability-button {
+    min-height: 48px;
+    padding-right: 8px;
+    padding-left: 8px;
+
+    font-size: 12px;
+    line-height: 1.2;
+
+    white-space: normal;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .training-player-availability {
+    padding: 13px;
+  }
+
+  .training-player-availability-actions {
+    gap: 7px;
+  }
+
+  .training-availability-button {
+    padding-right: 6px;
+    padding-left: 6px;
+
+    font-size: 11px;
+  }
+
+  .training-availability-status-text {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .training-player-availability {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .training-player-availability-actions {
+    width: auto;
+    min-width: 300px;
+
+    grid-template-columns:
+      repeat(2, minmax(130px, 1fr));
+
+    flex: 0 1 330px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .training-availability-button {
+    transition: none;
+  }
+}

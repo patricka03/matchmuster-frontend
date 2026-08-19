@@ -18,7 +18,6 @@ function BackButton({ to, label = 'Back' }) {
       onClick={handleBack}
       aria-label={label}
     >
-      <span aria-hidden="true">←</span>
       {label}
     </button>
   )

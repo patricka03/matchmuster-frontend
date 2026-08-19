@@ -1,0 +1,376 @@
+/* ==========================================================
+   MATCHMUSTER MATCH RATINGS — MOBILE APP POLISH
+   Import this AFTER the existing MatchRatings.css.
+
+   Keeps the current MatchMuster colours, ratings layout,
+   MOTM presentation and results styling unchanged.
+
+   Adds:
+   - iOS / Android safe-area support
+   - 44pt iOS / 48dp Android touch targets
+   - larger mobile slider touch area
+   - iOS textarea zoom prevention
+   - keyboard-friendly comment fields
+   - sticky submit bar clearance above fixed bottom nav
+   - better small-phone / landscape behaviour
+   - touch press feedback
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / FORM SAFETY
+======================================== */
+
+.match-ratings-form {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  /*
+   * Extra room for the sticky Submit bar plus
+   * the fixed MatchMuster bottom navigation.
+   */
+  padding-bottom: calc(
+    132px + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+/* ========================================
+   CARD WIDTH SAFETY
+======================================== */
+
+.ratings-window-card,
+.rating-player-list,
+.rating-player-card,
+.ratings-state-card,
+.motm-card,
+.rating-results-section {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   TOUCH INTERACTION
+======================================== */
+
+.rating-player-card,
+.submit-ratings-button,
+.rate-players-button,
+.ratings-submitted-button,
+.rating-control input[type='range'] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .rating-player-card:hover,
+  .submit-ratings-button:hover:not(:disabled),
+  .rate-players-button:hover,
+  .rating-result-row:hover {
+    transform: none;
+  }
+
+  .submit-ratings-button:active:not(:disabled),
+  .rate-players-button:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   TOUCH TARGETS
+======================================== */
+
+.submit-ratings-button,
+.rate-players-button,
+.ratings-submitted-button {
+  min-height: 44px;
+}
+
+html.platform-android .submit-ratings-button,
+html.platform-android .rate-players-button,
+html.platform-android .ratings-submitted-button {
+  min-height: 48px;
+}
+
+/* ========================================
+   RATING SLIDER — MOBILE TOUCH AREA
+======================================== */
+
+.rating-control input[type='range'] {
+  /*
+   * Keep the visible rail thin, but make the
+   * draggable control much easier to use on phones.
+   */
+  min-height: 44px;
+  padding: 14px 0;
+  background-clip: content-box;
+}
+
+html.platform-android
+  .rating-control input[type='range'] {
+  min-height: 48px;
+}
+
+/*
+ * Slightly larger thumbs on touch devices.
+ */
+@media (pointer: coarse) {
+  .rating-control
+    input[type='range']::-webkit-slider-thumb {
+    width: 26px;
+    height: 26px;
+  }
+
+  .rating-control
+    input[type='range']::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ========================================
+   COMMENT / KEYBOARD SAFETY
+======================================== */
+
+.rating-player-card textarea {
+  box-sizing: border-box;
+
+  scroll-margin-top:
+    calc(84px + env(safe-area-inset-top, 0px));
+
+  scroll-margin-bottom:
+    calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
+/*
+ * Prevent iOS Safari / Capacitor from zooming
+ * when tapping the comment field.
+ */
+@media (max-width: 950px) {
+  .rating-player-card textarea {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   STICKY SUBMIT BAR
+======================================== */
+
+.ratings-submit-bar {
+  /*
+   * Keep Submit above the fixed MatchMuster
+   * bottom navigation and system gesture area.
+   */
+  bottom: calc(
+    88px + env(safe-area-inset-bottom, 0px)
+  );
+
+  box-sizing: border-box;
+
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .ratings-submit-bar {
+  border-radius: 18px;
+}
+
+html.platform-ios .submit-ratings-button,
+html.platform-ios .rate-players-button,
+html.platform-ios .ratings-submitted-button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   ANDROID POLISH
+======================================== */
+
+html.platform-android .rating-player-card textarea {
+  min-height: 96px;
+}
+
+/* ========================================
+   PLAYER HEADER SAFETY
+======================================== */
+
+.rating-player-header,
+.rating-player-name {
+  min-width: 0;
+}
+
+.rating-player-name h2,
+.rating-player-name p {
+  overflow-wrap: anywhere;
+}
+
+.rating-score {
+  flex-shrink: 0;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+  .match-ratings-form {
+    gap: 18px;
+
+    padding-bottom: calc(
+      152px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .ratings-window-card {
+    width: 100%;
+  }
+
+  .rating-player-card {
+    width: 100%;
+  }
+
+  .rating-player-header {
+    min-width: 0;
+  }
+
+  .rating-player-name {
+    min-width: 0;
+  }
+
+  .rating-player-name h2 {
+    line-height: 1.25;
+  }
+
+  .ratings-submit-bar {
+    bottom: calc(
+      82px + env(safe-area-inset-bottom, 0px)
+    );
+
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .ratings-submit-bar strong {
+    font-size: 14px;
+  }
+
+  .ratings-submit-bar p {
+    line-height: 1.4;
+  }
+
+  .submit-ratings-button {
+    min-height: 48px;
+  }
+
+  .motm-winners article {
+    box-sizing: border-box;
+  }
+
+  .rating-result-player {
+    min-width: 0;
+  }
+
+  .rating-result-player strong,
+  .rating-result-player span {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .ratings-window-card {
+    padding: 19px 16px;
+  }
+
+  .rating-player-card {
+    padding: 18px 15px;
+  }
+
+  .rating-player-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .rating-score {
+    min-width: 48px;
+    height: 42px;
+    padding: 0 8px;
+    font-size: 17px;
+  }
+
+  .ratings-state-card {
+    padding: 28px 16px;
+  }
+
+  .motm-card {
+    padding: 30px 16px;
+  }
+
+  .rating-result-row {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .rating-result-position {
+    width: 28px;
+    height: 28px;
+  }
+
+  .rating-result-score {
+    min-width: 44px;
+    padding: 0 8px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .rating-player-list {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .ratings-submit-bar {
+    bottom: calc(
+      76px + env(safe-area-inset-bottom, 0px)
+    );
+
+    flex-direction: row;
+  }
+
+  .submit-ratings-button {
+    width: auto;
+    min-width: 180px;
+  }
+
+  .motm-winners article {
+    width: auto;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .rating-player-card,
+  .submit-ratings-button,
+  .rate-players-button,
+  .rating-result-row,
+  .rating-player-card textarea {
+    transition: none;
+  }
+}

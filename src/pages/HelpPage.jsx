@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import './HelpPage.css'
+import './HelpPage.mobile.css'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 
 function HelpPage() {
@@ -7,7 +8,7 @@ function HelpPage() {
     <main className="auth-page">
       <section className="auth-card">
         <Link className="app-back-button" to="/login">
-          ← Back to login
+          Back to login
         </Link>
 
         <img

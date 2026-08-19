@@ -1,0 +1,283 @@
+/* ==========================================================
+   MATCHMUSTER NAVBAR — MOBILE APP POLISH
+   File: src/components/navbar.mobile.css
+
+   Import this AFTER navbar.css.
+
+   Keeps the current MatchMuster top bar, logo,
+   notification badge, and settings action unchanged.
+
+   Adds:
+   - stronger iOS / Android safe-area handling
+   - 44pt iOS / 48dp Android touch targets
+   - better fixed-header behaviour in Capacitor
+   - touch-first press feedback
+   - safer long team-name handling
+   - better small-phone / landscape spacing
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   TOP BAR SHELL
+======================================== */
+
+.app-topbar {
+  width: 100%;
+  max-width: 100%;
+
+  box-sizing: border-box;
+
+  /*
+   * fixedNavigation.css / fixedNavigation.mobile.css
+   * will take ownership of position: fixed.
+   * These rules focus on the navbar surface itself.
+   */
+  padding-top:
+    env(safe-area-inset-top, 0px);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ========================================
+   SAFE INNER WIDTH
+======================================== */
+
+.app-topbar-inner {
+  box-sizing: border-box;
+
+  padding-left:
+    max(18px, env(safe-area-inset-left, 0px));
+
+  padding-right:
+    max(18px, env(safe-area-inset-right, 0px));
+}
+
+/* ========================================
+   BRAND SAFETY
+======================================== */
+
+.app-topbar-brand {
+  min-width: 0;
+}
+
+.app-topbar-brand strong {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.app-topbar-brand img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ========================================
+   TOUCH TARGETS
+======================================== */
+
+.app-topbar-action {
+  min-width: 44px;
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .app-topbar-action {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .app-topbar-action:hover {
+    transform: none;
+    background: #ffffff;
+    color: #334155;
+  }
+
+  .app-topbar-action:active {
+    transform: scale(0.96);
+
+    background:
+      linear-gradient(
+        135deg,
+        #fff0f7,
+        #eff6ff
+      );
+
+    color: #ff0a78;
+  }
+}
+
+/* ========================================
+   NOTIFICATION BADGE
+======================================== */
+
+.app-topbar-notification-badge {
+  pointer-events: none;
+}
+
+/* ========================================
+   ERROR BAR
+======================================== */
+
+.app-topbar-error {
+  box-sizing: border-box;
+
+  padding-right:
+    max(16px, env(safe-area-inset-right, 0px));
+
+  padding-left:
+    max(16px, env(safe-area-inset-left, 0px));
+}
+
+.app-topbar-error button {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .app-topbar-error button {
+  min-height: 48px;
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .app-topbar-action,
+html.platform-ios .app-topbar-error button {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 520px) {
+  .app-topbar-inner {
+    min-height: 60px;
+
+    padding-left:
+      max(14px, env(safe-area-inset-left, 0px));
+
+    padding-right:
+      max(14px, env(safe-area-inset-right, 0px));
+  }
+
+  .app-topbar-brand {
+    gap: 8px;
+  }
+
+  .app-topbar-brand strong {
+    /*
+     * Leave guaranteed room for notification + settings.
+     */
+    max-width: min(
+      46vw,
+      220px
+    );
+
+    font-size: 17px;
+  }
+
+  .app-topbar-actions {
+    gap: 7px;
+  }
+
+  .app-topbar-action {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .app-topbar-notification-badge {
+    top: -4px;
+    right: -5px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .app-topbar-inner {
+    gap: 10px;
+
+    padding-left:
+      max(12px, env(safe-area-inset-left, 0px));
+
+    padding-right:
+      max(12px, env(safe-area-inset-right, 0px));
+  }
+
+  .app-topbar-brand img {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .app-topbar-brand strong {
+    max-width: 38vw;
+    font-size: 16px;
+  }
+
+  .app-topbar-actions {
+    gap: 6px;
+  }
+
+  .app-topbar-action {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .app-topbar-inner {
+    min-height: 56px;
+
+    padding-left:
+      max(18px, env(safe-area-inset-left, 0px));
+
+    padding-right:
+      max(18px, env(safe-area-inset-right, 0px));
+  }
+
+  .app-topbar-brand img {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .app-topbar-action {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .app-topbar-action {
+    transition: none;
+  }
+}

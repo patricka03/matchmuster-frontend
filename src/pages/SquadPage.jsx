@@ -4,6 +4,7 @@ import { useNavigate, useParams, } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
 import './SquadPage.css'
+import './SquadPage.mobile.css'
 import API_URL from '../config/api'
 
 

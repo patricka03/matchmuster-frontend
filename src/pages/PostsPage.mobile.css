@@ -1,0 +1,299 @@
+/* ==========================================================
+   MATCHMUSTER POSTS PAGE — MOBILE APP POLISH
+   File: src/styles/PostsPage.mobile.css
+
+   Import this AFTER PostsPage.css.
+
+   Keeps the current MatchMuster posts feed, post-type badges,
+   pinned state, create-post action and empty states unchanged.
+
+   Adds:
+   - iOS / Android safe-area support
+   - dynamic viewport sizing
+   - 44pt iOS / 48dp Android touch targets
+   - touch-first post card behaviour
+   - safer long-title / preview wrapping
+   - bottom-nav clearance
+   - very-small-phone support
+   - landscape handling
+   - reduced-motion support
+
+   Platform hooks:
+   html.platform-ios
+   html.platform-android
+========================================================== */
+
+/* ========================================
+   PAGE / VIEWPORT
+======================================== */
+
+.posts-page {
+  min-height: calc(100vh - 72px);
+  min-height: calc(100dvh - 72px);
+
+  box-sizing: border-box;
+
+  padding-top:
+    max(48px, env(safe-area-inset-top, 0px));
+
+  padding-right:
+    max(24px, env(safe-area-inset-right, 0px));
+
+  padding-bottom:
+    calc(
+      116px + env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(24px, env(safe-area-inset-left, 0px));
+}
+
+.posts-container,
+.posts-header,
+.posts-list,
+.post-card,
+.posts-message,
+.posts-error,
+.posts-empty {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   CONTENT SAFETY
+======================================== */
+
+.posts-header,
+.posts-header > div,
+.post-card-heading,
+.post-card-footer {
+  min-width: 0;
+}
+
+.posts-header h1,
+.posts-header > div > p:last-child,
+.post-card h2,
+.post-preview,
+.post-card-footer,
+.posts-empty h2,
+.posts-empty p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   CREATE POST ACTION
+======================================== */
+
+.create-post-link {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.platform-android .create-post-link {
+  min-height: 48px;
+}
+
+/* ========================================
+   POST CARDS
+======================================== */
+
+.post-card {
+  min-height: 44px;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.post-card-heading {
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   TOUCH-FIRST FEEDBACK
+======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .post-card:hover,
+  .create-post-link:hover {
+    transform: none;
+  }
+
+  .post-card:active,
+  .create-post-link:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   IOS POLISH
+======================================== */
+
+html.platform-ios .post-card,
+html.platform-ios .create-post-link {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 650px) {
+  .posts-page {
+    padding-top:
+      max(28px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(16px, env(safe-area-inset-right, 0px));
+
+    padding-bottom:
+      calc(
+        116px + env(safe-area-inset-bottom, 0px)
+      );
+
+    padding-left:
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .posts-header {
+    gap: 18px;
+    margin-bottom: 26px;
+  }
+
+  .posts-header h1 {
+    font-size: 31px;
+    line-height: 1.15;
+  }
+
+  .posts-header > div > p:last-child {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .create-post-link {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .posts-list {
+    gap: 13px;
+  }
+
+  .post-card {
+    padding: 18px 16px;
+    border-radius: 13px;
+  }
+
+  .post-card h2 {
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  .post-preview {
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .post-card-footer {
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  .posts-message,
+  .posts-error,
+  .posts-empty {
+    padding: 24px 18px;
+  }
+
+  .posts-empty {
+    min-height: 230px;
+  }
+}
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .posts-page {
+    padding-right:
+      max(13px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(13px, env(safe-area-inset-left, 0px));
+  }
+
+  .posts-header h1 {
+    font-size: 28px;
+  }
+
+  .post-card {
+    padding: 16px 14px;
+  }
+
+  .post-type,
+  .post-pinned {
+    font-size: 9px;
+  }
+
+  .post-card h2 {
+    font-size: 17px;
+  }
+
+  .posts-empty {
+    min-height: 210px;
+    padding: 22px 14px;
+  }
+}
+
+/* ========================================
+   LANDSCAPE PHONES
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .posts-page {
+    padding-top:
+      max(18px, env(safe-area-inset-top, 0px));
+
+    padding-right:
+      max(22px, env(safe-area-inset-right, 0px));
+
+    padding-left:
+      max(22px, env(safe-area-inset-left, 0px));
+  }
+
+  .posts-container {
+    max-width: 1040px;
+  }
+
+  .posts-header {
+    flex-direction: row;
+  }
+
+  .create-post-link {
+    width: auto;
+    min-width: 150px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .post-card,
+  .create-post-link {
+    transition: none;
+  }
+}
