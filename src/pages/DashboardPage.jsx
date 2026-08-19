@@ -9,8 +9,15 @@ import {
   Star,
   Users,
 } from 'lucide-react'
+
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 import '../styles/DashboardHome.css'
 import '../styles/DashboardHome.mobile.css'
 
@@ -50,13 +57,19 @@ function DashboardPage() {
   })
 
   const [playerPayment, setPlayerPayment] = useState(null)
-  const [fixtureDetailsLoading, setFixtureDetailsLoading] =
-    useState(false)
+
+  const [
+    fixtureDetailsLoading,
+    setFixtureDetailsLoading,
+  ] = useState(false)
 
   const teamId = team?.id
 
-  const isPlayer = user?.account_type === 'player'
-  const isManager = user?.account_type === 'manager'
+  const isPlayer =
+    user?.account_type === 'player'
+
+  const isManager =
+    user?.account_type === 'manager'
 
   const isApprovedPlayer =
     isPlayer && Boolean(teamId)
@@ -82,10 +95,23 @@ function DashboardPage() {
     teamJoinPending &&
     canJoinTeam
 
+  async function clearDashboardSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
   useEffect(() => {
     function handleActiveTeamChanged() {
       setActiveTeamVersion(
-        (currentVersion) => currentVersion + 1,
+        (currentVersion) =>
+          currentVersion + 1,
       )
     }
 
@@ -103,30 +129,54 @@ function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search)
+    const searchParams =
+      new URLSearchParams(location.search)
 
-    if (searchParams.get('payment') !== 'success') return
+    if (
+      searchParams.get('payment') !==
+      'success'
+    ) {
+      return
+    }
 
     setPaymentSuccess(true)
     searchParams.delete('payment')
 
-    const cleanSearch = searchParams.toString()
+    const cleanSearch =
+      searchParams.toString()
 
     navigate(
       {
         pathname: location.pathname,
-        search: cleanSearch ? `?${cleanSearch}` : '',
+
+        search: cleanSearch
+          ? `?${cleanSearch}`
+          : '',
       },
-      { replace: true },
+
+      {
+        replace: true,
+      },
     )
-  }, [location.pathname, location.search, navigate])
+  }, [
+    location.pathname,
+    location.search,
+    navigate,
+  ])
+
+  // ========================================
+  // LOAD DASHBOARD
+  // ========================================
 
   useEffect(() => {
     async function loadDashboard() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        navigate('/login', {
+          replace: true,
+        })
+
         return
       }
 
@@ -136,23 +186,39 @@ function DashboardPage() {
       }
 
       try {
-        const [userResponse, teamsResponse] = await Promise.all([
-          fetch(`${API_URL}/users/me`, { headers }),
-          fetch(`${API_URL}/teams`, { headers }),
+        const [
+          userResponse,
+          teamsResponse,
+        ] = await Promise.all([
+          fetch(
+            `${API_URL}/users/me`,
+            {
+              headers,
+            },
+          ),
+
+          fetch(
+            `${API_URL}/teams`,
+            {
+              headers,
+            },
+          ),
         ])
 
         if (
           userResponse.status === 401 ||
           teamsResponse.status === 401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login', { replace: true })
+          await clearDashboardSession()
+
           return
         }
 
-        const userData = await userResponse.json()
-        const teamsData = await teamsResponse.json()
+        const userData =
+          await userResponse.json()
+
+        const teamsData =
+          await teamsResponse.json()
 
         if (!userResponse.ok) {
           throw new Error(
@@ -169,7 +235,8 @@ function DashboardPage() {
         }
 
         const currentUser =
-          userData.user || userData
+          userData.user ||
+          userData
 
         const teams =
           Array.isArray(teamsData)
@@ -177,26 +244,35 @@ function DashboardPage() {
             : teamsData.teams || []
 
         const storedActiveTeamId =
-          localStorage.getItem('activeTeamId')
+          localStorage.getItem(
+            'activeTeamId',
+          )
 
         const storedActiveTeam =
           storedActiveTeamId
             ? teams.find(
                 (teamRecord) =>
                   String(teamRecord.id) ===
-                  String(storedActiveTeamId),
+                  String(
+                    storedActiveTeamId,
+                  ),
               )
             : null
 
         const currentTeam =
-          storedActiveTeam || teams[0] || null
+          storedActiveTeam ||
+          teams[0] ||
+          null
 
         setUser(currentUser)
         setTeam(currentTeam)
+
         setNextMatch(null)
         setNextTraining(null)
+
         setSquadSelections([])
         setSquadLoaded(false)
+
         setPlayerPayment(null)
 
         setAvailabilitySummary({
@@ -213,7 +289,9 @@ function DashboardPage() {
 
         localStorage.setItem(
           'currentUser',
-          JSON.stringify(currentUser),
+          JSON.stringify(
+            currentUser,
+          ),
         )
 
         if (currentTeam) {
@@ -227,7 +305,10 @@ function DashboardPage() {
             currentTeam.name || '',
           )
 
-          localStorage.removeItem('teamJoinPending')
+          localStorage.removeItem(
+            'teamJoinPending',
+          )
+
           setTeamJoinPending(false)
 
           const [
@@ -236,12 +317,16 @@ function DashboardPage() {
           ] = await Promise.all([
             fetch(
               `${API_URL}/teams/${currentTeam.id}/matches`,
-              { headers },
+              {
+                headers,
+              },
             ),
 
             fetch(
               `${API_URL}/teams/${currentTeam.id}/trainings`,
-              { headers },
+              {
+                headers,
+              },
             ),
           ])
 
@@ -249,9 +334,8 @@ function DashboardPage() {
             matchesResponse.status === 401 ||
             trainingsResponse.status === 401
           ) {
-            localStorage.removeItem('token')
-            localStorage.removeItem('currentUser')
-            navigate('/login', { replace: true })
+            await clearDashboardSession()
+
             return
           }
 
@@ -287,54 +371,81 @@ function DashboardPage() {
               ? trainingsData
               : trainingsData.trainings || []
 
-          const upcomingMatches = matches
-            .filter((match) => {
-              if (!match.kickoff_time) return false
+          const upcomingMatches =
+            matches
+              .filter((match) => {
+                if (
+                  !match.kickoff_time
+                ) {
+                  return false
+                }
 
-              return (
-                new Date(match.kickoff_time).getTime() >
-                Date.now()
+                return (
+                  new Date(
+                    match.kickoff_time,
+                  ).getTime() >
+                  Date.now()
+                )
+              })
+              .sort(
+                (
+                  firstMatch,
+                  secondMatch,
+                ) =>
+                  new Date(
+                    firstMatch.kickoff_time,
+                  ).getTime() -
+                  new Date(
+                    secondMatch.kickoff_time,
+                  ).getTime(),
               )
-            })
-            .sort(
-              (firstMatch, secondMatch) =>
-                new Date(
-                  firstMatch.kickoff_time,
-                ).getTime() -
-                new Date(
-                  secondMatch.kickoff_time,
-                ).getTime(),
-            )
 
-          const upcomingTrainings = trainings
-            .filter((training) => {
-              if (!training.starts_at) return false
+          const upcomingTrainings =
+            trainings
+              .filter((training) => {
+                if (
+                  !training.starts_at
+                ) {
+                  return false
+                }
 
-              return (
-                new Date(training.starts_at).getTime() >
-                Date.now()
+                return (
+                  new Date(
+                    training.starts_at,
+                  ).getTime() >
+                  Date.now()
+                )
+              })
+              .sort(
+                (
+                  firstTraining,
+                  secondTraining,
+                ) =>
+                  new Date(
+                    firstTraining.starts_at,
+                  ).getTime() -
+                  new Date(
+                    secondTraining.starts_at,
+                  ).getTime(),
               )
-            })
-            .sort(
-              (firstTraining, secondTraining) =>
-                new Date(
-                  firstTraining.starts_at,
-                ).getTime() -
-                new Date(
-                  secondTraining.starts_at,
-                ).getTime(),
-            )
 
           setNextMatch(
-            upcomingMatches[0] || null,
+            upcomingMatches[0] ||
+              null,
           )
 
           setNextTraining(
-            upcomingTrainings[0] || null,
+            upcomingTrainings[0] ||
+              null,
           )
         } else {
-          localStorage.removeItem('activeTeamId')
-          localStorage.removeItem('activeTeamName')
+          localStorage.removeItem(
+            'activeTeamId',
+          )
+
+          localStorage.removeItem(
+            'activeTeamName',
+          )
         }
       } catch (error) {
         setErrorMessage(
@@ -345,12 +456,30 @@ function DashboardPage() {
     }
 
     loadDashboard()
-  }, [navigate, activeTeamVersion])
+  }, [
+    navigate,
+    activeTeamVersion,
+  ])
+
+  // ========================================
+  // NEXT FIXTURE DETAILS
+  // ========================================
 
   useEffect(() => {
-    if (!user || !teamId || !nextMatch) {
+    if (
+      !user ||
+      !teamId ||
+      !nextMatch
+    ) {
       setSquadSelections([])
-      setSquadLoaded(Boolean(user && teamId))
+
+      setSquadLoaded(
+        Boolean(
+          user &&
+          teamId,
+        ),
+      )
+
       setPlayerPayment(null)
 
       setAvailabilitySummary({
@@ -365,18 +494,26 @@ function DashboardPage() {
     let cancelled = false
 
     async function loadNextFixtureDetails() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
-      if (!token) return
+      if (!token) {
+        return
+      }
 
       const headers = {
         Accept: 'application/json',
         Authorization: token,
       }
 
-      setFixtureDetailsLoading(true)
+      setFixtureDetailsLoading(
+        true,
+      )
 
       try {
+        // ========================================
+        // PLAYER FIXTURE DETAILS
+        // ========================================
+
         if (isApprovedPlayer) {
           const [
             squadResponse,
@@ -384,115 +521,179 @@ function DashboardPage() {
           ] = await Promise.all([
             fetch(
               `${API_URL}/teams/${teamId}/matches/${nextMatch.id}/squad_selections`,
-              { headers },
+              {
+                headers,
+              },
             ),
 
             fetch(
               `${API_URL}/teams/${teamId}/matches/${nextMatch.id}/match_payments`,
-              { headers },
+              {
+                headers,
+              },
             ),
           ])
+
+          if (
+            squadResponse.status === 401 ||
+            paymentsResponse.status === 401
+          ) {
+            await clearDashboardSession()
+
+            return
+          }
 
           if (squadResponse.ok) {
             const squadData =
               await squadResponse.json()
 
             const selections =
-              Array.isArray(squadData)
+              Array.isArray(
+                squadData,
+              )
                 ? squadData
-                : squadData.squad_selections || []
+                : squadData.squad_selections ||
+                  []
 
             if (!cancelled) {
-              setSquadSelections(selections)
+              setSquadSelections(
+                selections,
+              )
+
               setSquadLoaded(true)
             }
           } else if (!cancelled) {
             setSquadLoaded(true)
           }
 
-          if (paymentsResponse.ok) {
+          if (
+            paymentsResponse.ok
+          ) {
             const paymentsData =
               await paymentsResponse.json()
 
             const payments =
-              Array.isArray(paymentsData)
+              Array.isArray(
+                paymentsData,
+              )
                 ? paymentsData
-                : paymentsData.match_payments || []
+                : paymentsData.match_payments ||
+                  []
 
             const ownPayment =
-              payments.find((payment) => {
-                const paymentUserId =
-                  payment.user_id ||
-                  payment.user?.id
+              payments.find(
+                (payment) => {
+                  const paymentUserId =
+                    payment.user_id ||
+                    payment.user?.id
 
-                return (
-                  paymentUserId !== undefined &&
-                  String(paymentUserId) ===
-                    String(user.id)
-                )
-              }) ||
+                  return (
+                    paymentUserId !==
+                      undefined &&
+                    String(
+                      paymentUserId,
+                    ) ===
+                      String(user.id)
+                  )
+                },
+              ) ||
               (payments.length === 1
                 ? payments[0]
                 : null)
 
             if (!cancelled) {
-              setPlayerPayment(ownPayment)
+              setPlayerPayment(
+                ownPayment,
+              )
             }
           }
         }
+
+        // ========================================
+        // MANAGER FIXTURE AVAILABILITY
+        // ========================================
 
         if (isApprovedManager) {
           const availabilityResponse =
             await fetch(
               `${API_URL}/teams/${teamId}/matches/${nextMatch.id}/availabilities`,
-              { headers },
+              {
+                headers,
+              },
             )
 
-          if (availabilityResponse.ok) {
+          if (
+            availabilityResponse.status ===
+            401
+          ) {
+            await clearDashboardSession()
+
+            return
+          }
+
+          if (
+            availabilityResponse.ok
+          ) {
             const availabilityData =
               await availabilityResponse.json()
 
             const players =
-              Array.isArray(availabilityData)
+              Array.isArray(
+                availabilityData,
+              )
                 ? availabilityData
                 : availabilityData.players ||
                   availabilityData.availabilities ||
                   []
 
-            const summary = players.reduce(
-              (counts, player) => {
-                if (
-                  player.status === 'available'
-                ) {
-                  counts.available += 1
-                } else if (
-                  player.status === 'unavailable'
-                ) {
-                  counts.unavailable += 1
-                } else {
-                  counts.pending += 1
-                }
+            const summary =
+              players.reduce(
+                (
+                  counts,
+                  player,
+                ) => {
+                  if (
+                    player.status ===
+                    'available'
+                  ) {
+                    counts.available += 1
+                  } else if (
+                    player.status ===
+                    'unavailable'
+                  ) {
+                    counts.unavailable +=
+                      1
+                  } else {
+                    counts.pending += 1
+                  }
 
-                return counts
-              },
-              {
-                available: 0,
-                unavailable: 0,
-                pending: 0,
-              },
-            )
+                  return counts
+                },
+
+                {
+                  available: 0,
+                  unavailable: 0,
+                  pending: 0,
+                },
+              )
 
             if (!cancelled) {
-              setAvailabilitySummary(summary)
+              setAvailabilitySummary(
+                summary,
+              )
             }
           }
         }
       } catch {
-        // The dashboard remains usable if a secondary card
-        // cannot load.
+        /*
+         * The dashboard remains usable
+         * if a secondary card cannot load.
+         */
       } finally {
         if (!cancelled) {
-          setFixtureDetailsLoading(false)
+          setFixtureDetailsLoading(
+            false,
+          )
         }
       }
     }
@@ -509,6 +710,10 @@ function DashboardPage() {
     teamId,
     user,
   ])
+
+  // ========================================
+  // NEXT TRAINING AVAILABILITY
+  // ========================================
 
   useEffect(() => {
     if (
@@ -528,9 +733,11 @@ function DashboardPage() {
     let cancelled = false
 
     async function loadTrainingAvailability() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
-      if (!token) return
+      if (!token) {
+        return
+      }
 
       const headers = {
         Accept: 'application/json',
@@ -538,14 +745,28 @@ function DashboardPage() {
       }
 
       try {
-        const response = await fetch(
-          `${API_URL}/teams/${teamId}/trainings/${nextTraining.id}/training_availabilities`,
-          { headers },
-        )
+        const response =
+          await fetch(
+            `${API_URL}/teams/${teamId}/trainings/${nextTraining.id}/training_availabilities`,
+            {
+              headers,
+            },
+          )
 
-        if (!response.ok) return
+        if (
+          response.status === 401
+        ) {
+          await clearDashboardSession()
 
-        const data = await response.json()
+          return
+        }
+
+        if (!response.ok) {
+          return
+        }
+
+        const data =
+          await response.json()
 
         const players =
           Array.isArray(data)
@@ -554,26 +775,35 @@ function DashboardPage() {
               data.training_availabilities ||
               []
 
-        const summary = players.reduce(
-          (counts, player) => {
-            if (player.status === 'available') {
-              counts.available += 1
-            } else if (
-              player.status === 'unavailable'
-            ) {
-              counts.unavailable += 1
-            } else {
-              counts.pending += 1
-            }
+        const summary =
+          players.reduce(
+            (
+              counts,
+              player,
+            ) => {
+              if (
+                player.status ===
+                'available'
+              ) {
+                counts.available += 1
+              } else if (
+                player.status ===
+                'unavailable'
+              ) {
+                counts.unavailable += 1
+              } else {
+                counts.pending += 1
+              }
 
-            return counts
-          },
-          {
-            available: 0,
-            unavailable: 0,
-            pending: 0,
-          },
-        )
+              return counts
+            },
+
+            {
+              available: 0,
+              unavailable: 0,
+              pending: 0,
+            },
+          )
 
         if (!cancelled) {
           setTrainingAvailabilitySummary(
@@ -581,8 +811,11 @@ function DashboardPage() {
           )
         }
       } catch {
-        // Keep the dashboard usable if training
-        // availability cannot be loaded.
+        /*
+         * Keep the dashboard usable
+         * if training availability
+         * cannot be loaded.
+         */
       }
     }
 
@@ -597,26 +830,45 @@ function DashboardPage() {
     teamId,
   ])
 
-  const playerSelection = useMemo(() => {
-    if (!user) return null
+  // ========================================
+  // PLAYER SQUAD SELECTION
+  // ========================================
 
-    return squadSelections.find(
-      (selection) => {
-        const selectionUserId =
-          selection.user_id ||
-          selection.user?.id
+  const playerSelection =
+    useMemo(() => {
+      if (!user) {
+        return null
+      }
 
-        return (
-          selectionUserId !== undefined &&
-          String(selectionUserId) ===
-            String(user.id)
-        )
-      },
-    )
-  }, [squadSelections, user])
+      return squadSelections.find(
+        (selection) => {
+          const selectionUserId =
+            selection.user_id ||
+            selection.user?.id
+
+          return (
+            selectionUserId !==
+              undefined &&
+            String(
+              selectionUserId,
+            ) ===
+              String(user.id)
+          )
+        },
+      )
+    }, [
+      squadSelections,
+      user,
+    ])
+
+  // ========================================
+  // DATE / TIME HELPERS
+  // ========================================
 
   function fixtureDate(match) {
-    if (!match?.kickoff_time) return ''
+    if (!match?.kickoff_time) {
+      return ''
+    }
 
     return new Intl.DateTimeFormat(
       'en-GB',
@@ -626,12 +878,16 @@ function DashboardPage() {
         month: 'short',
       },
     ).format(
-      new Date(match.kickoff_time),
+      new Date(
+        match.kickoff_time,
+      ),
     )
   }
 
   function fixtureTime(match) {
-    if (!match?.kickoff_time) return ''
+    if (!match?.kickoff_time) {
+      return ''
+    }
 
     return new Intl.DateTimeFormat(
       'en-GB',
@@ -640,12 +896,16 @@ function DashboardPage() {
         minute: '2-digit',
       },
     ).format(
-      new Date(match.kickoff_time),
+      new Date(
+        match.kickoff_time,
+      ),
     )
   }
 
   function trainingDate(training) {
-    if (!training?.starts_at) return ''
+    if (!training?.starts_at) {
+      return ''
+    }
 
     return new Intl.DateTimeFormat(
       'en-GB',
@@ -655,12 +915,16 @@ function DashboardPage() {
         month: 'short',
       },
     ).format(
-      new Date(training.starts_at),
+      new Date(
+        training.starts_at,
+      ),
     )
   }
 
   function trainingTime(training) {
-    if (!training?.starts_at) return ''
+    if (!training?.starts_at) {
+      return ''
+    }
 
     return new Intl.DateTimeFormat(
       'en-GB',
@@ -669,15 +933,22 @@ function DashboardPage() {
         minute: '2-digit',
       },
     ).format(
-      new Date(training.starts_at),
+      new Date(
+        training.starts_at,
+      ),
     )
   }
+
+  // ========================================
+  // SQUAD STATUS
+  // ========================================
 
   function squadStatus() {
     if (!nextMatch) {
       return {
         tone: 'muted',
-        text: 'No upcoming fixture',
+        text:
+          'No upcoming fixture',
       }
     }
 
@@ -687,21 +958,27 @@ function DashboardPage() {
     ) {
       return {
         tone: 'muted',
-        text: 'Checking squad...',
+        text:
+          'Checking squad...',
       }
     }
 
-    if (squadSelections.length === 0) {
+    if (
+      squadSelections.length ===
+      0
+    ) {
       return {
         tone: 'pending',
-        text: 'Squad not announced yet',
+        text:
+          'Squad not announced yet',
       }
     }
 
     if (!playerSelection) {
       return {
         tone: 'muted',
-        text: 'Not selected',
+        text:
+          'Not selected',
       }
     }
 
@@ -734,6 +1011,10 @@ function DashboardPage() {
     }
   }
 
+  // ========================================
+  // PAYMENT CARD
+  // ========================================
+
   function paymentCardText() {
     if (!nextMatch) {
       return 'No upcoming match fee'
@@ -743,34 +1024,55 @@ function DashboardPage() {
       return 'No payment due'
     }
 
-    if (playerPayment.status === 'paid') {
+    if (
+      playerPayment.status ===
+      'paid'
+    ) {
       return 'Match fee paid'
     }
 
-    if (playerPayment.status === 'waived') {
+    if (
+      playerPayment.status ===
+      'waived'
+    ) {
       return 'Match fee waived'
     }
 
     if (
-      playerPayment.status === 'refunded'
+      playerPayment.status ===
+      'refunded'
     ) {
       return 'Payment refunded'
     }
 
     const formattedAmount =
-      new Intl.NumberFormat('en-GB', {
-        style: 'currency',
-        currency: 'GBP',
-      }).format(
-        (playerPayment.amount_pence || 0) /
-          100,
+      new Intl.NumberFormat(
+        'en-GB',
+        {
+          style: 'currency',
+          currency: 'GBP',
+        },
+      ).format(
+        (
+          playerPayment.amount_pence ||
+          0
+        ) / 100,
       )
 
     return `${formattedAmount} due`
   }
 
+  // ========================================
+  // NAVIGATION
+  // ========================================
+
   function openNextFixture() {
-    if (!teamId || !nextMatch) return
+    if (
+      !teamId ||
+      !nextMatch
+    ) {
+      return
+    }
 
     navigate(
       `/teams/${teamId}/matches/${nextMatch.id}`,
@@ -778,7 +1080,12 @@ function DashboardPage() {
   }
 
   function openNextTraining() {
-    if (!teamId || !nextTraining) return
+    if (
+      !teamId ||
+      !nextTraining
+    ) {
+      return
+    }
 
     navigate(
       `/teams/${teamId}/trainings/${nextTraining.id}`,
@@ -788,6 +1095,7 @@ function DashboardPage() {
   function openPayments() {
     if (!teamId) {
       navigate('/team')
+
       return
     }
 
@@ -799,12 +1107,15 @@ function DashboardPage() {
       return
     }
 
-    navigate(`/teams/${teamId}/matches`)
+    navigate(
+      `/teams/${teamId}/matches`,
+    )
   }
 
   function openRatings() {
     if (!teamId) {
       navigate('/team')
+
       return
     }
 
@@ -812,6 +1123,10 @@ function DashboardPage() {
       `/teams/${teamId}/awards`,
     )
   }
+
+  // ========================================
+  // PAGE STATES
+  // ========================================
 
   if (errorMessage) {
     return (
@@ -831,6 +1146,10 @@ function DashboardPage() {
 
   const selectionStatus =
     squadStatus()
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>
@@ -852,6 +1171,10 @@ function DashboardPage() {
             </div>
           )}
 
+          {/* ========================================
+              PENDING MANAGER
+          ======================================== */}
+
           {isPendingManager && (
             <article className="home-dashboard-state-card">
               <span className="home-dashboard-state-icon">
@@ -870,6 +1193,10 @@ function DashboardPage() {
               </p>
             </article>
           )}
+
+          {/* ========================================
+              APPROVED MANAGER WITHOUT TEAM
+          ======================================== */}
 
           {hasNoTeamMembership &&
             isApprovedManager && (
@@ -892,7 +1219,9 @@ function DashboardPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      navigate('/teams/new')
+                      navigate(
+                        '/teams/new',
+                      )
                     }
                   >
                     Create a team
@@ -902,7 +1231,9 @@ function DashboardPage() {
                     className="secondary"
                     type="button"
                     onClick={() =>
-                      navigate('/teams/join')
+                      navigate(
+                        '/teams/join',
+                      )
                     }
                   >
                     Join a team
@@ -911,6 +1242,10 @@ function DashboardPage() {
               </article>
             )}
 
+          {/* ========================================
+              PLAYER WITHOUT TEAM
+          ======================================== */}
+
           {hasNoTeamMembership &&
             isPlayer && (
               <article className="home-dashboard-state-card">
@@ -918,7 +1253,9 @@ function DashboardPage() {
                   👥
                 </span>
 
-                <h1>Join your team</h1>
+                <h1>
+                  Join your team
+                </h1>
 
                 <p>
                   Enter the invite code from
@@ -930,7 +1267,9 @@ function DashboardPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      navigate('/teams/join')
+                      navigate(
+                        '/teams/join',
+                      )
                     }
                   >
                     Join a team
@@ -938,6 +1277,10 @@ function DashboardPage() {
                 </div>
               </article>
             )}
+
+          {/* ========================================
+              TEAM APPROVAL PENDING
+          ======================================== */}
 
           {isPendingTeamApproval && (
             <article className="home-dashboard-state-card">
@@ -967,8 +1310,12 @@ function DashboardPage() {
               <button
                 className="home-dashboard-fixture-card"
                 type="button"
-                onClick={openNextFixture}
-                disabled={!nextMatch}
+                onClick={
+                  openNextFixture
+                }
+                disabled={
+                  !nextMatch
+                }
               >
                 <span className="home-dashboard-fixture-label">
                   Next fixture
@@ -978,7 +1325,10 @@ function DashboardPage() {
                   <>
                     <span className="home-dashboard-fixture-opponent">
                       <span>
-                        vs {nextMatch.opponent}
+                        vs{' '}
+                        {
+                          nextMatch.opponent
+                        }
                       </span>
 
                       <ArrowRight
@@ -994,9 +1344,13 @@ function DashboardPage() {
                           aria-hidden="true"
                         />
 
-                        {fixtureDate(nextMatch)}
+                        {fixtureDate(
+                          nextMatch,
+                        )}
                         {' • '}
-                        {fixtureTime(nextMatch)}
+                        {fixtureTime(
+                          nextMatch,
+                        )}
                       </span>
 
                       <span>
@@ -1014,20 +1368,20 @@ function DashboardPage() {
                       <span
                         className={`home-dashboard-squad-status ${selectionStatus.tone}`}
                       >
-                        <span aria-hidden="true">
+                        <span
+                          aria-hidden="true"
+                        >
                           {selectionStatus.tone ===
-                          'selected'
+                            'selected' ||
+                          selectionStatus.tone ===
+                            'substitute'
                             ? '●'
-                            : selectionStatus.tone ===
-                                'substitute'
-                              ? '●'
-                              : selectionStatus.tone ===
-                                  'pending'
-                                ? '○'
-                                : '○'}
+                            : '○'}
                         </span>
 
-                        {selectionStatus.text}
+                        {
+                          selectionStatus.text
+                        }
                       </span>
                     )}
                   </>
@@ -1138,7 +1492,9 @@ function DashboardPage() {
                 <button
                   className="home-dashboard-action-card"
                   type="button"
-                  onClick={openPayments}
+                  onClick={
+                    openPayments
+                  }
                 >
                   <span className="home-dashboard-card-icon">
                     <CircleDollarSign
@@ -1188,7 +1544,9 @@ function DashboardPage() {
                 <button
                   className="home-dashboard-action-card"
                   type="button"
-                  onClick={openRatings}
+                  onClick={
+                    openRatings
+                  }
                 >
                   <span className="home-dashboard-card-icon">
                     <Star
@@ -1216,8 +1574,12 @@ function DashboardPage() {
                 <button
                   className="home-dashboard-training-card"
                   type="button"
-                  onClick={openNextTraining}
-                  disabled={!nextTraining}
+                  onClick={
+                    openNextTraining
+                  }
+                  disabled={
+                    !nextTraining
+                  }
                 >
                   <span className="home-dashboard-training-label">
                     Next training
@@ -1248,7 +1610,9 @@ function DashboardPage() {
                           {trainingDate(
                             nextTraining,
                           )}
+
                           {' • '}
+
                           {trainingTime(
                             nextTraining,
                           )}
@@ -1288,7 +1652,9 @@ function DashboardPage() {
 
                       <button
                         type="button"
-                        onClick={openNextTraining}
+                        onClick={
+                          openNextTraining
+                        }
                       >
                         View all
                       </button>

@@ -4,9 +4,16 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 import './EditAvailabilityPage.css'
 import './EditAvailabilityPage.mobile.css'
 
@@ -14,54 +21,108 @@ function EditAvailabilityPage() {
   const navigate = useNavigate()
   const { teamId, matchId } = useParams()
 
-  const [availability, setAvailability] = useState(null)
-  const [selectedStatus, setSelectedStatus] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [availability, setAvailability] =
+    useState(null)
+
+  const [selectedStatus, setSelectedStatus] =
+    useState('')
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [saving, setSaving] =
+    useState(false)
+
+  const [errorMessage, setErrorMessage] =
+    useState('')
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearAvailabilitySession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD AVAILABILITY
+  // ========================================
 
   useEffect(() => {
     async function fetchAvailability() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        await clearAvailabilitySession()
+
         return
       }
 
       try {
-        const response = await fetch(
-          `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities/mine`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: token,
-            },
-          }
-        )
+        const response =
+          await fetch(
+            `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities/mine`,
+            {
+              headers: {
+                Accept:
+                  'application/json',
 
-        if (response.status === 401) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login')
+                Authorization:
+                  token,
+              },
+            },
+          )
+
+        if (
+          response.status === 401
+        ) {
+          await clearAvailabilitySession()
+
           return
         }
 
-        const data = await response.json()
+        const data =
+          await response.json()
 
         if (!response.ok) {
           throw new Error(
-            data.error || 'Unable to load your availability.'
+            data.error ||
+              'Unable to load your availability.',
           )
         }
 
-        const availabilityData = data.availability || data
+        const availabilityData =
+          data.availability ||
+          data
 
-        setAvailability(availabilityData)
-        setSelectedStatus(availabilityData.status)
+        setAvailability(
+          availabilityData,
+        )
+
+        setSelectedStatus(
+          availabilityData.status,
+        )
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to connect to the server.'
+          error.message ||
+            'Unable to connect to the server.',
         )
       } finally {
         setLoading(false)
@@ -69,25 +130,41 @@ function EditAvailabilityPage() {
     }
 
     fetchAvailability()
-  }, [matchId, navigate, teamId])
+  }, [
+    matchId,
+    navigate,
+    teamId,
+  ])
+
+  // ========================================
+  // UPDATE AVAILABILITY
+  // ========================================
 
   async function handleSubmit(event) {
     event.preventDefault()
 
     if (!availability) {
-      setErrorMessage('No availability response was found.')
+      setErrorMessage(
+        'No availability response was found.',
+      )
+
       return
     }
 
     if (!selectedStatus) {
-      setErrorMessage('Please select your availability.')
+      setErrorMessage(
+        'Please select your availability.',
+      )
+
       return
     }
 
-    const token = localStorage.getItem('token')
+    const token =
+      getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearAvailabilitySession()
+
       return
     }
 
@@ -95,58 +172,91 @@ function EditAvailabilityPage() {
     setErrorMessage('')
 
     try {
-      const response = await fetch(
-        `${API_URL}/availabilities/${availability.id}`,
-        {
-          method: 'PATCH',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: token,
-          },
-          body: JSON.stringify({
-            availability: {
-              status: selectedStatus,
-            },
-          }),
-        }
-      )
+      const response =
+        await fetch(
+          `${API_URL}/availabilities/${availability.id}`,
+          {
+            method: 'PATCH',
 
-      if (response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('currentUser')
-        navigate('/login')
+            headers: {
+              Accept:
+                'application/json',
+
+              'Content-Type':
+                'application/json',
+
+              Authorization:
+                token,
+            },
+
+            body:
+              JSON.stringify({
+                availability: {
+                  status:
+                    selectedStatus,
+                },
+              }),
+          },
+        )
+
+      if (
+        response.status === 401
+      ) {
+        await clearAvailabilitySession()
+
         return
       }
 
-      const data = await response.json()
+      const data =
+        await response.json()
 
       if (!response.ok) {
-        let message = 'Unable to update your availability.'
+        let message =
+          'Unable to update your availability.'
 
-        if (Array.isArray(data.errors)) {
-          message = data.errors.join(', ')
-        } else if (data.error) {
-          message = data.error
+        if (
+          Array.isArray(
+            data.errors,
+          )
+        ) {
+          message =
+            data.errors.join(', ')
+        } else if (
+          data.error
+        ) {
+          message =
+            data.error
         }
 
-        throw new Error(message)
+        throw new Error(
+          message,
+        )
       }
 
-      navigate(`/teams/${teamId}/matches/${matchId}`, {
-        replace: true,
-        state: {
-          successMessage: 'Your availability has been updated.',
+      navigate(
+        `/teams/${teamId}/matches/${matchId}`,
+        {
+          replace: true,
+
+          state: {
+            successMessage:
+              'Your availability has been updated.',
+          },
         },
-      })
+      )
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to update your availability.'
+        error.message ||
+          'Unable to update your availability.',
       )
     } finally {
       setSaving(false)
     }
   }
+
+  // ========================================
+  // LOADING
+  // ========================================
 
   if (loading) {
     return (
@@ -155,12 +265,17 @@ function EditAvailabilityPage() {
 
         <main className="edit-availability-page">
           <p className="edit-availability-message">
-            Loading your availability...
+            Loading your
+            availability...
           </p>
         </main>
       </>
     )
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>
@@ -178,10 +293,13 @@ function EditAvailabilityPage() {
               Player availability
             </p>
 
-            <h1>Edit availability</h1>
+            <h1>
+              Edit availability
+            </h1>
 
             <p>
-              Change whether you are available for this fixture.
+              Change whether you are
+              available for this fixture.
             </p>
           </div>
 
@@ -197,14 +315,21 @@ function EditAvailabilityPage() {
           {availability && (
             <form
               className="edit-availability-card"
-              onSubmit={handleSubmit}
+              onSubmit={
+                handleSubmit
+              }
             >
-              <fieldset disabled={saving}>
-                <legend>Are you available?</legend>
+              <fieldset
+                disabled={saving}
+              >
+                <legend>
+                  Are you available?
+                </legend>
 
                 <label
                   className={`availability-option ${
-                    selectedStatus === 'available'
+                    selectedStatus ===
+                    'available'
                       ? 'availability-option-selected'
                       : ''
                   }`}
@@ -213,9 +338,17 @@ function EditAvailabilityPage() {
                     type="radio"
                     name="availability"
                     value="available"
-                    checked={selectedStatus === 'available'}
-                    onChange={(event) =>
-                      setSelectedStatus(event.target.value)
+                    checked={
+                      selectedStatus ===
+                      'available'
+                    }
+                    onChange={(
+                      event,
+                    ) =>
+                      setSelectedStatus(
+                        event.target
+                          .value,
+                      )
                     }
                   />
 
@@ -224,14 +357,21 @@ function EditAvailabilityPage() {
                   </span>
 
                   <span>
-                    <strong>Available</strong>
-                    <small>I can play in this fixture.</small>
+                    <strong>
+                      Available
+                    </strong>
+
+                    <small>
+                      I can play in this
+                      fixture.
+                    </small>
                   </span>
                 </label>
 
                 <label
                   className={`availability-option ${
-                    selectedStatus === 'unavailable'
+                    selectedStatus ===
+                    'unavailable'
                       ? 'availability-option-selected'
                       : ''
                   }`}
@@ -240,9 +380,17 @@ function EditAvailabilityPage() {
                     type="radio"
                     name="availability"
                     value="unavailable"
-                    checked={selectedStatus === 'unavailable'}
-                    onChange={(event) =>
-                      setSelectedStatus(event.target.value)
+                    checked={
+                      selectedStatus ===
+                      'unavailable'
+                    }
+                    onChange={(
+                      event,
+                    ) =>
+                      setSelectedStatus(
+                        event.target
+                          .value,
+                      )
                     }
                   />
 
@@ -251,8 +399,14 @@ function EditAvailabilityPage() {
                   </span>
 
                   <span>
-                    <strong>Unavailable</strong>
-                    <small>I cannot play in this fixture.</small>
+                    <strong>
+                      Unavailable
+                    </strong>
+
+                    <small>
+                      I cannot play in this
+                      fixture.
+                    </small>
                   </span>
                 </label>
               </fieldset>
@@ -271,7 +425,8 @@ function EditAvailabilityPage() {
                   disabled={
                     saving ||
                     !selectedStatus ||
-                    selectedStatus === availability.status
+                    selectedStatus ===
+                      availability.status
                   }
                 >
                   {saving

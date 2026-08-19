@@ -1,11 +1,21 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useState,
+} from 'react'
+
 import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 function EditTrainingPage() {
   const navigate = useNavigate()
@@ -15,71 +25,104 @@ function EditTrainingPage() {
     trainingId,
   } = useParams()
 
-  const [formData, setFormData] =
-    useState({
-      title: '',
-      starts_at: '',
-      meet_time: '',
-      location: '',
-      description: '',
+  const [
+    formData,
+    setFormData,
+  ] = useState({
+    title: '',
+    starts_at: '',
+    meet_time: '',
+    location: '',
+    description: '',
+  })
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true)
+
+  const [
+    submitting,
+    setSubmitting,
+  ] = useState(false)
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('')
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearEditTrainingSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
     })
+  }
 
-  const [loading, setLoading] =
-    useState(true)
-
-  const [submitting, setSubmitting] =
-    useState(false)
-
-  const [errorMessage, setErrorMessage] =
-    useState('')
+  // ========================================
+  // LOAD TRAINING
+  // ========================================
 
   useEffect(() => {
     async function loadTraining() {
       const token =
-        localStorage.getItem('token')
+        getAuthToken()
 
       if (!token) {
-        navigate('/login', {
-          replace: true,
-        })
-
+        await clearEditTrainingSession()
         return
       }
 
       try {
-        const response = await fetch(
-          `${API_URL}/teams/${teamId}/trainings/${trainingId}`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: token,
+        const response =
+          await fetch(
+            `${API_URL}/teams/${teamId}/trainings/${trainingId}`,
+            {
+              headers: {
+                Accept:
+                  'application/json',
+
+                Authorization:
+                  token,
+              },
             },
-          },
-        )
+          )
 
         const data =
           await response.json()
 
-        if (response.status === 401) {
-          localStorage.removeItem(
-            'token',
-          )
-
-          localStorage.removeItem(
-            'currentUser',
-          )
-
-          navigate('/login', {
-            replace: true,
-          })
-
+        if (
+          response.status === 401
+        ) {
+          await clearEditTrainingSession()
           return
         }
 
-        if (response.status === 403) {
-          navigate('/dashboard', {
-            replace: true,
-          })
+        if (
+          response.status === 403
+        ) {
+          navigate(
+            '/dashboard',
+            {
+              replace: true,
+            },
+          )
 
           return
         }
@@ -128,6 +171,10 @@ function EditTrainingPage() {
     trainingId,
   ])
 
+  // ========================================
+  // FORM
+  // ========================================
+
   function handleChange(event) {
     const {
       name,
@@ -142,19 +189,20 @@ function EditTrainingPage() {
     )
   }
 
+  // ========================================
+  // UPDATE TRAINING
+  // ========================================
+
   async function handleSubmit(
     event,
   ) {
     event.preventDefault()
 
     const token =
-      localStorage.getItem('token')
+      getAuthToken()
 
     if (!token) {
-      navigate('/login', {
-        replace: true,
-      })
-
+      await clearEditTrainingSession()
       return
     }
 
@@ -162,53 +210,50 @@ function EditTrainingPage() {
     setErrorMessage('')
 
     try {
-      const response = await fetch(
-        `${API_URL}/teams/${teamId}/trainings/${trainingId}`,
-        {
-          method: 'PATCH',
+      const response =
+        await fetch(
+          `${API_URL}/teams/${teamId}/trainings/${trainingId}`,
+          {
+            method: 'PATCH',
 
-          headers: {
-            Accept:
-              'application/json',
+            headers: {
+              Accept:
+                'application/json',
 
-            'Content-Type':
-              'application/json',
+              'Content-Type':
+                'application/json',
 
-            Authorization:
-              token,
+              Authorization:
+                token,
+            },
+
+            body:
+              JSON.stringify({
+                training:
+                  formData,
+              }),
           },
-
-          body:
-            JSON.stringify({
-              training:
-                formData,
-            }),
-        },
-      )
+        )
 
       const data =
         await response.json()
 
-      if (response.status === 401) {
-        localStorage.removeItem(
-          'token',
-        )
-
-        localStorage.removeItem(
-          'currentUser',
-        )
-
-        navigate('/login', {
-          replace: true,
-        })
-
+      if (
+        response.status === 401
+      ) {
+        await clearEditTrainingSession()
         return
       }
 
-      if (response.status === 403) {
-        navigate('/dashboard', {
-          replace: true,
-        })
+      if (
+        response.status === 403
+      ) {
+        navigate(
+          '/dashboard',
+          {
+            replace: true,
+          },
+        )
 
         return
       }
@@ -234,6 +279,10 @@ function EditTrainingPage() {
     }
   }
 
+  // ========================================
+  // LOADING
+  // ========================================
+
   if (loading) {
     return (
       <p className="dashboard-message">
@@ -241,6 +290,10 @@ function EditTrainingPage() {
       </p>
     )
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>

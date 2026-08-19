@@ -1,108 +1,226 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+
+import {
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
 
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 function EditTeamPage() {
-  const { teamId } = useParams()
-  const navigate = useNavigate()
-  const badgeInputRef = useRef(null)
+  const { teamId } =
+    useParams()
 
-  const [currentUser, setCurrentUser] = useState(null)
-  const [teamName, setTeamName] = useState('')
-  const [description, setDescription] = useState('')
+  const navigate =
+    useNavigate()
 
-  const [badgeUrl, setBadgeUrl] = useState('')
-  const [badgeFile, setBadgeFile] = useState(null)
-  const [badgePreviewUrl, setBadgePreviewUrl] =
-    useState('')
+  const badgeInputRef =
+    useRef(null)
 
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [uploadingBadge, setUploadingBadge] =
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(null)
+
+  const [
+    teamName,
+    setTeamName,
+  ] = useState('')
+
+  const [
+    description,
+    setDescription,
+  ] = useState('')
+
+  const [
+    badgeUrl,
+    setBadgeUrl,
+  ] = useState('')
+
+  const [
+    badgeFile,
+    setBadgeFile,
+  ] = useState(null)
+
+  const [
+    badgePreviewUrl,
+    setBadgePreviewUrl,
+  ] = useState('')
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [saving, setSaving] =
     useState(false)
 
-  const [errorMessage, setErrorMessage] = useState('')
-  const [badgeErrorMessage, setBadgeErrorMessage] =
-    useState('')
-  const [badgeSuccessMessage, setBadgeSuccessMessage] =
-    useState('')
+  const [
+    uploadingBadge,
+    setUploadingBadge,
+  ] = useState(false)
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('')
+
+  const [
+    badgeErrorMessage,
+    setBadgeErrorMessage,
+  ] = useState('')
+
+  const [
+    badgeSuccessMessage,
+    setBadgeSuccessMessage,
+  ] = useState('')
+
+  async function clearEditTeamSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
 
   useEffect(() => {
     async function fetchEditTeamPage() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login', { replace: true })
+        await clearEditTeamSession()
         return
       }
 
       const headers = {
-        Accept: 'application/json',
-        Authorization: token,
+        Accept:
+          'application/json',
+
+        Authorization:
+          token,
       }
 
       try {
-        const [teamResponse, userResponse] =
-          await Promise.all([
-            fetch(`${API_URL}/teams/${teamId}`, {
+        const [
+          teamResponse,
+          userResponse,
+        ] = await Promise.all([
+          fetch(
+            `${API_URL}/teams/${teamId}`,
+            {
               headers,
-            }),
-            fetch(`${API_URL}/users/me`, {
+            },
+          ),
+
+          fetch(
+            `${API_URL}/users/me`,
+            {
               headers,
-            }),
-          ])
+            },
+          ),
+        ])
 
         if (
-          teamResponse.status === 401 ||
-          userResponse.status === 401
+          teamResponse.status ===
+            401 ||
+          userResponse.status ===
+            401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login', { replace: true })
+          await clearEditTeamSession()
           return
         }
 
-        const teamData = await teamResponse.json()
-        const userData = await userResponse.json()
+        const teamData =
+          await teamResponse.json()
+
+        const userData =
+          await userResponse.json()
 
         if (!teamResponse.ok) {
           throw new Error(
-            teamData.error || 'Unable to load this team.'
+            teamData.error ||
+              'Unable to load this team.',
           )
         }
 
         if (!userResponse.ok) {
           throw new Error(
             userData.error ||
-              'Unable to load your account.'
+              'Unable to load your account.',
           )
         }
 
-        const loadedTeam = teamData.team || teamData
-        const loadedUser = userData.user || userData
+        const loadedTeam =
+          teamData.team ||
+          teamData
+
+        const loadedUser =
+          userData.user ||
+          userData
 
         const isApprovedManager =
-          loadedUser.account_type === 'manager' &&
+          loadedUser.account_type ===
+            'manager' &&
           loadedUser.manager_verification_status ===
             'approved'
 
         const managesThisTeam =
-          loadedTeam.membership_role === 'manager'
+          loadedTeam.membership_role ===
+          'manager'
 
-        if (!isApprovedManager || !managesThisTeam) {
-          navigate('/team', { replace: true })
+        if (
+          !isApprovedManager ||
+          !managesThisTeam
+        ) {
+          navigate('/team', {
+            replace: true,
+          })
+
           return
         }
 
-        setCurrentUser(loadedUser)
-        setTeamName(loadedTeam.name || '')
-        setDescription(loadedTeam.description || '')
-        setBadgeUrl(loadedTeam.badge_url || '')
+        setCurrentUser(
+          loadedUser,
+        )
+
+        setTeamName(
+          loadedTeam.name || '',
+        )
+
+        setDescription(
+          loadedTeam.description ||
+            '',
+        )
+
+        setBadgeUrl(
+          loadedTeam.badge_url ||
+            '',
+        )
       } catch (error) {
         setErrorMessage(
           error.message ||
-            'Unable to connect to the server.'
+            'Unable to connect to the server.',
         )
       } finally {
         setLoading(false)
@@ -110,31 +228,42 @@ function EditTeamPage() {
     }
 
     fetchEditTeamPage()
-  }, [navigate, teamId])
+  }, [
+    navigate,
+    teamId,
+  ])
 
   useEffect(() => {
     return () => {
       if (badgePreviewUrl) {
-        URL.revokeObjectURL(badgePreviewUrl)
+        URL.revokeObjectURL(
+          badgePreviewUrl,
+        )
       }
     }
   }, [badgePreviewUrl])
 
   function clearBadgeSelection() {
     if (badgePreviewUrl) {
-      URL.revokeObjectURL(badgePreviewUrl)
+      URL.revokeObjectURL(
+        badgePreviewUrl,
+      )
     }
 
     setBadgeFile(null)
     setBadgePreviewUrl('')
 
     if (badgeInputRef.current) {
-      badgeInputRef.current.value = ''
+      badgeInputRef.current.value =
+        ''
     }
   }
 
-  function handleBadgeSelection(event) {
-    const selectedFile = event.target.files?.[0]
+  function handleBadgeSelection(
+    event,
+  ) {
+    const selectedFile =
+      event.target.files?.[0]
 
     setBadgeErrorMessage('')
     setBadgeSuccessMessage('')
@@ -149,128 +278,185 @@ function EditTeamPage() {
       'image/webp',
     ]
 
-    if (!allowedTypes.includes(selectedFile.type)) {
-      clearBadgeSelection()
-      setBadgeErrorMessage(
-        'Please select a JPG, PNG or WebP image.'
+    if (
+      !allowedTypes.includes(
+        selectedFile.type,
       )
+    ) {
+      clearBadgeSelection()
+
+      setBadgeErrorMessage(
+        'Please select a JPG, PNG or WebP image.',
+      )
+
       return
     }
 
-    if (selectedFile.size > 5 * 1024 * 1024) {
+    if (
+      selectedFile.size >
+      5 * 1024 * 1024
+    ) {
       clearBadgeSelection()
+
       setBadgeErrorMessage(
-        'The team badge must be smaller than 5 MB.'
+        'The team badge must be smaller than 5 MB.',
       )
+
       return
     }
 
     if (badgePreviewUrl) {
-      URL.revokeObjectURL(badgePreviewUrl)
+      URL.revokeObjectURL(
+        badgePreviewUrl,
+      )
     }
 
-    setBadgeFile(selectedFile)
+    setBadgeFile(
+      selectedFile,
+    )
+
     setBadgePreviewUrl(
-      URL.createObjectURL(selectedFile)
+      URL.createObjectURL(
+        selectedFile,
+      ),
     )
   }
 
-  async function handleBadgeUpload(event) {
+  async function handleBadgeUpload(
+    event,
+  ) {
     event.preventDefault()
 
     if (!badgeFile) {
       setBadgeErrorMessage(
-        'Please select a team badge first.'
+        'Please select a team badge first.',
       )
+
       return
     }
 
-    const token = localStorage.getItem('token')
+    const token =
+      getAuthToken()
 
     if (!token) {
-      navigate('/login', { replace: true })
+      await clearEditTeamSession()
       return
     }
 
-    const formData = new FormData()
-    formData.append('badge', badgeFile)
+    const formData =
+      new FormData()
+
+    formData.append(
+      'badge',
+      badgeFile,
+    )
 
     setUploadingBadge(true)
     setBadgeErrorMessage('')
     setBadgeSuccessMessage('')
 
     try {
-      const response = await fetch(
-        `${API_URL}/teams/${teamId}/badge`,
-        {
-          method: 'PATCH',
-          headers: {
-            Accept: 'application/json',
-            Authorization: token,
+      const response =
+        await fetch(
+          `${API_URL}/teams/${teamId}/badge`,
+          {
+            method: 'PATCH',
+
+            headers: {
+              Accept:
+                'application/json',
+
+              Authorization:
+                token,
+            },
+
+            body:
+              formData,
           },
-          body: formData,
-        }
-      )
+        )
 
-      const data = await response.json().catch(() => ({}))
+      const data =
+        await response
+          .json()
+          .catch(() => ({}))
 
-      if (response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('currentUser')
-        navigate('/login', { replace: true })
+      if (
+        response.status === 401
+      ) {
+        await clearEditTeamSession()
         return
       }
 
-      if (response.status === 403) {
+      if (
+        response.status === 403
+      ) {
         throw new Error(
           data.error ||
-            'You do not have permission to update this badge.'
+            'You do not have permission to update this badge.',
         )
       }
 
       if (!response.ok) {
-        const errors = Array.isArray(data.errors)
-          ? data.errors.join(', ')
-          : ''
+        const errors =
+          Array.isArray(
+            data.errors,
+          )
+            ? data.errors.join(
+                ', ',
+              )
+            : ''
 
         throw new Error(
           data.error ||
             errors ||
-            'Unable to upload the team badge.'
+            'Unable to upload the team badge.',
         )
       }
 
-      const updatedTeam = data.team || data
+      const updatedTeam =
+        data.team || data
 
-      setBadgeUrl(updatedTeam.badge_url || '')
+      setBadgeUrl(
+        updatedTeam.badge_url ||
+          '',
+      )
+
       clearBadgeSelection()
+
       setBadgeSuccessMessage(
-        'Team badge updated successfully.'
+        'Team badge updated successfully.',
       )
     } catch (error) {
       setBadgeErrorMessage(
         error.message ||
-          'Unable to upload the team badge.'
+          'Unable to upload the team badge.',
       )
     } finally {
       setUploadingBadge(false)
     }
   }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(
+    event,
+  ) {
     event.preventDefault()
 
-    const trimmedName = teamName.trim()
+    const trimmedName =
+      teamName.trim()
 
     if (!trimmedName) {
-      setErrorMessage('Team name cannot be blank.')
+      setErrorMessage(
+        'Team name cannot be blank.',
+      )
+
       return
     }
 
-    const token = localStorage.getItem('token')
+    const token =
+      getAuthToken()
 
     if (!token) {
-      navigate('/login', { replace: true })
+      await clearEditTeamSession()
       return
     }
 
@@ -278,49 +464,71 @@ function EditTeamPage() {
     setErrorMessage('')
 
     try {
-      const response = await fetch(
-        `${API_URL}/teams/${teamId}`,
-        {
-          method: 'PATCH',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: token,
-          },
-          body: JSON.stringify({
-            team: {
-              name: trimmedName,
-              description: description.trim(),
+      const response =
+        await fetch(
+          `${API_URL}/teams/${teamId}`,
+          {
+            method: 'PATCH',
+
+            headers: {
+              Accept:
+                'application/json',
+
+              'Content-Type':
+                'application/json',
+
+              Authorization:
+                token,
             },
-          }),
-        }
-      )
 
-      const data = await response.json().catch(() => ({}))
+            body:
+              JSON.stringify({
+                team: {
+                  name:
+                    trimmedName,
 
-      if (response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('currentUser')
-        navigate('/login', { replace: true })
+                  description:
+                    description.trim(),
+                },
+              }),
+          },
+        )
+
+      const data =
+        await response
+          .json()
+          .catch(() => ({}))
+
+      if (
+        response.status === 401
+      ) {
+        await clearEditTeamSession()
         return
       }
 
-      if (response.status === 403) {
+      if (
+        response.status === 403
+      ) {
         throw new Error(
           data.error ||
-            'You do not have permission to edit this team.'
+            'You do not have permission to edit this team.',
         )
       }
 
       if (!response.ok) {
-        const errors = Array.isArray(data.errors)
-          ? data.errors.join(', ')
-          : ''
+        const errors =
+          Array.isArray(
+            data.errors,
+          )
+            ? data.errors.join(
+                ', ',
+              )
+            : ''
 
         throw new Error(
           data.error ||
             errors ||
-            'Unable to update the team.'
+            'Unable to update the team.',
         )
       }
 
@@ -328,7 +536,9 @@ function EditTeamPage() {
         replace: true,
       })
     } catch (error) {
-      setErrorMessage(error.message)
+      setErrorMessage(
+        error.message,
+      )
     } finally {
       setSaving(false)
     }
@@ -343,15 +553,22 @@ function EditTeamPage() {
   }
 
   const displayedBadgeUrl =
-    badgePreviewUrl || badgeUrl
+    badgePreviewUrl ||
+    badgeUrl
 
-  const busy = saving || uploadingBadge
+  const busy =
+    saving ||
+    uploadingBadge
 
   return (
     <>
       <Navbar
-        teamId={Number(teamId)}
-        currentUser={currentUser}
+        teamId={
+          Number(teamId)
+        }
+        currentUser={
+          currentUser
+        }
       />
 
       <main className="dashboard-page">
@@ -359,7 +576,9 @@ function EditTeamPage() {
           <button
             className="back-button"
             type="button"
-            onClick={() => navigate('/team')}
+            onClick={() =>
+              navigate('/team')
+            }
           >
             Back to my teams
           </button>
@@ -369,10 +588,13 @@ function EditTeamPage() {
               Team management
             </p>
 
-            <h1>Edit Team</h1>
+            <h1>
+              Edit Team
+            </h1>
 
             <p>
-              Update your team’s badge, name and
+              Update your team’s
+              badge, name and
               description.
             </p>
           </div>
@@ -380,10 +602,14 @@ function EditTeamPage() {
           <article className="edit-team-card">
             <section className="edit-team-badge-section">
               <div className="edit-team-badge-heading">
-                <h2>Team badge</h2>
+                <h2>
+                  Team badge
+                </h2>
 
                 <p>
-                  Upload the badge shown across your team.
+                  Upload the badge
+                  shown across your
+                  team.
                 </p>
               </div>
 
@@ -391,7 +617,9 @@ function EditTeamPage() {
                 <div className="edit-team-badge-preview">
                   {displayedBadgeUrl ? (
                     <img
-                      src={displayedBadgeUrl}
+                      src={
+                        displayedBadgeUrl
+                      }
                       alt={`${teamName || 'Team'} badge`}
                     />
                   ) : (
@@ -400,34 +628,46 @@ function EditTeamPage() {
                         {teamName
                           .trim()
                           .charAt(0)
-                          .toUpperCase() || 'T'}
+                          .toUpperCase() ||
+                          'T'}
                       </span>
 
-                      <small>No badge</small>
+                      <small>
+                        No badge
+                      </small>
                     </div>
                   )}
                 </div>
 
                 <form
                   className="edit-team-badge-form"
-                  onSubmit={handleBadgeUpload}
+                  onSubmit={
+                    handleBadgeUpload
+                  }
                 >
                   <label htmlFor="team-badge">
                     Choose team badge
                   </label>
 
                   <input
-                    ref={badgeInputRef}
+                    ref={
+                      badgeInputRef
+                    }
                     id="team-badge"
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
-                    onChange={handleBadgeSelection}
-                    disabled={busy}
+                    onChange={
+                      handleBadgeSelection
+                    }
+                    disabled={
+                      busy
+                    }
                     aria-describedby="team-badge-help"
                   />
 
                   <small id="team-badge-help">
-                    JPG, PNG or WebP. Maximum size 5 MB.
+                    JPG, PNG or WebP.
+                    Maximum size 5 MB.
                   </small>
 
                   {badgeErrorMessage && (
@@ -435,7 +675,9 @@ function EditTeamPage() {
                       className="team-error"
                       role="alert"
                     >
-                      {badgeErrorMessage}
+                      {
+                        badgeErrorMessage
+                      }
                     </p>
                   )}
 
@@ -444,14 +686,19 @@ function EditTeamPage() {
                       className="team-success"
                       role="status"
                     >
-                      {badgeSuccessMessage}
+                      {
+                        badgeSuccessMessage
+                      }
                     </p>
                   )}
 
                   <button
                     className="upload-team-badge-button"
                     type="submit"
-                    disabled={busy || !badgeFile}
+                    disabled={
+                      busy ||
+                      !badgeFile
+                    }
                   >
                     {uploadingBadge
                       ? 'Uploading...'
@@ -465,10 +712,15 @@ function EditTeamPage() {
 
             <form
               className="edit-team-form"
-              onSubmit={handleSubmit}
+              onSubmit={
+                handleSubmit
+              }
             >
               {errorMessage && (
-                <p className="team-error" role="alert">
+                <p
+                  className="team-error"
+                  role="alert"
+                >
                   {errorMessage}
                 </p>
               )}
@@ -476,6 +728,7 @@ function EditTeamPage() {
               <div className="edit-team-form-group">
                 <label htmlFor="team-name">
                   Team name
+
                   <span className="required-mark">
                     {' '}
                     *
@@ -485,12 +738,21 @@ function EditTeamPage() {
                 <input
                   id="team-name"
                   type="text"
-                  value={teamName}
-                  onChange={(event) =>
-                    setTeamName(event.target.value)
+                  value={
+                    teamName
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    setTeamName(
+                      event.target
+                        .value,
+                    )
                   }
                   placeholder="Enter your team name"
-                  disabled={busy}
+                  disabled={
+                    busy
+                  }
                   required
                 />
               </div>
@@ -502,17 +764,27 @@ function EditTeamPage() {
 
                 <textarea
                   id="team-description"
-                  value={description}
-                  onChange={(event) =>
-                    setDescription(event.target.value)
+                  value={
+                    description
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    setDescription(
+                      event.target
+                        .value,
+                    )
                   }
                   placeholder="Tell players about your team"
                   rows="6"
-                  disabled={busy}
+                  disabled={
+                    busy
+                  }
                 />
 
                 <small>
-                  You can leave the description blank.
+                  You can leave the
+                  description blank.
                 </small>
               </div>
 
@@ -520,16 +792,26 @@ function EditTeamPage() {
                 <button
                   className="save-team-button"
                   type="submit"
-                  disabled={busy}
+                  disabled={
+                    busy
+                  }
                 >
-                  {saving ? 'Saving...' : 'Save changes'}
+                  {saving
+                    ? 'Saving...'
+                    : 'Save changes'}
                 </button>
 
                 <button
                   className="cancel-edit-team-button"
                   type="button"
-                  disabled={busy}
-                  onClick={() => navigate('/team')}
+                  disabled={
+                    busy
+                  }
+                  onClick={() =>
+                    navigate(
+                      '/team',
+                    )
+                  }
                 >
                   Cancel
                 </button>

@@ -1,46 +1,111 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import {
+  useEffect,
+  useState,
+} from 'react'
+
+import {
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 import '../styles/MatchRatingsPage.css'
 import '../styles/MatchRatings.mobile.css'
 
 function MatchRatingsPage() {
-  const navigate = useNavigate()
+  const navigate =
+    useNavigate()
 
   const {
     teamId,
     matchId,
   } = useParams()
 
-  const [match, setMatch] = useState(null)
-  const [ratingStatus, setRatingStatus] = useState(null)
-  const [results, setResults] = useState(null)
+  const [match, setMatch] =
+    useState(null)
 
-  const [ratings, setRatings] = useState({})
+  const [
+    ratingStatus,
+    setRatingStatus,
+  ] = useState(null)
 
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
+  const [results, setResults] =
+    useState(null)
 
-  const [errorMessage, setErrorMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
+  const [ratings, setRatings] =
+    useState({})
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [
+    submitting,
+    setSubmitting,
+  ] = useState(false)
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('')
+
+  const [
+    successMessage,
+    setSuccessMessage,
+  ] = useState('')
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearRatingsSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD PAGE
+  // ========================================
 
   useEffect(() => {
     async function loadPage() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login', {
-          replace: true,
-        })
+        await clearRatingsSession()
 
         return
       }
 
       const headers = {
-        Accept: 'application/json',
-        Authorization: token,
+        Accept:
+          'application/json',
+
+        Authorization:
+          token,
       }
 
       setLoading(true)
@@ -67,15 +132,12 @@ function MatchRatingsPage() {
         ])
 
         if (
-          matchResponse.status === 401 ||
-          statusResponse.status === 401
+          matchResponse.status ===
+            401 ||
+          statusResponse.status ===
+            401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-
-          navigate('/login', {
-            replace: true,
-          })
+          await clearRatingsSession()
 
           return
         }
@@ -109,12 +171,17 @@ function MatchRatingsPage() {
           statusData,
         )
 
-        if (statusData.eligible) {
-          const initialRatings = {}
+        if (
+          statusData.eligible
+        ) {
+          const initialRatings =
+            {}
 
           statusData.players.forEach(
             (player) => {
-              initialRatings[player.id] = {
+              initialRatings[
+                player.id
+              ] = {
                 rating: 7.0,
                 comment: '',
               }
@@ -126,7 +193,9 @@ function MatchRatingsPage() {
           )
         }
 
-        if (statusData.ratings_finalised) {
+        if (
+          statusData.ratings_finalised
+        ) {
           await loadResults(
             token,
           )
@@ -148,23 +217,45 @@ function MatchRatingsPage() {
     matchId,
   ])
 
-  async function loadResults(tokenOverride = null) {
+  // ========================================
+  // LOAD RESULTS
+  // ========================================
+
+  async function loadResults(
+    tokenOverride = null,
+  ) {
     const token =
       tokenOverride ||
-      localStorage.getItem('token')
+      getAuthToken()
 
-    if (!token) return
+    if (!token) {
+      await clearRatingsSession()
+
+      return
+    }
 
     try {
-      const response = await fetch(
-        `${API_URL}/teams/${teamId}/matches/${matchId}/rating_results`,
-        {
-          headers: {
-            Accept: 'application/json',
-            Authorization: token,
+      const response =
+        await fetch(
+          `${API_URL}/teams/${teamId}/matches/${matchId}/rating_results`,
+          {
+            headers: {
+              Accept:
+                'application/json',
+
+              Authorization:
+                token,
+            },
           },
-        },
-      )
+        )
+
+      if (
+        response.status === 401
+      ) {
+        await clearRatingsSession()
+
+        return
+      }
 
       const data =
         await response.json()
@@ -194,7 +285,9 @@ function MatchRatingsPage() {
         ...currentRatings,
 
         [playerId]: {
-          ...currentRatings[playerId],
+          ...currentRatings[
+            playerId
+          ],
 
           rating:
             Number(value),
@@ -212,7 +305,9 @@ function MatchRatingsPage() {
         ...currentRatings,
 
         [playerId]: {
-          ...currentRatings[playerId],
+          ...currentRatings[
+            playerId
+          ],
 
           comment:
             value,
@@ -221,10 +316,18 @@ function MatchRatingsPage() {
     )
   }
 
-  async function handleSubmit(event) {
+  // ========================================
+  // SUBMIT RATINGS
+  // ========================================
+
+  async function handleSubmit(
+    event,
+  ) {
     event.preventDefault()
 
-    if (!ratingStatus?.can_submit) {
+    if (
+      !ratingStatus?.can_submit
+    ) {
       return
     }
 
@@ -233,13 +336,16 @@ function MatchRatingsPage() {
         'Submit all player ratings? You will not be able to change them afterwards.',
       )
 
-    if (!confirmed) return
+    if (!confirmed) {
+      return
+    }
 
     const token =
-      localStorage.getItem('token')
+      getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearRatingsSession()
+
       return
     }
 
@@ -250,13 +356,15 @@ function MatchRatingsPage() {
             player.id,
 
           rating:
-            ratings[player.id]
-              ?.rating,
+            ratings[
+              player.id
+            ]?.rating,
 
           comment:
-            ratings[player.id]
-              ?.comment
-              ?.trim() || '',
+            ratings[
+              player.id
+            ]?.comment?.trim() ||
+            '',
         }),
       )
 
@@ -265,24 +373,39 @@ function MatchRatingsPage() {
     setSuccessMessage('')
 
     try {
-      const response = await fetch(
-        `${API_URL}/teams/${teamId}/matches/${matchId}/match_ratings`,
-        {
-          method: 'POST',
+      const response =
+        await fetch(
+          `${API_URL}/teams/${teamId}/matches/${matchId}/match_ratings`,
+          {
+            method:
+              'POST',
 
-          headers: {
-            Accept: 'application/json',
-            'Content-Type':
-              'application/json',
-            Authorization: token,
+            headers: {
+              Accept:
+                'application/json',
+
+              'Content-Type':
+                'application/json',
+
+              Authorization:
+                token,
+            },
+
+            body:
+              JSON.stringify({
+                ratings:
+                  submittedRatings,
+              }),
           },
+        )
 
-          body: JSON.stringify({
-            ratings:
-              submittedRatings,
-          }),
-        },
-      )
+      if (
+        response.status === 401
+      ) {
+        await clearRatingsSession()
+
+        return
+      }
 
       const data =
         await response.json()
@@ -290,7 +413,9 @@ function MatchRatingsPage() {
       if (!response.ok) {
         throw new Error(
           data.error ||
-            data.errors?.join(', ') ||
+            data.errors?.join(
+              ', ',
+            ) ||
             'Unable to submit ratings.',
         )
       }
@@ -304,7 +429,8 @@ function MatchRatingsPage() {
           ...currentStatus,
 
           submitted: true,
-          can_submit: false,
+          can_submit:
+            false,
 
           submitted_voters:
             data.submitted_voters ??
@@ -325,8 +451,12 @@ function MatchRatingsPage() {
     }
   }
 
-  function formatDateTime(dateTime) {
-    if (!dateTime) return ''
+  function formatDateTime(
+    dateTime,
+  ) {
+    if (!dateTime) {
+      return ''
+    }
 
     return new Intl.DateTimeFormat(
       'en-GB',
@@ -334,14 +464,19 @@ function MatchRatingsPage() {
         day: 'numeric',
         month: 'short',
         hour: '2-digit',
-        minute: '2-digit',
+        minute:
+          '2-digit',
       },
     ).format(
-      new Date(dateTime),
+      new Date(
+        dateTime,
+      ),
     )
   }
 
-  function playerName(player) {
+  function playerName(
+    player,
+  ) {
     return [
       player.first_name,
       player.last_name,
@@ -350,7 +485,9 @@ function MatchRatingsPage() {
       .join(' ')
   }
 
-  function playerInitials(player) {
+  function playerInitials(
+    player,
+  ) {
     return [
       player.first_name,
       player.last_name,
@@ -366,20 +503,30 @@ function MatchRatingsPage() {
   }
 
   function isMotm(playerId) {
-    return results?.man_of_the_match?.some(
-      (winner) =>
-        winner.player.id ===
-        playerId,
+    return (
+      results?.man_of_the_match?.some(
+        (winner) =>
+          winner.player.id ===
+          playerId,
+      )
     )
   }
 
-  function renderPlayerAvatar(player) {
+  function renderPlayerAvatar(
+    player,
+  ) {
     if (player.avatar_url) {
       return (
         <img
           className="rating-player-avatar"
-          src={player.avatar_url}
-          alt={playerName(player)}
+          src={
+            player.avatar_url
+          }
+          alt={
+            playerName(
+              player,
+            )
+          }
         />
       )
     }
@@ -389,7 +536,9 @@ function MatchRatingsPage() {
         className="rating-player-avatar rating-player-avatar-placeholder"
         aria-hidden="true"
       >
-        {playerInitials(player)}
+        {playerInitials(
+          player,
+        )}
       </div>
     )
   }
@@ -404,7 +553,9 @@ function MatchRatingsPage() {
 
   return (
     <>
-      <Navbar teamId={teamId} />
+      <Navbar
+        teamId={teamId}
+      />
 
       <main className="dashboard-page">
         <section className="dashboard-content">
@@ -439,12 +590,15 @@ function MatchRatingsPage() {
 
               <h1>
                 Player ratings vs{' '}
-                {match.opponent}
+                {
+                  match.opponent
+                }
               </h1>
 
               <p>
-                Rate the players from the
-                matchday squad.
+                Rate the players
+                from the matchday
+                squad.
               </p>
             </div>
           )}
@@ -456,9 +610,9 @@ function MatchRatingsPage() {
               </h2>
 
               <p>
-                You were not part of the
-                eligible rating group for
-                this match.
+                You were not part of
+                the eligible rating
+                group for this match.
               </p>
             </section>
           )}
@@ -473,12 +627,14 @@ function MatchRatingsPage() {
                 </span>
 
                 <h2>
-                  Ratings aren't open yet
+                  Ratings aren't open
+                  yet
                 </h2>
 
                 <p>
-                  Voting opens two hours
-                  after kick-off.
+                  Voting opens two
+                  hours after
+                  kick-off.
                 </p>
 
                 <strong>
@@ -502,9 +658,10 @@ function MatchRatingsPage() {
                 </h2>
 
                 <p>
-                  Your ratings are locked
-                  in. Results stay hidden
-                  until voting closes.
+                  Your ratings are
+                  locked in. Results
+                  stay hidden until
+                  voting closes.
                 </p>
 
                 <div className="ratings-progress">
@@ -551,8 +708,9 @@ function MatchRatingsPage() {
                   </h2>
 
                   <p>
-                    Scores are private until
-                    voting closes.
+                    Scores are private
+                    until voting
+                    closes.
                   </p>
                 </div>
 
@@ -573,8 +731,9 @@ function MatchRatingsPage() {
                 {ratingStatus.players.map(
                   (player) => {
                     const playerRating =
-                      ratings[player.id] ||
-                      {
+                      ratings[
+                        player.id
+                      ] || {
                         rating: 7.0,
                         comment: '',
                       }
@@ -582,7 +741,9 @@ function MatchRatingsPage() {
                     return (
                       <article
                         className="rating-player-card"
-                        key={player.id}
+                        key={
+                          player.id
+                        }
                       >
                         <div className="rating-player-header">
                           {renderPlayerAvatar(
@@ -597,14 +758,17 @@ function MatchRatingsPage() {
                             </h2>
 
                             <p>
-                              Matchday squad
+                              Matchday
+                              squad
                             </p>
                           </div>
 
                           <strong className="rating-score">
                             {Number(
                               playerRating.rating,
-                            ).toFixed(1)}
+                            ).toFixed(
+                              1,
+                            )}
                           </strong>
                         </div>
 
@@ -632,7 +796,8 @@ function MatchRatingsPage() {
                             ) =>
                               handleRatingChange(
                                 player.id,
-                                event.target.value,
+                                event.target
+                                  .value,
                               )
                             }
                             aria-label={`Rating for ${playerName(
@@ -654,7 +819,9 @@ function MatchRatingsPage() {
                           <textarea
                             id={`rating-comment-${player.id}`}
                             rows={3}
-                            maxLength={300}
+                            maxLength={
+                              300
+                            }
                             placeholder="Anything you'd like to say about their performance?"
                             value={
                               playerRating.comment
@@ -664,7 +831,8 @@ function MatchRatingsPage() {
                             ) =>
                               handleCommentChange(
                                 player.id,
-                                event.target.value,
+                                event.target
+                                  .value,
                               )
                             }
                           />
@@ -685,8 +853,9 @@ function MatchRatingsPage() {
                   </strong>
 
                   <p>
-                    Once submitted, ratings
-                    cannot be changed.
+                    Once submitted,
+                    ratings cannot be
+                    changed.
                   </p>
                 </div>
 
@@ -717,9 +886,10 @@ function MatchRatingsPage() {
                 </h2>
 
                 <p>
-                  MatchMuster is finalising
-                  the results and Man of the
-                  Match.
+                  MatchMuster is
+                  finalising the
+                  results and Man of
+                  the Match.
                 </p>
 
                 <div className="ratings-progress">
@@ -764,10 +934,14 @@ function MatchRatingsPage() {
 
                       <div className="motm-winners">
                         {results.man_of_the_match.map(
-                          (winner) => (
+                          (
+                            winner,
+                          ) => (
                             <article
                               key={
-                                winner.player.id
+                                winner
+                                  .player
+                                  .id
                               }
                             >
                               {renderPlayerAvatar(
@@ -795,13 +969,15 @@ function MatchRatingsPage() {
                   ) : (
                     <>
                       <h2>
-                        No Man of the Match
+                        No Man of the
+                        Match
                       </h2>
 
                       <p>
-                        There weren't enough
-                        completed votes to
-                        award MOTM.
+                        There weren't
+                        enough completed
+                        votes to award
+                        MOTM.
                       </p>
                     </>
                   )}
@@ -842,17 +1018,24 @@ function MatchRatingsPage() {
                           <article
                             className={`rating-result-row ${
                               isMotm(
-                                result.player.id,
+                                result
+                                  .player
+                                  .id,
                               )
                                 ? 'rating-result-motm'
                                 : ''
                             }`}
                             key={
-                              result.player.id
+                              result
+                                .player
+                                .id
                             }
                           >
                             <span className="rating-result-position">
-                              {index + 1}
+                              {
+                                index +
+                                1
+                              }
                             </span>
 
                             {renderPlayerAvatar(
@@ -875,10 +1058,13 @@ function MatchRatingsPage() {
                             </div>
 
                             {isMotm(
-                              result.player.id,
+                              result
+                                .player
+                                .id,
                             ) && (
                               <span className="rating-result-award">
-                                🏆 MOTM
+                                🏆
+                                MOTM
                               </span>
                             )}
 

@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { SearchBox } from '@mapbox/search-js-react'
+
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 const MAPBOX_TOKEN =
   import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
@@ -23,6 +29,26 @@ function CreateMatchPage() {
 
   const [errorMessages, setErrorMessages] = useState([])
   const [submitting, setSubmitting] = useState(false)
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearCreateMatchSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // FORM
+  // ========================================
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -120,10 +146,10 @@ function CreateMatchPage() {
     event.preventDefault()
 
     const token =
-      localStorage.getItem('token')
+      getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearCreateMatchSession()
       return
     }
 
@@ -162,9 +188,7 @@ function CreateMatchPage() {
       )
 
       if (response.status === 401) {
-        localStorage.removeItem('token')
-
-        navigate('/login')
+        await clearCreateMatchSession()
         return
       }
 
@@ -237,10 +261,6 @@ function CreateMatchPage() {
               </div>
             )}
 
-            {/* ========================================
-                OPPONENT
-            ======================================== */}
-
             <div className="form-group">
               <label htmlFor="opponent">
                 Opponent
@@ -256,10 +276,6 @@ function CreateMatchPage() {
                 required
               />
             </div>
-
-            {/* ========================================
-                MATCH TYPE
-            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="match_type">
@@ -286,10 +302,6 @@ function CreateMatchPage() {
                 </option>
               </select>
             </div>
-
-            {/* ========================================
-                MAPBOX LOCATION
-            ======================================== */}
 
             <div className="form-group">
               <label>
@@ -354,10 +366,6 @@ function CreateMatchPage() {
                 )}
             </div>
 
-            {/* ========================================
-                KICK-OFF
-            ======================================== */}
-
             <div className="form-group">
               <label htmlFor="kickoff_time">
                 Kick-off date and time
@@ -373,10 +381,6 @@ function CreateMatchPage() {
               />
             </div>
 
-            {/* ========================================
-                MATCH INFORMATION
-            ======================================== */}
-
             <div className="form-group">
               <label htmlFor="description">
                 Match information
@@ -391,10 +395,6 @@ function CreateMatchPage() {
                 rows={5}
               />
             </div>
-
-            {/* ========================================
-                ACTIONS
-            ======================================== */}
 
             <div className="match-form-actions">
               <Link

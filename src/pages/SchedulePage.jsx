@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+
 import {
   CalendarDays,
   ChevronRight,
@@ -6,13 +11,20 @@ import {
   Dumbbell,
   MapPin,
 } from 'lucide-react'
+
 import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 const COMPLETED_MATCH_DISPLAY_HOURS = 24
 
@@ -20,41 +32,100 @@ function SchedulePage() {
   const navigate = useNavigate()
   const { teamId } = useParams()
 
-  const [matches, setMatches] = useState([])
-  const [trainings, setTrainings] = useState([])
-  const [currentUser, setCurrentUser] = useState(null)
+  const [matches, setMatches] =
+    useState([])
 
-  const [loading, setLoading] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [currentTime, setCurrentTime] = useState(Date.now())
+  const [trainings, setTrainings] =
+    useState([])
+
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(null)
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('')
+
+  const [
+    currentTime,
+    setCurrentTime,
+  ] = useState(
+    Date.now(),
+  )
 
   const isApprovedManager =
-    currentUser?.account_type === 'manager' &&
-    currentUser?.manager_verification_status === 'approved'
+    currentUser?.account_type ===
+      'manager' &&
+    currentUser?.manager_verification_status ===
+      'approved'
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearScheduleSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // PAGE CLOCK
+  // ========================================
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(Date.now())
-    }, 30000)
+    const interval =
+      setInterval(() => {
+        setCurrentTime(
+          Date.now(),
+        )
+      }, 30000)
 
-    return () => clearInterval(interval)
+    return () =>
+      clearInterval(
+        interval,
+      )
   }, [])
+
+  // ========================================
+  // LOAD SCHEDULE
+  // ========================================
 
   useEffect(() => {
     async function loadSchedule() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login', {
-          replace: true,
-        })
-
+        await clearScheduleSession()
         return
       }
 
       const headers = {
-        Accept: 'application/json',
-        Authorization: token,
+        Accept:
+          'application/json',
+
+        Authorization:
+          token,
       }
 
       setLoading(true)
@@ -68,43 +139,53 @@ function SchedulePage() {
         ] = await Promise.all([
           fetch(
             `${API_URL}/teams/${teamId}/matches`,
-            { headers },
+            {
+              headers,
+            },
           ),
 
           fetch(
             `${API_URL}/teams/${teamId}/trainings`,
-            { headers },
+            {
+              headers,
+            },
           ),
 
           fetch(
             `${API_URL}/users/me`,
-            { headers },
+            {
+              headers,
+            },
           ),
         ])
 
         if (
-          matchesResponse.status === 401 ||
-          trainingsResponse.status === 401 ||
-          userResponse.status === 401
+          matchesResponse.status ===
+            401 ||
+          trainingsResponse.status ===
+            401 ||
+          userResponse.status ===
+            401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-
-          navigate('/login', {
-            replace: true,
-          })
+          await clearScheduleSession()
 
           return
         }
 
         if (
-          matchesResponse.status === 403 ||
-          trainingsResponse.status === 403 ||
-          userResponse.status === 403
+          matchesResponse.status ===
+            403 ||
+          trainingsResponse.status ===
+            403 ||
+          userResponse.status ===
+            403
         ) {
-          navigate('/dashboard', {
-            replace: true,
-          })
+          navigate(
+            '/dashboard',
+            {
+              replace: true,
+            },
+          )
 
           return
         }
@@ -114,26 +195,40 @@ function SchedulePage() {
           trainingsData,
           userData,
         ] = await Promise.all([
-          matchesResponse.json().catch(() => ({})),
-          trainingsResponse.json().catch(() => ({})),
-          userResponse.json().catch(() => ({})),
+          matchesResponse
+            .json()
+            .catch(() => ({})),
+
+          trainingsResponse
+            .json()
+            .catch(() => ({})),
+
+          userResponse
+            .json()
+            .catch(() => ({})),
         ])
 
-        if (!matchesResponse.ok) {
+        if (
+          !matchesResponse.ok
+        ) {
           throw new Error(
             matchesData.error ||
               'Unable to load fixtures.',
           )
         }
 
-        if (!trainingsResponse.ok) {
+        if (
+          !trainingsResponse.ok
+        ) {
           throw new Error(
             trainingsData.error ||
               'Unable to load training.',
           )
         }
 
-        if (!userResponse.ok) {
+        if (
+          !userResponse.ok
+        ) {
           throw new Error(
             userData.error ||
               'Unable to load your account.',
@@ -141,33 +236,49 @@ function SchedulePage() {
         }
 
         const user =
-          userData.user || userData
+          userData.user ||
+          userData
 
         const isPlayer =
-          user.account_type === 'player'
+          user.account_type ===
+          'player'
 
         const isManager =
-          user.account_type === 'manager' &&
-          user.manager_verification_status === 'approved'
+          user.account_type ===
+            'manager' &&
+          user.manager_verification_status ===
+            'approved'
 
-        if (!isPlayer && !isManager) {
-          navigate('/dashboard', {
-            replace: true,
-          })
+        if (
+          !isPlayer &&
+          !isManager
+        ) {
+          navigate(
+            '/dashboard',
+            {
+              replace: true,
+            },
+          )
 
           return
         }
 
         setMatches(
-          Array.isArray(matchesData)
+          Array.isArray(
+            matchesData,
+          )
             ? matchesData
-            : matchesData.matches || [],
+            : matchesData.matches ||
+                [],
         )
 
         setTrainings(
-          Array.isArray(trainingsData)
+          Array.isArray(
+            trainingsData,
+          )
             ? trainingsData
-            : trainingsData.trainings || [],
+            : trainingsData.trainings ||
+                [],
         )
 
         setCurrentUser(user)
@@ -187,56 +298,107 @@ function SchedulePage() {
     teamId,
   ])
 
-  const upcomingSchedule = useMemo(() => {
-    const fixtureItems =
-      matches.map((match) => ({
-        id: `match-${match.id}`,
-        recordId: match.id,
-        type: 'match',
-        dateTime: match.kickoff_time,
-        title: `vs ${match.opponent}`,
-        location: match.location,
-        matchType: match.match_type,
-      }))
+  // ========================================
+  // UPCOMING SCHEDULE
+  // ========================================
 
-    const trainingItems =
-      trainings.map((training) => ({
-        id: `training-${training.id}`,
-        recordId: training.id,
-        type: 'training',
-        dateTime: training.starts_at,
-        meetTime: training.meet_time,
-        title: training.title,
-        location: training.location,
-      }))
+  const upcomingSchedule =
+    useMemo(() => {
+      const fixtureItems =
+        matches.map(
+          (match) => ({
+            id:
+              `match-${match.id}`,
 
-    return [
-      ...fixtureItems,
-      ...trainingItems,
-    ]
-      .filter(
-        (item) =>
-          item.dateTime &&
-          new Date(item.dateTime).getTime() >
-            currentTime,
-      )
-      .sort(
-        (firstItem, secondItem) =>
-          new Date(firstItem.dateTime).getTime() -
-          new Date(secondItem.dateTime).getTime(),
-      )
-  }, [
-    currentTime,
-    matches,
-    trainings,
-  ])
+            recordId:
+              match.id,
+
+            type:
+              'match',
+
+            dateTime:
+              match.kickoff_time,
+
+            title:
+              `vs ${match.opponent}`,
+
+            location:
+              match.location,
+
+            matchType:
+              match.match_type,
+          }),
+        )
+
+      const trainingItems =
+        trainings.map(
+          (training) => ({
+            id:
+              `training-${training.id}`,
+
+            recordId:
+              training.id,
+
+            type:
+              'training',
+
+            dateTime:
+              training.starts_at,
+
+            meetTime:
+              training.meet_time,
+
+            title:
+              training.title,
+
+            location:
+              training.location,
+          }),
+        )
+
+      return [
+        ...fixtureItems,
+        ...trainingItems,
+      ]
+        .filter(
+          (item) =>
+            item.dateTime &&
+            new Date(
+              item.dateTime,
+            ).getTime() >
+              currentTime,
+        )
+        .sort(
+          (
+            firstItem,
+            secondItem,
+          ) =>
+            new Date(
+              firstItem.dateTime,
+            ).getTime() -
+            new Date(
+              secondItem.dateTime,
+            ).getTime(),
+        )
+    }, [
+      currentTime,
+      matches,
+      trainings,
+    ])
+
+  // ========================================
+  // MATCH RESULTS
+  // ========================================
 
   function hasResult(match) {
     return (
       match.team_score !== null &&
-      match.team_score !== undefined &&
-      match.opponent_score !== null &&
-      match.opponent_score !== undefined
+      match.team_score !==
+        undefined &&
+      match.opponent_score !==
+        null &&
+      match.opponent_score !==
+        undefined
     )
   }
 
@@ -263,7 +425,9 @@ function SchedulePage() {
   }
 
   function hasMatchStarted(match) {
-    if (!match.kickoff_time) {
+    if (
+      !match.kickoff_time
+    ) {
       return false
     }
 
@@ -273,17 +437,28 @@ function SchedulePage() {
       ).getTime()
 
     return (
-      !Number.isNaN(kickoff) &&
-      currentTime >= kickoff
+      !Number.isNaN(
+        kickoff,
+      ) &&
+      currentTime >=
+        kickoff
     )
   }
 
-  function shouldDisplayRecentMatch(match) {
-    if (!hasMatchStarted(match)) {
+  function shouldDisplayRecentMatch(
+    match,
+  ) {
+    if (
+      !hasMatchStarted(
+        match,
+      )
+    ) {
       return false
     }
 
-    if (!match.ratings_finalised_at) {
+    if (
+      !match.ratings_finalised_at
+    ) {
       return true
     }
 
@@ -292,7 +467,11 @@ function SchedulePage() {
         match.ratings_finalised_at,
       ).getTime()
 
-    if (Number.isNaN(finalisedAt)) {
+    if (
+      Number.isNaN(
+        finalisedAt,
+      )
+    ) {
       return true
     }
 
@@ -303,7 +482,10 @@ function SchedulePage() {
         60 *
         1000
 
-    return currentTime < removeFromScheduleAt
+    return (
+      currentTime <
+      removeFromScheduleAt
+    )
   }
 
   const recentMatches =
@@ -312,7 +494,10 @@ function SchedulePage() {
         shouldDisplayRecentMatch,
       )
       .sort(
-        (firstMatch, secondMatch) =>
+        (
+          firstMatch,
+          secondMatch,
+        ) =>
           new Date(
             secondMatch.kickoff_time,
           ).getTime() -
@@ -320,6 +505,10 @@ function SchedulePage() {
             firstMatch.kickoff_time,
           ).getTime(),
       )
+
+  // ========================================
+  // DATE / TIME
+  // ========================================
 
   function formatDate(dateTime) {
     return new Intl.DateTimeFormat(
@@ -330,7 +519,9 @@ function SchedulePage() {
         month: 'short',
       },
     ).format(
-      new Date(dateTime),
+      new Date(
+        dateTime,
+      ),
     )
   }
 
@@ -342,11 +533,15 @@ function SchedulePage() {
         minute: '2-digit',
       },
     ).format(
-      new Date(dateTime),
+      new Date(
+        dateTime,
+      ),
     )
   }
 
-  function formatKickoffTime(kickoffTime) {
+  function formatKickoffTime(
+    kickoffTime,
+  ) {
     return new Intl.DateTimeFormat(
       'en-GB',
       {
@@ -358,12 +553,21 @@ function SchedulePage() {
         minute: '2-digit',
       },
     ).format(
-      new Date(kickoffTime),
+      new Date(
+        kickoffTime,
+      ),
     )
   }
 
+  // ========================================
+  // NAVIGATION
+  // ========================================
+
   function openItem(item) {
-    if (item.type === 'match') {
+    if (
+      item.type ===
+      'match'
+    ) {
       navigate(
         `/teams/${teamId}/matches/${item.recordId}`,
       )
@@ -376,6 +580,10 @@ function SchedulePage() {
     )
   }
 
+  // ========================================
+  // LOADING
+  // ========================================
+
   if (loading) {
     return (
       <p className="dashboard-message">
@@ -384,11 +592,17 @@ function SchedulePage() {
     )
   }
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <>
       <Navbar
         teamId={teamId}
-        currentUser={currentUser}
+        currentUser={
+          currentUser
+        }
       />
 
       <main className="dashboard-page">
@@ -409,8 +623,9 @@ function SchedulePage() {
               </h1>
 
               <p>
-                Upcoming fixtures and training,
-                with recent match activity below.
+                Upcoming fixtures and
+                training, with recent
+                match activity below.
               </p>
             </div>
 
@@ -452,8 +667,13 @@ function SchedulePage() {
             </p>
           )}
 
+          {/* ========================================
+              UPCOMING
+          ======================================== */}
+
           {!errorMessage &&
-            upcomingSchedule.length > 0 && (
+            upcomingSchedule.length >
+              0 && (
               <section className="matches-section">
                 <div className="matches-section-heading">
                   <p className="dashboard-label">
@@ -465,7 +685,8 @@ function SchedulePage() {
                   </h2>
 
                   <p>
-                    Your next fixtures and training sessions,
+                    Your next fixtures
+                    and training sessions,
                     in date order.
                   </p>
                 </div>
@@ -489,7 +710,9 @@ function SchedulePage() {
                             {formatDate(
                               item.dateTime,
                             )}
+
                             {' · '}
+
                             {formatTime(
                               item.dateTime,
                             )}
@@ -497,14 +720,18 @@ function SchedulePage() {
                         </div>
 
                         <div className="match-details">
-                          {item.type === 'match' &&
+                          {item.type ===
+                            'match' &&
                             item.matchType && (
                               <span className="match-type-badge">
-                                {item.matchType}
+                                {
+                                  item.matchType
+                                }
                               </span>
                             )}
 
-                          {item.type === 'training' && (
+                          {item.type ===
+                            'training' && (
                             <span className="match-type-badge">
                               Training
                             </span>
@@ -525,6 +752,7 @@ function SchedulePage() {
 
                                 {' '}
                                 Starts{' '}
+
                                 {formatTime(
                                   item.dateTime,
                                 )}
@@ -539,6 +767,7 @@ function SchedulePage() {
 
                                   {' '}
                                   Meet{' '}
+
                                   {formatTime(
                                     item.meetTime,
                                   )}
@@ -553,6 +782,7 @@ function SchedulePage() {
                               />
 
                               {' '}
+
                               {formatKickoffTime(
                                 item.dateTime,
                               )}
@@ -566,6 +796,7 @@ function SchedulePage() {
                             />
 
                             {' '}
+
                             {item.location ||
                               'Location TBC'}
                           </p>
@@ -575,10 +806,13 @@ function SchedulePage() {
                           type="button"
                           className="view-match-button"
                           onClick={() =>
-                            openItem(item)
+                            openItem(
+                              item,
+                            )
                           }
                         >
-                          {item.type === 'match'
+                          {item.type ===
+                          'match'
                             ? 'View fixture'
                             : 'View training'}
 
@@ -595,7 +829,8 @@ function SchedulePage() {
             )}
 
           {!errorMessage &&
-            upcomingSchedule.length === 0 && (
+            upcomingSchedule.length ===
+              0 && (
               <article className="empty-team-card">
                 <div className="card-icon">
                   📅
@@ -613,8 +848,13 @@ function SchedulePage() {
               </article>
             )}
 
+          {/* ========================================
+              RECENT MATCHES
+          ======================================== */}
+
           {!errorMessage &&
-            recentMatches.length > 0 && (
+            recentMatches.length >
+              0 && (
               <section className="matches-section recent-matches-section">
                 <div className="matches-section-heading">
                   <p className="dashboard-label">
@@ -626,8 +866,10 @@ function SchedulePage() {
                   </h2>
 
                   <p>
-                    Recent match results, ratings and payment
-                    activity remain available here.
+                    Recent match results,
+                    ratings and payment
+                    activity remain
+                    available here.
                   </p>
                 </div>
 
@@ -661,9 +903,15 @@ function SchedulePage() {
 
                             {resultAvailable ? (
                               <strong className="recent-match-score">
-                                {match.team_score}
+                                {
+                                  match.team_score
+                                }
+
                                 {' - '}
-                                {match.opponent_score}
+
+                                {
+                                  match.opponent_score
+                                }
                               </strong>
                             ) : (
                               <strong>
@@ -678,7 +926,9 @@ function SchedulePage() {
                             <div className="match-card-badges">
                               {match.match_type && (
                                 <span className="match-type-badge">
-                                  {match.match_type}
+                                  {
+                                    match.match_type
+                                  }
                                 </span>
                               )}
 
@@ -692,21 +942,32 @@ function SchedulePage() {
                                 <span
                                   className={`match-result-badge match-result-badge-${outcome.toLowerCase()}`}
                                 >
-                                  {outcome}
+                                  {
+                                    outcome
+                                  }
                                 </span>
                               )}
                             </div>
 
                             <h2>
-                              vs {match.opponent}
+                              vs{' '}
+                              {
+                                match.opponent
+                              }
                             </h2>
 
                             {resultAvailable && (
                               <p className="recent-match-result">
                                 <strong>
-                                  {match.team_score}
+                                  {
+                                    match.team_score
+                                  }
+
                                   {' - '}
-                                  {match.opponent_score}
+
+                                  {
+                                    match.opponent_score
+                                  }
                                 </strong>
 
                                 <span>
@@ -723,6 +984,7 @@ function SchedulePage() {
                               />
 
                               {' '}
+
                               {match.location ||
                                 'Location TBC'}
                             </p>

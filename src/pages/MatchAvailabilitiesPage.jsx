@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 function MatchAvailabilityPage() {
   const navigate = useNavigate()
@@ -17,12 +23,33 @@ function MatchAvailabilityPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearAvailabilitySession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD AVAILABILITY
+  // ========================================
+
   useEffect(() => {
     async function fetchAvailability() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login', { replace: true })
+        await clearAvailabilitySession()
         return
       }
 
@@ -32,27 +59,39 @@ function MatchAvailabilityPage() {
       }
 
       try {
-        const [availabilityResponse, selectionResponse, userResponse] =
-          await Promise.all([
-            fetch(
-              `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities`,
-              { headers }
-            ),
-            fetch(
-              `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`,
-              { headers }
-            ),
-            fetch(`${API_URL}/users/me`, { headers }),
-          ])
+        const [
+          availabilityResponse,
+          selectionResponse,
+          userResponse,
+        ] = await Promise.all([
+          fetch(
+            `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities`,
+            {
+              headers,
+            },
+          ),
+
+          fetch(
+            `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`,
+            {
+              headers,
+            },
+          ),
+
+          fetch(
+            `${API_URL}/users/me`,
+            {
+              headers,
+            },
+          ),
+        ])
 
         if (
           availabilityResponse.status === 401 ||
           selectionResponse.status === 401 ||
           userResponse.status === 401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login', { replace: true })
+          await clearAvailabilitySession()
           return
         }
 
@@ -61,55 +100,87 @@ function MatchAvailabilityPage() {
           selectionResponse.status === 403 ||
           userResponse.status === 403
         ) {
-          navigate('/dashboard', { replace: true })
+          navigate('/dashboard', {
+            replace: true,
+          })
+
           return
         }
 
-        const availabilityData = await availabilityResponse.json()
-        const selectionData = await selectionResponse.json()
-        const userData = await userResponse.json()
+        const availabilityData =
+          await availabilityResponse.json()
+
+        const selectionData =
+          await selectionResponse.json()
+
+        const userData =
+          await userResponse.json()
 
         if (!availabilityResponse.ok) {
           throw new Error(
             availabilityData.error ||
-              'Unable to load player availability.'
+              'Unable to load player availability.',
           )
         }
 
         if (!selectionResponse.ok) {
           throw new Error(
-            selectionData.error || 'Unable to load the squad selection.'
+            selectionData.error ||
+              'Unable to load the squad selection.',
           )
         }
 
         if (!userResponse.ok) {
           throw new Error(
-            userData.error || 'Unable to load your account.'
+            userData.error ||
+              'Unable to load your account.',
           )
         }
 
-        const user = userData.user || userData
+        const user =
+          userData.user ||
+          userData
+
         const isApprovedManager =
           user.account_type === 'manager' &&
-          user.manager_verification_status === 'approved'
+          user.manager_verification_status ===
+            'approved'
 
         if (!isApprovedManager) {
-          navigate('/dashboard', { replace: true })
+          navigate('/dashboard', {
+            replace: true,
+          })
+
           return
         }
 
-        const selections = Array.isArray(selectionData)
-          ? selectionData
-          : selectionData.squad_selections || []
+        const selections =
+          Array.isArray(selectionData)
+            ? selectionData
+            : selectionData.squad_selections ||
+              []
 
         setCurrentUser(user)
-        setMatch(availabilityData.match || null)
-        setPlayers(availabilityData.players || [])
-        setSquadSelections(selections)
+
+        setMatch(
+          availabilityData.match ||
+            null,
+        )
+
+        setPlayers(
+          availabilityData.players ||
+            [],
+        )
+
+        setSquadSelections(
+          selections,
+        )
+
         setErrorMessage('')
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to connect to the server.'
+          error.message ||
+            'Unable to connect to the server.',
         )
       } finally {
         setLoading(false)
@@ -117,116 +188,228 @@ function MatchAvailabilityPage() {
     }
 
     fetchAvailability()
-  }, [navigate, teamId, matchId])
+  }, [
+    navigate,
+    teamId,
+    matchId,
+  ])
 
-  const playersByStatus = useMemo(
-    () => ({
-      available: players.filter(
-        (player) => player.status === 'available'
-      ),
-      unavailable: players.filter(
-        (player) => player.status === 'unavailable'
-      ),
-      pending: players.filter(
-        (player) =>
-          !['available', 'unavailable'].includes(player.status)
-      ),
-    }),
-    [players]
-  )
+  // ========================================
+  // GROUP PLAYERS
+  // ========================================
 
-  const summary = useMemo(
-    () => ({
-      available: playersByStatus.available.length,
-      unavailable: playersByStatus.unavailable.length,
-      awaiting_response: playersByStatus.pending.length,
-    }),
-    [playersByStatus]
-  )
+  const playersByStatus =
+    useMemo(
+      () => ({
+        available:
+          players.filter(
+            (player) =>
+              player.status ===
+              'available',
+          ),
 
-  const starterCount = squadSelections.filter(
-    (selection) => selection.selection_type === 'starter'
-  ).length
+        unavailable:
+          players.filter(
+            (player) =>
+              player.status ===
+              'unavailable',
+          ),
 
-  function selectionUserId(selection) {
-    return selection.user_id || selection.user?.id
+        pending:
+          players.filter(
+            (player) =>
+              ![
+                'available',
+                'unavailable',
+              ].includes(
+                player.status,
+              ),
+          ),
+      }),
+      [players],
+    )
+
+  const summary =
+    useMemo(
+      () => ({
+        available:
+          playersByStatus.available.length,
+
+        unavailable:
+          playersByStatus.unavailable.length,
+
+        awaiting_response:
+          playersByStatus.pending.length,
+      }),
+      [playersByStatus],
+    )
+
+  const starterCount =
+    squadSelections.filter(
+      (selection) =>
+        selection.selection_type ===
+        'starter',
+    ).length
+
+  // ========================================
+  // SQUAD HELPERS
+  // ========================================
+
+  function selectionUserId(
+    selection,
+  ) {
+    return (
+      selection.user_id ||
+      selection.user?.id
+    )
   }
 
-  function findSelection(playerId) {
+  function findSelection(
+    playerId,
+  ) {
     return squadSelections.find(
       (selection) =>
-        Number(selectionUserId(selection)) === Number(playerId)
+        Number(
+          selectionUserId(
+            selection,
+          ),
+        ) ===
+        Number(playerId),
     )
   }
 
   function playerName(player) {
-    if (player.name?.trim()) return player.name.trim()
+    if (player.name?.trim()) {
+      return player.name.trim()
+    }
 
-    const fullName = [player.first_name, player.last_name]
+    const fullName = [
+      player.first_name,
+      player.last_name,
+    ]
       .filter(Boolean)
       .join(' ')
       .trim()
 
-    return fullName || player.email || 'Unnamed player'
+    return (
+      fullName ||
+      player.email ||
+      'Unnamed player'
+    )
   }
 
-  function playerInitials(player) {
-    const names = player.name
-      ? player.name.trim().split(/\s+/)
-      : [player.first_name, player.last_name].filter(Boolean)
+  function playerInitials(
+    player,
+  ) {
+    const names =
+      player.name
+        ? player.name
+            .trim()
+            .split(/\s+/)
+        : [
+            player.first_name,
+            player.last_name,
+          ].filter(Boolean)
 
-    const initials = names
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((name) => name[0])
-      .join('')
-      .toUpperCase()
+    const initials =
+      names
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(
+          (name) =>
+            name[0],
+        )
+        .join('')
+        .toUpperCase()
 
-    return initials || player.email?.[0]?.toUpperCase() || '?'
+    return (
+      initials ||
+      player.email?.[0]?.toUpperCase() ||
+      '?'
+    )
   }
 
-  async function assignPlayer(player, destination) {
-    const token = localStorage.getItem('token')
-    const existingSelection = findSelection(player.id)
+  // ========================================
+  // ASSIGN PLAYER
+  // ========================================
+
+  async function assignPlayer(
+    player,
+    destination,
+  ) {
+    const token =
+      getAuthToken()
+
+    const existingSelection =
+      findSelection(player.id)
 
     if (!token) {
-      navigate('/login', { replace: true })
+      await clearAvailabilitySession()
       return
     }
 
     if (
       destination === 'starter' &&
-      existingSelection?.selection_type !== 'starter' &&
+      existingSelection?.selection_type !==
+        'starter' &&
       starterCount >= 11
     ) {
       setSuccessMessage('')
-      setErrorMessage('The Starting XI already contains 11 players.')
+
+      setErrorMessage(
+        'The Starting XI already contains 11 players.',
+      )
+
       return
     }
 
-    if (destination === 'available' && !existingSelection) return
+    if (
+      destination === 'available' &&
+      !existingSelection
+    ) {
+      return
+    }
 
-    if (existingSelection?.selection_type === destination) return
+    if (
+      existingSelection?.selection_type ===
+      destination
+    ) {
+      return
+    }
 
-    const baseUrl = `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`
-    const returningToPool = destination === 'available'
-    const method = returningToPool
-      ? 'DELETE'
-      : existingSelection
-        ? 'PATCH'
-        : 'POST'
-    const url = existingSelection
-      ? `${baseUrl}/${existingSelection.id}`
-      : baseUrl
+    const baseUrl =
+      `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`
+
+    const returningToPool =
+      destination ===
+      'available'
+
+    const method =
+      returningToPool
+        ? 'DELETE'
+        : existingSelection
+          ? 'PATCH'
+          : 'POST'
+
+    const url =
+      existingSelection
+        ? `${baseUrl}/${existingSelection.id}`
+        : baseUrl
 
     const position =
-      existingSelection?.position || player.preferred_position
+      existingSelection?.position ||
+      player.preferred_position
 
-    if (!returningToPool && !position) {
+    if (
+      !returningToPool &&
+      !position
+    ) {
       setSuccessMessage('')
+
       setErrorMessage(
-        `${playerName(player)} needs a preferred position before being selected.`
+        `${playerName(player)} needs a preferred position before being selected.`,
       )
+
       return
     }
 
@@ -235,96 +418,152 @@ function MatchAvailabilityPage() {
     setSuccessMessage('')
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: token,
-        },
-        body: returningToPool
-          ? undefined
-          : JSON.stringify({
-              squad_selection: {
-                user_id: player.id,
-                selection_type: destination,
-                position,
-              },
-            }),
-      })
+      const response =
+        await fetch(
+          url,
+          {
+            method,
 
-      if (response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('currentUser')
-        navigate('/login', { replace: true })
+            headers: {
+              Accept:
+                'application/json',
+
+              'Content-Type':
+                'application/json',
+
+              Authorization:
+                token,
+            },
+
+            body:
+              returningToPool
+                ? undefined
+                : JSON.stringify({
+                    squad_selection: {
+                      user_id:
+                        player.id,
+
+                      selection_type:
+                        destination,
+
+                      position,
+                    },
+                  }),
+          },
+        )
+
+      if (
+        response.status === 401
+      ) {
+        await clearAvailabilitySession()
         return
       }
 
-      if (response.status === 403) {
-        navigate('/dashboard', { replace: true })
+      if (
+        response.status === 403
+      ) {
+        navigate(
+          '/dashboard',
+          {
+            replace: true,
+          },
+        )
+
         return
       }
 
       let data = null
 
-      if (response.status !== 204) {
-        data = await response.json()
+      if (
+        response.status !== 204
+      ) {
+        data =
+          await response.json()
       }
 
       if (!response.ok) {
         throw new Error(
           data?.errors?.join(', ') ||
             data?.error ||
-            'Unable to update this player.'
+            'Unable to update this player.',
         )
       }
 
       if (returningToPool) {
-        setSquadSelections((currentSelections) =>
-          currentSelections.filter(
-            (selection) => selection.id !== existingSelection.id
-          )
+        setSquadSelections(
+          (currentSelections) =>
+            currentSelections.filter(
+              (selection) =>
+                selection.id !==
+                existingSelection.id,
+            ),
         )
       } else {
-        const savedSelection = data.squad_selection || data
+        const savedSelection =
+          data.squad_selection ||
+          data
 
-        setSquadSelections((currentSelections) => {
-          if (existingSelection) {
-            return currentSelections.map((selection) =>
-              selection.id === existingSelection.id
-                ? savedSelection
-                : selection
-            )
-          }
+        setSquadSelections(
+          (currentSelections) => {
+            if (
+              existingSelection
+            ) {
+              return currentSelections.map(
+                (selection) =>
+                  selection.id ===
+                  existingSelection.id
+                    ? savedSelection
+                    : selection,
+              )
+            }
 
-          return [...currentSelections, savedSelection]
-        })
+            return [
+              ...currentSelections,
+              savedSelection,
+            ]
+          },
+        )
       }
 
       const destinationLabel =
-        destination === 'starter'
+        destination ===
+        'starter'
           ? 'Starting XI'
-          : destination === 'substitute'
+          : destination ===
+              'substitute'
             ? 'Substitutes'
             : 'Available players'
 
       setSuccessMessage(
-        `${playerName(player)} moved to ${destinationLabel}.`
+        `${playerName(player)} moved to ${destinationLabel}.`,
       )
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to connect to the server.'
+        error.message ||
+          'Unable to connect to the server.',
       )
     } finally {
       setSavingPlayerId(null)
     }
   }
 
-  function renderSquadButtons(player) {
-    const currentSelection = findSelection(player.id)
+  // ========================================
+  // SQUAD BUTTONS
+  // ========================================
+
+  function renderSquadButtons(
+    player,
+  ) {
+    const currentSelection =
+      findSelection(player.id)
+
     const currentDestination =
-      currentSelection?.selection_type || 'available'
-    const saving = savingPlayerId === player.id
+      currentSelection?.selection_type ||
+      'available'
+
+    const saving =
+      savingPlayerId ===
+      player.id
 
     return (
       <div
@@ -332,28 +571,72 @@ function MatchAvailabilityPage() {
         aria-label={`Squad selection for ${playerName(player)}`}
       >
         <button
-          className={currentDestination === 'starter' ? 'active' : ''}
+          className={
+            currentDestination ===
+            'starter'
+              ? 'active'
+              : ''
+          }
           type="button"
-          onClick={() => assignPlayer(player, 'starter')}
-          disabled={saving || currentDestination === 'starter'}
+          onClick={() =>
+            assignPlayer(
+              player,
+              'starter',
+            )
+          }
+          disabled={
+            saving ||
+            currentDestination ===
+              'starter'
+          }
         >
-          {saving ? 'Saving...' : 'Starting XI'}
+          {saving
+            ? 'Saving...'
+            : 'Starting XI'}
         </button>
 
         <button
-          className={currentDestination === 'substitute' ? 'active' : ''}
+          className={
+            currentDestination ===
+            'substitute'
+              ? 'active'
+              : ''
+          }
           type="button"
-          onClick={() => assignPlayer(player, 'substitute')}
-          disabled={saving || currentDestination === 'substitute'}
+          onClick={() =>
+            assignPlayer(
+              player,
+              'substitute',
+            )
+          }
+          disabled={
+            saving ||
+            currentDestination ===
+              'substitute'
+          }
         >
           Substitutes
         </button>
 
         <button
-          className={currentDestination === 'available' ? 'active' : ''}
+          className={
+            currentDestination ===
+            'available'
+              ? 'active'
+              : ''
+          }
           type="button"
-          onClick={() => assignPlayer(player, 'available')}
-          disabled={saving || currentDestination === 'available'}
+          onClick={() =>
+            assignPlayer(
+              player,
+              'available',
+            )
+          }
+          disabled={
+            saving ||
+            currentDestination ===
+              'available'
+          }
         >
           Available players
         </button>
@@ -361,54 +644,89 @@ function MatchAvailabilityPage() {
     )
   }
 
-  function renderPlayerGroup(title, status, groupPlayers) {
+  // ========================================
+  // PLAYER GROUP
+  // ========================================
+
+  function renderPlayerGroup(
+    title,
+    status,
+    groupPlayers,
+  ) {
     const statusLabel =
       status === 'pending'
         ? 'Awaiting response'
-        : status[0].toUpperCase() + status.slice(1)
+        : status[0].toUpperCase() +
+          status.slice(1)
 
     return (
       <section className="availability-group">
         <div className="availability-group-heading">
-          <h2>{title}</h2>
-          <span>{groupPlayers.length}</span>
+          <h2>
+            {title}
+          </h2>
+
+          <span>
+            {groupPlayers.length}
+          </span>
         </div>
 
         {groupPlayers.length === 0 ? (
           <article className="empty-team-card">
-            <p>No players are currently {statusLabel.toLowerCase()}.</p>
+            <p>
+              No players are currently{' '}
+              {statusLabel.toLowerCase()}.
+            </p>
           </article>
         ) : (
           <div className="availability-list">
-            {groupPlayers.map((player) => (
-              <article
-                className="availability-player-card"
-                key={player.id}
-              >
-                <div className="availability-player">
-                  <div className="player-avatar" aria-hidden="true">
-                    {playerInitials(player)}
+            {groupPlayers.map(
+              (player) => (
+                <article
+                  className="availability-player-card"
+                  key={player.id}
+                >
+                  <div className="availability-player">
+                    <div
+                      className="player-avatar"
+                      aria-hidden="true"
+                    >
+                      {playerInitials(
+                        player,
+                      )}
+                    </div>
+
+                    <div>
+                      <h2>
+                        {playerName(
+                          player,
+                        )}
+                      </h2>
+
+                      <p>
+                        {player.preferred_position
+                          ? `Preferred position: ${player.preferred_position}`
+                          : 'No preferred position set'}
+                      </p>
+                    </div>
                   </div>
 
-                  <div>
-                    <h2>{playerName(player)}</h2>
-                    <p>
-                      {player.preferred_position
-                        ? `Preferred position: ${player.preferred_position}`
-                        : 'No preferred position set'}
-                    </p>
+                  <div className="availability-player-actions">
+                    <span
+                      className={`availability-status ${status}`}
+                    >
+                      {statusLabel}
+                    </span>
+
+                    {status ===
+                      'available' &&
+                      renderSquadButtons(
+                        player,
+                      )}
                   </div>
-                </div>
-
-                <div className="availability-player-actions">
-                  <span className={`availability-status ${status}`}>
-                    {statusLabel}
-                  </span>
-
-                  {status === 'available' && renderSquadButtons(player)}
-                </div>
-              </article>
-            ))}
+                </article>
+              ),
+            )}
           </div>
         )}
       </section>
@@ -416,23 +734,36 @@ function MatchAvailabilityPage() {
   }
 
   if (loading) {
-    return <p className="dashboard-message">Loading availability...</p>
+    return (
+      <p className="dashboard-message">
+        Loading availability...
+      </p>
+    )
   }
 
   return (
     <>
-      <Navbar teamId={teamId} currentUser={currentUser} />
+      <Navbar
+        teamId={teamId}
+        currentUser={currentUser}
+      />
 
       <main className="dashboard-page">
         <section className="dashboard-content">
           {errorMessage && (
-            <p className="team-error" role="alert">
+            <p
+              className="team-error"
+              role="alert"
+            >
               {errorMessage}
             </p>
           )}
 
           {successMessage && (
-            <p className="team-success" role="status">
+            <p
+              className="team-success"
+              role="status"
+            >
               {successMessage}
             </p>
           )}
@@ -443,7 +774,9 @@ function MatchAvailabilityPage() {
           />
 
           <div className="dashboard-welcome">
-            <p className="dashboard-label">Match availability</p>
+            <p className="dashboard-label">
+              Match availability
+            </p>
 
             <h1>
               {match?.opponent
@@ -452,8 +785,10 @@ function MatchAvailabilityPage() {
             </h1>
 
             <p>
-              Review every response and assign available players to the
-              Starting XI, substitutes or the available-player pool.
+              Review every response and
+              assign available players to the
+              Starting XI, substitutes or the
+              available-player pool.
             </p>
           </div>
 
@@ -462,18 +797,35 @@ function MatchAvailabilityPage() {
             aria-label="Availability summary"
           >
             <article className="availability-summary-card available">
-              <span>Available</span>
-              <strong>{summary.available}</strong>
+              <span>
+                Available
+              </span>
+
+              <strong>
+                {summary.available}
+              </strong>
             </article>
 
             <article className="availability-summary-card unavailable">
-              <span>Unavailable</span>
-              <strong>{summary.unavailable}</strong>
+              <span>
+                Unavailable
+              </span>
+
+              <strong>
+                {summary.unavailable}
+              </strong>
             </article>
 
             <article className="availability-summary-card pending">
-              <span>Awaiting response</span>
-              <strong>{summary.awaiting_response}</strong>
+              <span>
+                Awaiting response
+              </span>
+
+              <strong>
+                {
+                  summary.awaiting_response
+                }
+              </strong>
             </article>
           </section>
 
@@ -481,19 +833,19 @@ function MatchAvailabilityPage() {
             {renderPlayerGroup(
               'Available players',
               'available',
-              playersByStatus.available
+              playersByStatus.available,
             )}
 
             {renderPlayerGroup(
               'Unavailable players',
               'unavailable',
-              playersByStatus.unavailable
+              playersByStatus.unavailable,
             )}
 
             {renderPlayerGroup(
               'Awaiting response',
               'pending',
-              playersByStatus.pending
+              playersByStatus.pending,
             )}
           </div>
         </section>

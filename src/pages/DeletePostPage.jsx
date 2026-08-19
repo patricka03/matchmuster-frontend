@@ -1,26 +1,63 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams, } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import './DeletePostPage.css'
 import './DeletePostPage.mobile.css'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 function DeletePostPage() {
   const { teamId, postId } = useParams()
   const navigate = useNavigate()
 
   const [post, setPost] = useState(null)
-  const [currentUser, setCurrentUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [deleting, setDeleting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [currentUser, setCurrentUser] =
+    useState(null)
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [deleting, setDeleting] =
+    useState(false)
+
+  const [errorMessage, setErrorMessage] =
+    useState('')
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearDeletePostSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD PAGE
+  // ========================================
 
   useEffect(() => {
     async function loadDeletePostPage() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        await clearDeletePostSession()
         return
       }
 
@@ -30,11 +67,22 @@ function DeletePostPage() {
       }
 
       try {
-        const [userResponse, postResponse] = await Promise.all([
-          fetch(`${API_URL}/users/me`, { headers }),
+        const [
+          userResponse,
+          postResponse,
+        ] = await Promise.all([
+          fetch(
+            `${API_URL}/users/me`,
+            {
+              headers,
+            },
+          ),
+
           fetch(
             `${API_URL}/teams/${teamId}/posts/${postId}`,
-            { headers }
+            {
+              headers,
+            },
           ),
         ])
 
@@ -42,23 +90,27 @@ function DeletePostPage() {
           userResponse.status === 401 ||
           postResponse.status === 401
         ) {
-          localStorage.removeItem('token')
-          navigate('/login')
+          await clearDeletePostSession()
           return
         }
 
-        const userData = await userResponse.json()
-        const postData = await postResponse.json()
+        const userData =
+          await userResponse.json()
+
+        const postData =
+          await postResponse.json()
 
         if (!userResponse.ok) {
           throw new Error(
-            userData.error || 'Unable to load your account.'
+            userData.error ||
+              'Unable to load your account.',
           )
         }
 
         if (!postResponse.ok) {
           throw new Error(
-            postData.error || 'Unable to load this post.'
+            postData.error ||
+              'Unable to load this post.',
           )
         }
 
@@ -66,16 +118,21 @@ function DeletePostPage() {
 
         const approvedManager =
           user.account_type === 'manager' &&
-          user.manager_verification_status === 'approved'
+          user.manager_verification_status ===
+            'approved'
 
         const canDeletePost =
-          user.id === postData.user_id || approvedManager
+          user.id === postData.user_id ||
+          approvedManager
 
         if (!canDeletePost) {
           navigate(
             `/teams/${teamId}/posts/${postId}`,
-            { replace: true }
+            {
+              replace: true,
+            },
           )
+
           return
         }
 
@@ -83,7 +140,8 @@ function DeletePostPage() {
         setPost(postData)
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to load this post.'
+          error.message ||
+            'Unable to load this post.',
         )
       } finally {
         setLoading(false)
@@ -91,13 +149,21 @@ function DeletePostPage() {
     }
 
     loadDeletePostPage()
-  }, [navigate, postId, teamId])
+  }, [
+    navigate,
+    postId,
+    teamId,
+  ])
+
+  // ========================================
+  // DELETE POST
+  // ========================================
 
   async function handleDelete() {
-    const token = localStorage.getItem('token')
+    const token = getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearDeletePostSession()
       return
     }
 
@@ -109,25 +175,30 @@ function DeletePostPage() {
         `${API_URL}/teams/${teamId}/posts/${postId}`,
         {
           method: 'DELETE',
+
           headers: {
             Accept: 'application/json',
             Authorization: token,
           },
-        }
+        },
       )
 
       if (response.status === 401) {
-        localStorage.removeItem('token')
-        navigate('/login')
+        await clearDeletePostSession()
         return
       }
 
       if (!response.ok) {
-        let message = 'Unable to delete this post.'
+        let message =
+          'Unable to delete this post.'
 
         try {
-          const data = await response.json()
-          message = data.error || message
+          const data =
+            await response.json()
+
+          message =
+            data.error ||
+            message
         } catch {
           // Keep the default error message.
         }
@@ -135,15 +206,25 @@ function DeletePostPage() {
         throw new Error(message)
       }
 
-      navigate(`/teams/${teamId}/posts`, { replace: true })
+      navigate(
+        `/teams/${teamId}/posts`,
+        {
+          replace: true,
+        },
+      )
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to delete this post.'
+        error.message ||
+          'Unable to delete this post.',
       )
     } finally {
       setDeleting(false)
     }
   }
+
+  // ========================================
+  // LOADING
+  // ========================================
 
   if (loading) {
     return (
@@ -159,6 +240,10 @@ function DeletePostPage() {
     )
   }
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <>
       <Navbar
@@ -169,29 +254,40 @@ function DeletePostPage() {
       <main className="delete-post-page">
         <section className="delete-post-container">
           {errorMessage && (
-            <p className="delete-post-error" role="alert">
+            <p
+              className="delete-post-error"
+              role="alert"
+            >
               {errorMessage}
             </p>
           )}
 
           {post && (
             <div className="delete-post-card">
-              <div className="delete-post-icon">!</div>
+              <div className="delete-post-icon">
+                !
+              </div>
 
               <p className="delete-post-label">
                 Delete post
               </p>
 
-              <h1>Are you sure?</h1>
+              <h1>
+                Are you sure?
+              </h1>
 
               <p className="delete-post-warning">
                 You are about to permanently delete:
               </p>
 
               <div className="delete-post-preview">
-                <strong>{post.title}</strong>
+                <strong>
+                  {post.title}
+                </strong>
 
-                <p>{post.content}</p>
+                <p>
+                  {post.content}
+                </p>
               </div>
 
               <p className="delete-post-notice">
@@ -213,7 +309,9 @@ function DeletePostPage() {
                   onClick={handleDelete}
                   disabled={deleting}
                 >
-                  {deleting ? 'Deleting...' : 'Yes, delete post'}
+                  {deleting
+                    ? 'Deleting...'
+                    : 'Yes, delete post'}
                 </button>
               </div>
             </div>

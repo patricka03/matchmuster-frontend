@@ -23,6 +23,11 @@ import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 import './TrainingPage.css'
 import './TrainingPage.mobile.css'
 
@@ -94,13 +99,37 @@ function TrainingPage() {
       'approved'
 
   // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearTrainingSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
   // LOAD TRAINING
   // ========================================
 
   useEffect(() => {
     async function loadTraining() {
       const token =
-        localStorage.getItem('token')
+        getAuthToken()
 
       if (!token) {
         navigate('/login', {
@@ -138,26 +167,19 @@ function TrainingPage() {
         if (
           trainingResponse.status ===
             401 ||
-          userResponse.status === 401
+          userResponse.status ===
+            401
         ) {
-          localStorage.removeItem(
-            'token',
-          )
-
-          localStorage.removeItem(
-            'currentUser',
-          )
-
-          navigate('/login', {
-            replace: true,
-          })
+          await clearTrainingSession()
 
           return
         }
 
         if (
           trainingResponse.status ===
-          403
+            403 ||
+          userResponse.status ===
+            403
         ) {
           navigate('/dashboard', {
             replace: true,
@@ -212,6 +234,27 @@ function TrainingPage() {
               },
             )
 
+          if (
+            response.status === 401
+          ) {
+            await clearTrainingSession()
+
+            return
+          }
+
+          if (
+            response.status === 403
+          ) {
+            navigate(
+              '/dashboard',
+              {
+                replace: true,
+              },
+            )
+
+            return
+          }
+
           if (response.ok) {
             const data =
               await response.json()
@@ -240,6 +283,27 @@ function TrainingPage() {
                 headers,
               },
             )
+
+          if (
+            response.status === 401
+          ) {
+            await clearTrainingSession()
+
+            return
+          }
+
+          if (
+            response.status === 403
+          ) {
+            navigate(
+              '/dashboard',
+              {
+                replace: true,
+              },
+            )
+
+            return
+          }
 
           if (response.ok) {
             const data =
@@ -393,10 +457,11 @@ function TrainingPage() {
     }
 
     const token =
-      localStorage.getItem('token')
+      getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearTrainingSession()
+
       return
     }
 
@@ -440,6 +505,27 @@ function TrainingPage() {
               }),
           },
         )
+
+      if (
+        response.status === 401
+      ) {
+        await clearTrainingSession()
+
+        return
+      }
+
+      if (
+        response.status === 403
+      ) {
+        navigate(
+          '/dashboard',
+          {
+            replace: true,
+          },
+        )
+
+        return
+      }
 
       const data =
         await response.json()
@@ -485,12 +571,10 @@ function TrainingPage() {
     }
 
     const token =
-      localStorage.getItem('token')
+      getAuthToken()
 
     if (!token) {
-      navigate('/login', {
-        replace: true,
-      })
+      await clearTrainingSession()
 
       return
     }
@@ -518,17 +602,7 @@ function TrainingPage() {
       if (
         response.status === 401
       ) {
-        localStorage.removeItem(
-          'token',
-        )
-
-        localStorage.removeItem(
-          'currentUser',
-        )
-
-        navigate('/login', {
-          replace: true,
-        })
+        await clearTrainingSession()
 
         return
       }
@@ -536,9 +610,12 @@ function TrainingPage() {
       if (
         response.status === 403
       ) {
-        navigate('/dashboard', {
-          replace: true,
-        })
+        navigate(
+          '/dashboard',
+          {
+            replace: true,
+          },
+        )
 
         return
       }
@@ -667,6 +744,10 @@ function TrainingPage() {
       </p>
     )
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>
@@ -823,10 +904,6 @@ function TrainingPage() {
 
                       {hasCoordinates && (
                         <>
-                          {/* ========================================
-                              VIEW MAP
-                          ======================================== */}
-
                           <button
                             className="view-map-button"
                             type="button"
@@ -847,10 +924,6 @@ function TrainingPage() {
                               : 'View map'}
                           </button>
 
-                          {/* ========================================
-                              MAPBOX MAP
-                          ======================================== */}
-
                           {showMap && (
                             <div
                               className="match-map-container"
@@ -860,10 +933,6 @@ function TrainingPage() {
                               aria-label={`Map showing ${training.location}`}
                             />
                           )}
-
-                          {/* ========================================
-                              DIRECTIONS
-                          ======================================== */}
 
                           <div className="match-directions">
                             <span className="match-directions-label">
@@ -1067,20 +1136,17 @@ function TrainingPage() {
                   <section className="availability-groups">
                     {[
                       {
-                        key:
-                          'available',
-                        title:
-                          'Available',
+                        key: 'available',
+                        title: 'Available',
                       },
+
                       {
-                        key:
-                          'unavailable',
-                        title:
-                          'Unavailable',
+                        key: 'unavailable',
+                        title: 'Unavailable',
                       },
+
                       {
-                        key:
-                          'pending',
+                        key: 'pending',
                         title:
                           'Awaiting response',
                       },

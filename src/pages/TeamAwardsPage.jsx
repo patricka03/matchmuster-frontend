@@ -1,36 +1,93 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import {
+  useEffect,
+  useState,
+} from 'react'
+
+import {
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 import '../styles/TeamAwardsPage.css'
 import '../styles/TeamAwardsPage.mobile.css'
 
 function TeamAwardsPage() {
-  const navigate = useNavigate()
-  const { teamId } = useParams()
+  const navigate =
+    useNavigate()
 
-  const [awards, setAwards] = useState(null)
-  const [currentUser, setCurrentUser] = useState(null)
+  const { teamId } =
+    useParams()
 
-  const [loading, setLoading] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [awards, setAwards] =
+    useState(null)
+
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(null)
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('')
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearAwardsSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD AWARDS
+  // ========================================
 
   useEffect(() => {
     async function loadAwardsPage() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login', {
-          replace: true,
-        })
+        await clearAwardsSession()
 
         return
       }
 
       const headers = {
-        Accept: 'application/json',
-        Authorization: token,
+        Accept:
+          'application/json',
+
+        Authorization:
+          token,
       }
 
       setLoading(true)
@@ -57,26 +114,28 @@ function TeamAwardsPage() {
         ])
 
         if (
-          awardsResponse.status === 401 ||
-          userResponse.status === 401
+          awardsResponse.status ===
+            401 ||
+          userResponse.status ===
+            401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-
-          navigate('/login', {
-            replace: true,
-          })
+          await clearAwardsSession()
 
           return
         }
 
         if (
-          awardsResponse.status === 403 ||
-          userResponse.status === 403
+          awardsResponse.status ===
+            403 ||
+          userResponse.status ===
+            403
         ) {
-          navigate('/dashboard', {
-            replace: true,
-          })
+          navigate(
+            '/dashboard',
+            {
+              replace: true,
+            },
+          )
 
           return
         }
@@ -87,7 +146,9 @@ function TeamAwardsPage() {
         const userData =
           await userResponse.json()
 
-        if (!awardsResponse.ok) {
+        if (
+          !awardsResponse.ok
+        ) {
           throw new Error(
             awardsData.error ||
               'Unable to load team awards.',
@@ -134,19 +195,26 @@ function TeamAwardsPage() {
       .join(' ')
   }
 
-  function playerInitials(player) {
+  function playerInitials(
+    player,
+  ) {
     return [
       player?.first_name,
       player?.last_name,
     ]
       .filter(Boolean)
-      .map((name) => name[0])
+      .map(
+        (name) =>
+          name[0],
+      )
       .join('')
       .slice(0, 2)
       .toUpperCase()
   }
 
-  function formatMatchDate(date) {
+  function formatMatchDate(
+    date,
+  ) {
     if (!date) return ''
 
     return new Intl.DateTimeFormat(
@@ -162,14 +230,25 @@ function TeamAwardsPage() {
 
   function renderAvatar(
     player,
-    className = 'team-award-avatar',
+    className =
+      'team-award-avatar',
   ) {
-    if (player?.avatar_url) {
+    if (
+      player?.avatar_url
+    ) {
       return (
         <img
-          className={className}
-          src={player.avatar_url}
-          alt={playerName(player)}
+          className={
+            className
+          }
+          src={
+            player.avatar_url
+          }
+          alt={
+            playerName(
+              player,
+            )
+          }
         />
       )
     }
@@ -179,7 +258,9 @@ function TeamAwardsPage() {
         className={`${className} team-award-avatar-placeholder`}
         aria-hidden="true"
       >
-        {playerInitials(player)}
+        {playerInitials(
+          player,
+        )}
       </div>
     )
   }
@@ -208,7 +289,9 @@ function TeamAwardsPage() {
           (leader) => (
             <article
               className="team-award-leader"
-              key={leader.player.id}
+              key={
+                leader.player.id
+              }
             >
               {renderAvatar(
                 leader.player,
@@ -223,8 +306,11 @@ function TeamAwardsPage() {
                 </strong>
 
                 <span>
-                  {leader.motm_count}{' '}
-                  {leader.motm_count === 1
+                  {
+                    leader.motm_count
+                  }{' '}
+                  {leader.motm_count ===
+                  1
                     ? 'MOTM award'
                     : 'MOTM awards'}
                 </span>
@@ -239,7 +325,9 @@ function TeamAwardsPage() {
   function renderMotmLeaderboard(
     leaderboard,
   ) {
-    if (!leaderboard?.length) {
+    if (
+      !leaderboard?.length
+    ) {
       return (
         <div className="team-awards-no-results">
           No MOTM awards yet.
@@ -250,10 +338,15 @@ function TeamAwardsPage() {
     return (
       <div className="team-awards-leaderboard">
         {leaderboard.map(
-          (entry, index) => (
+          (
+            entry,
+            index,
+          ) => (
             <article
               className="team-awards-leaderboard-row"
-              key={entry.player.id}
+              key={
+                entry.player.id
+              }
             >
               <span className="team-awards-position">
                 {index + 1}
@@ -281,7 +374,9 @@ function TeamAwardsPage() {
                 </span>
 
                 <strong>
-                  {entry.motm_count}
+                  {
+                    entry.motm_count
+                  }
                 </strong>
               </div>
             </article>
@@ -296,7 +391,9 @@ function TeamAwardsPage() {
     icon,
     emptyMessage,
   ) {
-    if (!leaderboard?.length) {
+    if (
+      !leaderboard?.length
+    ) {
       return (
         <div className="team-awards-stat-empty">
           <span>
@@ -313,10 +410,15 @@ function TeamAwardsPage() {
     return (
       <div className="team-stat-leaderboard">
         {leaderboard.map(
-          (entry, index) => (
+          (
+            entry,
+            index,
+          ) => (
             <article
               className="team-stat-row"
-              key={entry.player.id}
+              key={
+                entry.player.id
+              }
             >
               <span className="team-awards-position">
                 {index + 1}
@@ -334,7 +436,12 @@ function TeamAwardsPage() {
                 </strong>
 
                 <span>
-                  Season {awards.statistics.label}
+                  Season{' '}
+                  {
+                    awards
+                      .statistics
+                      .label
+                  }
                 </span>
               </div>
 
@@ -344,7 +451,9 @@ function TeamAwardsPage() {
                 </span>
 
                 <strong>
-                  {entry.total}
+                  {
+                    entry.total
+                  }
                 </strong>
               </div>
             </article>
@@ -354,7 +463,9 @@ function TeamAwardsPage() {
     )
   }
 
-  function goalDifferenceLabel(value) {
+  function goalDifferenceLabel(
+    value,
+  ) {
     if (value > 0) {
       return `+${value}`
     }
@@ -374,7 +485,9 @@ function TeamAwardsPage() {
     <>
       <Navbar
         teamId={teamId}
-        currentUser={currentUser}
+        currentUser={
+          currentUser
+        }
       />
 
       <main className="dashboard-page">
@@ -393,507 +506,537 @@ function TeamAwardsPage() {
             </p>
           )}
 
-          {!errorMessage && awards && (
-            <>
-              <div className="dashboard-welcome">
-                <p className="dashboard-label">
-                  Team achievements
-                </p>
-
-                <h1>
-                  Team Awards &amp; Stats
-                </h1>
-
-                <p>
-                  Follow the season's standout
-                  performers, awards and team
-                  statistics.
-                </p>
-              </div>
-
-              {/* ========================================
-                  PLAYER AWARDS
-              ======================================== */}
-
-              <section className="team-awards-hero-grid">
-                <article className="team-award-hero-card">
-                  <div className="team-award-icon">
-                    🏆
-                  </div>
-
-                  <p className="team-award-eyebrow">
-                    {awards.month.label}
+          {!errorMessage &&
+            awards && (
+              <>
+                <div className="dashboard-welcome">
+                  <p className="dashboard-label">
+                    Team achievements
                   </p>
 
-                  <h2>
-                    Player of the Month
-                  </h2>
+                  <h1>
+                    Team Awards &amp;
+                    Stats
+                  </h1>
 
-                  {renderAwardLeaders(
-                    awards.month
-                      .player_of_the_month,
-                    'No Player of the Month yet.',
-                  )}
-                </article>
-
-                <article className="team-award-hero-card team-award-season-card">
-                  <div className="team-award-icon">
-                    ⭐
-                  </div>
-
-                  <p className="team-award-eyebrow">
-                    Season{' '}
-                    {awards.season.label}
+                  <p>
+                    Follow the season's
+                    standout performers,
+                    awards and team
+                    statistics.
                   </p>
-
-                  <h2>
-                    Season Player
-                  </h2>
-
-                  {renderAwardLeaders(
-                    awards.season
-                      .player_of_the_season,
-                    'The season race has not started yet.',
-                  )}
-                </article>
-              </section>
-
-              {/* ========================================
-                  TEAM RECORD
-              ======================================== */}
-
-              <section className="team-awards-section">
-                <div className="team-awards-section-heading">
-                  <div>
-                    <p className="dashboard-label">
-                      Season{' '}
-                      {awards.statistics.label}
-                    </p>
-
-                    <h2>
-                      Team record
-                    </h2>
-
-                    <p>
-                      Results from completed
-                      matches this season.
-                    </p>
-                  </div>
                 </div>
 
-                <div className="team-record-grid">
-                  <article>
-                    <span>
-                      P
-                    </span>
-
-                    <strong>
-                      {
-                        awards.statistics
-                          .team.played
-                      }
-                    </strong>
-
-                    <small>
-                      Played
-                    </small>
-                  </article>
-
-                  <article>
-                    <span>
-                      W
-                    </span>
-
-                    <strong>
-                      {
-                        awards.statistics
-                          .team.wins
-                      }
-                    </strong>
-
-                    <small>
-                      Wins
-                    </small>
-                  </article>
-
-                  <article>
-                    <span>
-                      D
-                    </span>
-
-                    <strong>
-                      {
-                        awards.statistics
-                          .team.draws
-                      }
-                    </strong>
-
-                    <small>
-                      Draws
-                    </small>
-                  </article>
-
-                  <article>
-                    <span>
-                      L
-                    </span>
-
-                    <strong>
-                      {
-                        awards.statistics
-                          .team.losses
-                      }
-                    </strong>
-
-                    <small>
-                      Losses
-                    </small>
-                  </article>
-
-                  <article>
-                    <span>
-                      GF
-                    </span>
-
-                    <strong>
-                      {
-                        awards.statistics
-                          .team.goals_for
-                      }
-                    </strong>
-
-                    <small>
-                      Goals for
-                    </small>
-                  </article>
-
-                  <article>
-                    <span>
-                      GA
-                    </span>
-
-                    <strong>
-                      {
-                        awards.statistics
-                          .team.goals_against
-                      }
-                    </strong>
-
-                    <small>
-                      Goals against
-                    </small>
-                  </article>
-
-                  <article>
-                    <span>
-                      GD
-                    </span>
-
-                    <strong>
-                      {goalDifferenceLabel(
-                        awards.statistics
-                          .team.goal_difference,
-                      )}
-                    </strong>
-
-                    <small>
-                      Goal difference
-                    </small>
-                  </article>
-                </div>
-              </section>
-
-              {/* ========================================
-                  GOALS + ASSISTS
-              ======================================== */}
-
-              <section className="team-stat-grid">
-                <article className="team-awards-section">
-                  <div className="team-awards-section-heading">
-                    <div>
-                      <p className="dashboard-label">
-                        Attack
-                      </p>
-
-                      <h2>
-                        ⚽ Top Scorers
-                      </h2>
-
-                      <p>
-                        Most goals this season.
-                      </p>
-                    </div>
-                  </div>
-
-                  {renderStatLeaderboard(
-                    awards.statistics
-                      .top_scorers,
-                    '⚽',
-                    'No goals recorded yet.',
-                  )}
-                </article>
-
-                <article className="team-awards-section">
-                  <div className="team-awards-section-heading">
-                    <div>
-                      <p className="dashboard-label">
-                        Creativity
-                      </p>
-
-                      <h2>
-                        🎯 Top Assists
-                      </h2>
-
-                      <p>
-                        Most assists this season.
-                      </p>
-                    </div>
-                  </div>
-
-                  {renderStatLeaderboard(
-                    awards.statistics
-                      .top_assists,
-                    '🎯',
-                    'No assists recorded yet.',
-                  )}
-                </article>
-              </section>
-
-              {/* ========================================
-                  CLEAN SHEETS
-              ======================================== */}
-
-              <section className="team-awards-section">
-                <div className="team-awards-section-heading">
-                  <div>
-                    <p className="dashboard-label">
-                      Defence
-                    </p>
-
-                    <h2>
-                      🧤 Clean Sheets
-                    </h2>
-
-                    <p>
-                      Players with the most
-                      clean sheets this season.
-                    </p>
-                  </div>
-                </div>
-
-                {renderStatLeaderboard(
-                  awards.statistics
-                    .clean_sheets,
-                  '🧤',
-                  'No clean sheets recorded yet.',
-                )}
-              </section>
-
-              {/* ========================================
-                  DISCIPLINE
-              ======================================== */}
-
-              <section className="team-stat-grid">
-                <article className="team-awards-section">
-                  <div className="team-awards-section-heading">
-                    <div>
-                      <p className="dashboard-label">
-                        Discipline
-                      </p>
-
-                      <h2>
-                        🟨 Yellow Cards
-                      </h2>
-
-                      <p>
-                        Yellow cards recorded
-                        this season.
-                      </p>
-                    </div>
-                  </div>
-
-                  {renderStatLeaderboard(
-                    awards.statistics
-                      .yellow_cards,
-                    '🟨',
-                    'No yellow cards recorded.',
-                  )}
-                </article>
-
-                <article className="team-awards-section">
-                  <div className="team-awards-section-heading">
-                    <div>
-                      <p className="dashboard-label">
-                        Discipline
-                      </p>
-
-                      <h2>
-                        🟥 Red Cards
-                      </h2>
-
-                      <p>
-                        Red cards recorded
-                        this season.
-                      </p>
-                    </div>
-                  </div>
-
-                  {renderStatLeaderboard(
-                    awards.statistics
-                      .red_cards,
-                    '🟥',
-                    'No red cards recorded.',
-                  )}
-                </article>
-              </section>
-
-              {/* ========================================
-                  MONTHLY MOTM
-              ======================================== */}
-
-              <section className="team-awards-section">
-                <div className="team-awards-section-heading">
-                  <div>
-                    <p className="dashboard-label">
-                      {awards.month.label}
-                    </p>
-
-                    <h2>
-                      Player of the Month race
-                    </h2>
-
-                    <p>
-                      Ranked by Man of the
-                      Match awards this month.
-                    </p>
-                  </div>
-                </div>
-
-                {renderMotmLeaderboard(
-                  awards.month.leaderboard,
-                )}
-              </section>
-
-              {/* ========================================
-                  SEASON MOTM
-              ======================================== */}
-
-              <section className="team-awards-section">
-                <div className="team-awards-section-heading">
-                  <div>
-                    <p className="dashboard-label">
-                      {awards.season.label}
-                    </p>
-
-                    <h2>
-                      MOTM Season Leaderboard
-                    </h2>
-
-                    <p>
-                      Most Man of the Match
-                      performances this season.
-                    </p>
-                  </div>
-                </div>
-
-                {renderMotmLeaderboard(
-                  awards.season.leaderboard,
-                )}
-              </section>
-
-              {/* ========================================
-                  RECENT MOTM
-              ======================================== */}
-
-              <section className="team-awards-section">
-                <div className="team-awards-section-heading">
-                  <div>
-                    <p className="dashboard-label">
-                      Recent matches
-                    </p>
-
-                    <h2>
-                      Recent Man of the Match
-                    </h2>
-                  </div>
-                </div>
-
-                {awards
-                  .recent_man_of_the_match
-                  ?.length > 0 ? (
-                  <div className="recent-motm-list">
-                    {awards
-                      .recent_man_of_the_match
-                      .map(
-                        (award) => (
-                          <article
-                            className="recent-motm-card"
-                            key={`${award.match.id}-${award.player.id}`}
-                          >
-                            {renderAvatar(
-                              award.player,
-                              'recent-motm-avatar',
-                            )}
-
-                            <div className="recent-motm-player">
-                              <span>
-                                🏆 MOTM
-                              </span>
-
-                              <strong>
-                                {playerName(
-                                  award.player,
-                                )}
-                              </strong>
-
-                              <p>
-                                vs{' '}
-                                {
-                                  award.match
-                                    .opponent
-                                }
-                              </p>
-                            </div>
-
-                            <div className="recent-motm-result">
-                              <strong>
-                                {Number(
-                                  award.average_rating,
-                                ).toFixed(1)}
-                              </strong>
-
-                              <span>
-                                {formatMatchDate(
-                                  award.match
-                                    .kickoff_time,
-                                )}
-                              </span>
-                            </div>
-                          </article>
-                        ),
-                      )}
-                  </div>
-                ) : (
-                  <div className="team-awards-empty-state">
-                    <span>
+                <section className="team-awards-hero-grid">
+                  <article className="team-award-hero-card">
+                    <div className="team-award-icon">
                       🏆
-                    </span>
+                    </div>
 
-                    <h3>
-                      No awards yet
-                    </h3>
-
-                    <p>
-                      Man of the Match winners
-                      will appear here once
-                      match ratings are
-                      completed.
+                    <p className="team-award-eyebrow">
+                      {
+                        awards.month
+                          .label
+                      }
                     </p>
+
+                    <h2>
+                      Player of the
+                      Month
+                    </h2>
+
+                    {renderAwardLeaders(
+                      awards.month
+                        .player_of_the_month,
+                      'No Player of the Month yet.',
+                    )}
+                  </article>
+
+                  <article className="team-award-hero-card team-award-season-card">
+                    <div className="team-award-icon">
+                      ⭐
+                    </div>
+
+                    <p className="team-award-eyebrow">
+                      Season{' '}
+                      {
+                        awards.season
+                          .label
+                      }
+                    </p>
+
+                    <h2>
+                      Season Player
+                    </h2>
+
+                    {renderAwardLeaders(
+                      awards.season
+                        .player_of_the_season,
+                      'The season race has not started yet.',
+                    )}
+                  </article>
+                </section>
+
+                <section className="team-awards-section">
+                  <div className="team-awards-section-heading">
+                    <div>
+                      <p className="dashboard-label">
+                        Season{' '}
+                        {
+                          awards
+                            .statistics
+                            .label
+                        }
+                      </p>
+
+                      <h2>
+                        Team record
+                      </h2>
+
+                      <p>
+                        Results from
+                        completed
+                        matches this
+                        season.
+                      </p>
+                    </div>
                   </div>
-                )}
-              </section>
-            </>
-          )}
+
+                  <div className="team-record-grid">
+                    <article>
+                      <span>
+                        P
+                      </span>
+
+                      <strong>
+                        {
+                          awards
+                            .statistics
+                            .team
+                            .played
+                        }
+                      </strong>
+
+                      <small>
+                        Played
+                      </small>
+                    </article>
+
+                    <article>
+                      <span>
+                        W
+                      </span>
+
+                      <strong>
+                        {
+                          awards
+                            .statistics
+                            .team
+                            .wins
+                        }
+                      </strong>
+
+                      <small>
+                        Wins
+                      </small>
+                    </article>
+
+                    <article>
+                      <span>
+                        D
+                      </span>
+
+                      <strong>
+                        {
+                          awards
+                            .statistics
+                            .team
+                            .draws
+                        }
+                      </strong>
+
+                      <small>
+                        Draws
+                      </small>
+                    </article>
+
+                    <article>
+                      <span>
+                        L
+                      </span>
+
+                      <strong>
+                        {
+                          awards
+                            .statistics
+                            .team
+                            .losses
+                        }
+                      </strong>
+
+                      <small>
+                        Losses
+                      </small>
+                    </article>
+
+                    <article>
+                      <span>
+                        GF
+                      </span>
+
+                      <strong>
+                        {
+                          awards
+                            .statistics
+                            .team
+                            .goals_for
+                        }
+                      </strong>
+
+                      <small>
+                        Goals for
+                      </small>
+                    </article>
+
+                    <article>
+                      <span>
+                        GA
+                      </span>
+
+                      <strong>
+                        {
+                          awards
+                            .statistics
+                            .team
+                            .goals_against
+                        }
+                      </strong>
+
+                      <small>
+                        Goals against
+                      </small>
+                    </article>
+
+                    <article>
+                      <span>
+                        GD
+                      </span>
+
+                      <strong>
+                        {goalDifferenceLabel(
+                          awards
+                            .statistics
+                            .team
+                            .goal_difference,
+                        )}
+                      </strong>
+
+                      <small>
+                        Goal difference
+                      </small>
+                    </article>
+                  </div>
+                </section>
+
+                <section className="team-stat-grid">
+                  <article className="team-awards-section">
+                    <div className="team-awards-section-heading">
+                      <div>
+                        <p className="dashboard-label">
+                          Attack
+                        </p>
+
+                        <h2>
+                          ⚽ Top Scorers
+                        </h2>
+
+                        <p>
+                          Most goals this
+                          season.
+                        </p>
+                      </div>
+                    </div>
+
+                    {renderStatLeaderboard(
+                      awards
+                        .statistics
+                        .top_scorers,
+                      '⚽',
+                      'No goals recorded yet.',
+                    )}
+                  </article>
+
+                  <article className="team-awards-section">
+                    <div className="team-awards-section-heading">
+                      <div>
+                        <p className="dashboard-label">
+                          Creativity
+                        </p>
+
+                        <h2>
+                          🎯 Top Assists
+                        </h2>
+
+                        <p>
+                          Most assists
+                          this season.
+                        </p>
+                      </div>
+                    </div>
+
+                    {renderStatLeaderboard(
+                      awards
+                        .statistics
+                        .top_assists,
+                      '🎯',
+                      'No assists recorded yet.',
+                    )}
+                  </article>
+                </section>
+
+                <section className="team-awards-section">
+                  <div className="team-awards-section-heading">
+                    <div>
+                      <p className="dashboard-label">
+                        Defence
+                      </p>
+
+                      <h2>
+                        🧤 Clean Sheets
+                      </h2>
+
+                      <p>
+                        Players with the
+                        most clean sheets
+                        this season.
+                      </p>
+                    </div>
+                  </div>
+
+                  {renderStatLeaderboard(
+                    awards
+                      .statistics
+                      .clean_sheets,
+                    '🧤',
+                    'No clean sheets recorded yet.',
+                  )}
+                </section>
+
+                <section className="team-stat-grid">
+                  <article className="team-awards-section">
+                    <div className="team-awards-section-heading">
+                      <div>
+                        <p className="dashboard-label">
+                          Discipline
+                        </p>
+
+                        <h2>
+                          🟨 Yellow
+                          Cards
+                        </h2>
+
+                        <p>
+                          Yellow cards
+                          recorded this
+                          season.
+                        </p>
+                      </div>
+                    </div>
+
+                    {renderStatLeaderboard(
+                      awards
+                        .statistics
+                        .yellow_cards,
+                      '🟨',
+                      'No yellow cards recorded.',
+                    )}
+                  </article>
+
+                  <article className="team-awards-section">
+                    <div className="team-awards-section-heading">
+                      <div>
+                        <p className="dashboard-label">
+                          Discipline
+                        </p>
+
+                        <h2>
+                          🟥 Red Cards
+                        </h2>
+
+                        <p>
+                          Red cards
+                          recorded this
+                          season.
+                        </p>
+                      </div>
+                    </div>
+
+                    {renderStatLeaderboard(
+                      awards
+                        .statistics
+                        .red_cards,
+                      '🟥',
+                      'No red cards recorded.',
+                    )}
+                  </article>
+                </section>
+
+                <section className="team-awards-section">
+                  <div className="team-awards-section-heading">
+                    <div>
+                      <p className="dashboard-label">
+                        {
+                          awards.month
+                            .label
+                        }
+                      </p>
+
+                      <h2>
+                        Player of the
+                        Month race
+                      </h2>
+
+                      <p>
+                        Ranked by Man of
+                        the Match awards
+                        this month.
+                      </p>
+                    </div>
+                  </div>
+
+                  {renderMotmLeaderboard(
+                    awards.month
+                      .leaderboard,
+                  )}
+                </section>
+
+                <section className="team-awards-section">
+                  <div className="team-awards-section-heading">
+                    <div>
+                      <p className="dashboard-label">
+                        {
+                          awards.season
+                            .label
+                        }
+                      </p>
+
+                      <h2>
+                        MOTM Season
+                        Leaderboard
+                      </h2>
+
+                      <p>
+                        Most Man of the
+                        Match performances
+                        this season.
+                      </p>
+                    </div>
+                  </div>
+
+                  {renderMotmLeaderboard(
+                    awards.season
+                      .leaderboard,
+                  )}
+                </section>
+
+                <section className="team-awards-section">
+                  <div className="team-awards-section-heading">
+                    <div>
+                      <p className="dashboard-label">
+                        Recent matches
+                      </p>
+
+                      <h2>
+                        Recent Man of the
+                        Match
+                      </h2>
+                    </div>
+                  </div>
+
+                  {awards
+                    .recent_man_of_the_match
+                    ?.length > 0 ? (
+                    <div className="recent-motm-list">
+                      {awards
+                        .recent_man_of_the_match
+                        .map(
+                          (
+                            award,
+                          ) => (
+                            <article
+                              className="recent-motm-card"
+                              key={`${award.match.id}-${award.player.id}`}
+                            >
+                              {renderAvatar(
+                                award.player,
+                                'recent-motm-avatar',
+                              )}
+
+                              <div className="recent-motm-player">
+                                <span>
+                                  🏆
+                                  MOTM
+                                </span>
+
+                                <strong>
+                                  {playerName(
+                                    award.player,
+                                  )}
+                                </strong>
+
+                                <p>
+                                  vs{' '}
+                                  {
+                                    award
+                                      .match
+                                      .opponent
+                                  }
+                                </p>
+                              </div>
+
+                              <div className="recent-motm-result">
+                                <strong>
+                                  {Number(
+                                    award.average_rating,
+                                  ).toFixed(
+                                    1,
+                                  )}
+                                </strong>
+
+                                <span>
+                                  {formatMatchDate(
+                                    award
+                                      .match
+                                      .kickoff_time,
+                                  )}
+                                </span>
+                              </div>
+                            </article>
+                          ),
+                        )}
+                    </div>
+                  ) : (
+                    <div className="team-awards-empty-state">
+                      <span>
+                        🏆
+                      </span>
+
+                      <h3>
+                        No awards yet
+                      </h3>
+
+                      <p>
+                        Man of the Match
+                        winners will
+                        appear here once
+                        match ratings are
+                        completed.
+                      </p>
+                    </div>
+                  )}
+                </section>
+              </>
+            )}
         </section>
       </main>
     </>

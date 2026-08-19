@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { SearchBox } from '@mapbox/search-js-react'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 const MAPBOX_TOKEN =
   import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
@@ -31,16 +37,32 @@ function EditMatchPage() {
   const [errorMessages, setErrorMessages] = useState([])
 
   // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearEditMatchSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
   // LOAD MATCH
   // ========================================
 
   useEffect(() => {
     async function fetchMatch() {
       const token =
-        localStorage.getItem('token')
+        getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        await clearEditMatchSession()
         return
       }
 
@@ -56,10 +78,7 @@ function EditMatchPage() {
         )
 
         if (response.status === 401) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-
-          navigate('/login')
+          await clearEditMatchSession()
           return
         }
 
@@ -190,9 +209,6 @@ function EditMatchPage() {
 
         location: value,
 
-        // The manager is changing the venue.
-        // Remove the old coordinates until
-        // they choose a new Mapbox result.
         latitude: null,
         longitude: null,
       }),
@@ -217,8 +233,6 @@ function EditMatchPage() {
       return
     }
 
-    // Mapbox / GeoJSON order:
-    // [longitude, latitude]
     const [
       longitude,
       latitude,
@@ -272,8 +286,6 @@ function EditMatchPage() {
     return {
       ...formData,
 
-      // Convert the user's local date/time
-      // back into UTC before sending to Rails.
       kickoff_time:
         new Date(
           formData.kickoff_time,
@@ -289,16 +301,13 @@ function EditMatchPage() {
     event.preventDefault()
 
     const token =
-      localStorage.getItem('token')
+      getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearEditMatchSession()
       return
     }
 
-    // If the venue has been changed,
-    // a Mapbox result must be selected so
-    // navigation coordinates are available.
     if (
       formData.latitude === null ||
       formData.longitude === null
@@ -334,10 +343,7 @@ function EditMatchPage() {
       )
 
       if (response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('currentUser')
-
-        navigate('/login')
+        await clearEditMatchSession()
         return
       }
 
@@ -366,10 +372,6 @@ function EditMatchPage() {
       setSubmitting(false)
     }
   }
-
-  // ========================================
-  // LOADING
-  // ========================================
 
   if (loading) {
     return (
@@ -428,10 +430,6 @@ function EditMatchPage() {
               </div>
             )}
 
-            {/* ========================================
-                OPPONENT
-            ======================================== */}
-
             <div className="form-group">
               <label htmlFor="opponent">
                 Opponent
@@ -450,10 +448,6 @@ function EditMatchPage() {
                 required
               />
             </div>
-
-            {/* ========================================
-                MATCH TYPE
-            ======================================== */}
 
             <div className="form-group">
               <label htmlFor="match_type">
@@ -484,10 +478,6 @@ function EditMatchPage() {
                 </option>
               </select>
             </div>
-
-            {/* ========================================
-                MAPBOX LOCATION
-            ======================================== */}
 
             <div className="form-group">
               <label>
@@ -556,10 +546,6 @@ function EditMatchPage() {
                 )}
             </div>
 
-            {/* ========================================
-                KICK-OFF
-            ======================================== */}
-
             <div className="form-group">
               <label htmlFor="kickoff_time">
                 Kick-off date and time
@@ -579,10 +565,6 @@ function EditMatchPage() {
               />
             </div>
 
-            {/* ========================================
-                MATCH INFORMATION
-            ======================================== */}
-
             <div className="form-group">
               <label htmlFor="description">
                 Match information
@@ -601,10 +583,6 @@ function EditMatchPage() {
                 rows={5}
               />
             </div>
-
-            {/* ========================================
-                ACTIONS
-            ======================================== */}
 
             <div className="match-form-actions">
               <Link

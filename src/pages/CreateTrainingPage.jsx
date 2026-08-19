@@ -1,9 +1,15 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SearchBox } from '@mapbox/search-js-react'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 const MAPBOX_TOKEN =
   import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
@@ -22,16 +28,44 @@ function CreateTrainingPage() {
     description: '',
   })
 
-  const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [submitting, setSubmitting] =
+    useState(false)
+
+  const [errorMessage, setErrorMessage] =
+    useState('')
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearCreateTrainingSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // FORM
+  // ========================================
 
   function handleChange(event) {
-    const { name, value } = event.target
+    const {
+      name,
+      value,
+    } = event.target
 
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      [name]: value,
-    }))
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+        [name]: value,
+      }),
+    )
   }
 
   // ========================================
@@ -39,16 +73,19 @@ function CreateTrainingPage() {
   // ========================================
 
   function handleLocationChange(value) {
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      location: value,
-      latitude: null,
-      longitude: null,
-    }))
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+        location: value,
+        latitude: null,
+        longitude: null,
+      }),
+    )
   }
 
   function handleLocationRetrieve(result) {
-    const feature = result?.features?.[0]
+    const feature =
+      result?.features?.[0]
 
     if (!feature) {
       return
@@ -66,7 +103,10 @@ function CreateTrainingPage() {
 
     // GeoJSON stores coordinates as:
     // [longitude, latitude]
-    const [longitude, latitude] = coordinates
+    const [
+      longitude,
+      latitude,
+    ] = coordinates
 
     const properties =
       feature.properties || {}
@@ -80,25 +120,31 @@ function CreateTrainingPage() {
         .filter(Boolean)
         .join(', ')
 
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      location:
-        locationName ||
-        currentFormData.location,
-      latitude,
-      longitude,
-    }))
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+
+        location:
+          locationName ||
+          currentFormData.location,
+
+        latitude,
+        longitude,
+      }),
+    )
 
     setErrorMessage('')
   }
 
   function handleLocationClear() {
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      location: '',
-      latitude: null,
-      longitude: null,
-    }))
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+        location: '',
+        latitude: null,
+        longitude: null,
+      }),
+    )
   }
 
   // ========================================
@@ -108,13 +154,11 @@ function CreateTrainingPage() {
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const token = localStorage.getItem('token')
+    const token =
+      getAuthToken()
 
     if (!token) {
-      navigate('/login', {
-        replace: true,
-      })
-
+      await clearCreateTrainingSession()
       return
     }
 
@@ -133,40 +177,50 @@ function CreateTrainingPage() {
     setErrorMessage('')
 
     try {
-      const response = await fetch(
-        `${API_URL}/teams/${teamId}/trainings`,
-        {
-          method: 'POST',
+      const response =
+        await fetch(
+          `${API_URL}/teams/${teamId}/trainings`,
+          {
+            method: 'POST',
 
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: token,
+            headers: {
+              Accept:
+                'application/json',
+
+              'Content-Type':
+                'application/json',
+
+              Authorization:
+                token,
+            },
+
+            body:
+              JSON.stringify({
+                training:
+                  formData,
+              }),
           },
+        )
 
-          body: JSON.stringify({
-            training: formData,
-          }),
-        },
-      )
+      const data =
+        await response.json()
 
-      const data = await response.json()
-
-      if (response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('currentUser')
-
-        navigate('/login', {
-          replace: true,
-        })
-
+      if (
+        response.status === 401
+      ) {
+        await clearCreateTrainingSession()
         return
       }
 
-      if (response.status === 403) {
-        navigate('/dashboard', {
-          replace: true,
-        })
+      if (
+        response.status === 403
+      ) {
+        navigate(
+          '/dashboard',
+          {
+            replace: true,
+          },
+        )
 
         return
       }
@@ -192,6 +246,10 @@ function CreateTrainingPage() {
     }
   }
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <>
       <Navbar teamId={teamId} />
@@ -208,11 +266,14 @@ function CreateTrainingPage() {
               Training
             </p>
 
-            <h1>Create training</h1>
+            <h1>
+              Create training
+            </h1>
 
             <p>
-              Add the details for your next
-              team training session.
+              Add the details for your
+              next team training
+              session.
             </p>
           </div>
 
@@ -227,7 +288,9 @@ function CreateTrainingPage() {
 
           <form
             className="match-form"
-            onSubmit={handleSubmit}
+            onSubmit={
+              handleSubmit
+            }
           >
             {/* ========================================
                 TITLE
@@ -242,8 +305,12 @@ function CreateTrainingPage() {
                 id="training-title"
                 name="title"
                 type="text"
-                value={formData.title}
-                onChange={handleChange}
+                value={
+                  formData.title
+                }
+                onChange={
+                  handleChange
+                }
                 placeholder="Tuesday Training"
                 required
               />
@@ -262,8 +329,12 @@ function CreateTrainingPage() {
                 id="training-starts"
                 name="starts_at"
                 type="datetime-local"
-                value={formData.starts_at}
-                onChange={handleChange}
+                value={
+                  formData.starts_at
+                }
+                onChange={
+                  handleChange
+                }
                 required
               />
             </div>
@@ -281,8 +352,12 @@ function CreateTrainingPage() {
                 id="training-meet-time"
                 name="meet_time"
                 type="datetime-local"
-                value={formData.meet_time}
-                onChange={handleChange}
+                value={
+                  formData.meet_time
+                }
+                onChange={
+                  handleChange
+                }
                 required
               />
             </div>
@@ -298,11 +373,21 @@ function CreateTrainingPage() {
 
               {MAPBOX_TOKEN ? (
                 <SearchBox
-                  accessToken={MAPBOX_TOKEN}
-                  value={formData.location}
-                  onChange={handleLocationChange}
-                  onRetrieve={handleLocationRetrieve}
-                  onClear={handleLocationClear}
+                  accessToken={
+                    MAPBOX_TOKEN
+                  }
+                  value={
+                    formData.location
+                  }
+                  onChange={
+                    handleLocationChange
+                  }
+                  onRetrieve={
+                    handleLocationRetrieve
+                  }
+                  onClear={
+                    handleLocationClear
+                  }
                   placeholder="Search for a training ground, football centre, park or address"
                   options={{
                     country: 'GB',
@@ -327,21 +412,28 @@ function CreateTrainingPage() {
                   className="team-error"
                   role="alert"
                 >
-                  Mapbox is not configured.
-                  Check your frontend environment
+                  Mapbox is not
+                  configured. Check
+                  your frontend
+                  environment
                   variables.
                 </p>
               )}
 
-              {formData.latitude !== null &&
-                formData.longitude !== null && (
+              {formData.latitude !==
+                null &&
+                formData.longitude !==
+                  null && (
                   <div className="selected-match-location">
                     <span>
-                      📍 Location selected
+                      📍 Location
+                      selected
                     </span>
 
                     <strong>
-                      {formData.location}
+                      {
+                        formData.location
+                      }
                     </strong>
                   </div>
                 )}
@@ -359,8 +451,12 @@ function CreateTrainingPage() {
               <textarea
                 id="training-description"
                 name="description"
-                value={formData.description}
-                onChange={handleChange}
+                value={
+                  formData.description
+                }
+                onChange={
+                  handleChange
+                }
                 placeholder="Bring boots, shin pads and blue training top."
                 rows="5"
               />
@@ -386,7 +482,9 @@ function CreateTrainingPage() {
               <button
                 type="submit"
                 className="create-match-button"
-                disabled={submitting}
+                disabled={
+                  submitting
+                }
               >
                 {submitting
                   ? 'Creating...'

@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 const COMPLETED_MATCH_DISPLAY_HOURS = 24
 
@@ -16,6 +22,22 @@ function MatchesPage() {
 
   const [currentTime, setCurrentTime] = useState(Date.now())
 
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearMatchesSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
   // Keeps the page updated if kickoff happens
   // while the manager/player is still on this page.
   useEffect(() => {
@@ -26,12 +48,16 @@ function MatchesPage() {
     return () => clearInterval(interval)
   }, [])
 
+  // ========================================
+  // LOAD MATCHES
+  // ========================================
+
   useEffect(() => {
     async function fetchMatchesPage() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        await clearMatchesSession()
         return
       }
 
@@ -44,7 +70,10 @@ function MatchesPage() {
       setErrorMessage('')
 
       try {
-        const [matchesResponse, userResponse] = await Promise.all([
+        const [
+          matchesResponse,
+          userResponse,
+        ] = await Promise.all([
           fetch(
             `${API_URL}/teams/${teamId}/matches`,
             {
@@ -64,10 +93,7 @@ function MatchesPage() {
           matchesResponse.status === 401 ||
           userResponse.status === 401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-
-          navigate('/login')
+          await clearMatchesSession()
           return
         }
 
@@ -75,7 +101,10 @@ function MatchesPage() {
           matchesResponse.status === 403 ||
           userResponse.status === 403
         ) {
-          navigate('/dashboard')
+          navigate('/dashboard', {
+            replace: true,
+          })
+
           return
         }
 
@@ -123,7 +152,10 @@ function MatchesPage() {
           !isPlayer &&
           !isApprovedManager
         ) {
-          navigate('/dashboard')
+          navigate('/dashboard', {
+            replace: true,
+          })
+
           return
         }
 
@@ -149,6 +181,10 @@ function MatchesPage() {
     teamId,
   ])
 
+  // ========================================
+  // DATE / TIME
+  // ========================================
+
   function formatKickoffTime(kickoffTime) {
     return new Intl.DateTimeFormat(
       'en-GB',
@@ -164,6 +200,10 @@ function MatchesPage() {
       new Date(kickoffTime),
     )
   }
+
+  // ========================================
+  // MATCH STATUS
+  // ========================================
 
   function hasMatchStarted(match) {
     if (!match.kickoff_time) {
@@ -331,6 +371,10 @@ function MatchesPage() {
     currentUser?.manager_verification_status ===
       'approved'
 
+  // ========================================
+  // LOADING
+  // ========================================
+
   if (loading) {
     return (
       <p className="dashboard-message">
@@ -338,6 +382,10 @@ function MatchesPage() {
       </p>
     )
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>
@@ -390,8 +438,7 @@ function MatchesPage() {
           )}
 
           {!errorMessage &&
-            visibleMatches.length ===
-              0 && (
+            visibleMatches.length === 0 && (
               <article className="empty-team-card">
                 <div className="card-icon">
                   📅
@@ -428,8 +475,7 @@ function MatchesPage() {
           ======================================== */}
 
           {!errorMessage &&
-            upcomingMatches.length >
-              0 && (
+            upcomingMatches.length > 0 && (
               <section className="matches-section">
                 <div className="matches-section-heading">
                   <p className="dashboard-label">
@@ -462,23 +508,15 @@ function MatchesPage() {
 
                         <div className="match-details">
                           <span className="match-type-badge">
-                            {
-                              match.match_type
-                            }
+                            {match.match_type}
                           </span>
 
                           <h2>
-                            vs{' '}
-                            {
-                              match.opponent
-                            }
+                            vs {match.opponent}
                           </h2>
 
                           <p>
-                            📍{' '}
-                            {
-                              match.location
-                            }
+                            📍 {match.location}
                           </p>
                         </div>
 
@@ -505,8 +543,7 @@ function MatchesPage() {
           ======================================== */}
 
           {!errorMessage &&
-            lockedMatches.length >
-              0 && (
+            lockedMatches.length > 0 && (
               <section className="matches-section recent-matches-section">
                 <div className="matches-section-heading">
                   <p className="dashboard-label">
@@ -542,9 +579,7 @@ function MatchesPage() {
                       return (
                         <article
                           className="match-card match-card-locked"
-                          key={
-                            match.id
-                          }
+                          key={match.id}
                         >
                           <div className="match-date">
                             <span>
@@ -573,9 +608,7 @@ function MatchesPage() {
                           <div className="match-details">
                             <div className="match-card-badges">
                               <span className="match-type-badge">
-                                {
-                                  match.match_type
-                                }
+                                {match.match_type}
                               </span>
 
                               <span className="match-locked-badge">
@@ -594,22 +627,15 @@ function MatchesPage() {
                             </div>
 
                             <h2>
-                              vs{' '}
-                              {
-                                match.opponent
-                              }
+                              vs {match.opponent}
                             </h2>
 
                             {resultAvailable && (
                               <p className="recent-match-result">
                                 <strong>
-                                  {
-                                    match.team_score
-                                  }
+                                  {match.team_score}
                                   {' - '}
-                                  {
-                                    match.opponent_score
-                                  }
+                                  {match.opponent_score}
                                 </strong>
 
                                 <span>
@@ -620,10 +646,7 @@ function MatchesPage() {
                             )}
 
                             <p>
-                              📍{' '}
-                              {
-                                match.location
-                              }
+                              📍 {match.location}
                             </p>
                           </div>
 

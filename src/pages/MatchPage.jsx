@@ -2,9 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 const MAPBOX_TOKEN =
   import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
@@ -29,6 +35,22 @@ function MatchPage() {
   const [errorMessage, setErrorMessage] = useState('')
 
   // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearMatchSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
   // PAGE CLOCK
   // ========================================
 
@@ -46,10 +68,13 @@ function MatchPage() {
 
   useEffect(() => {
     async function fetchMatchPage() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        navigate('/login', {
+          replace: true,
+        })
+
         return
       }
 
@@ -63,7 +88,10 @@ function MatchPage() {
       setPlayerAvailability(null)
 
       try {
-        const [matchResponse, userResponse] = await Promise.all([
+        const [
+          matchResponse,
+          userResponse,
+        ] = await Promise.all([
           fetch(
             `${API_URL}/teams/${teamId}/matches/${matchId}`,
             {
@@ -83,12 +111,7 @@ function MatchPage() {
           matchResponse.status === 401 ||
           userResponse.status === 401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-
-          navigate('/login', {
-            replace: true,
-          })
+          await clearMatchSession()
 
           return
         }
@@ -104,8 +127,11 @@ function MatchPage() {
           return
         }
 
-        const matchData = await matchResponse.json()
-        const userData = await userResponse.json()
+        const matchData =
+          await matchResponse.json()
+
+        const userData =
+          await userResponse.json()
 
         if (!matchResponse.ok) {
           throw new Error(
@@ -132,27 +158,27 @@ function MatchPage() {
 
         setCurrentUser(user)
 
+        // ========================================
+        // PLAYER AVAILABILITY
+        // ========================================
+
         if (
           user.account_type ===
           'player'
         ) {
-          const availabilityResponse = await fetch(
-            `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities/mine`,
-            {
-              headers,
-            },
-          )
+          const availabilityResponse =
+            await fetch(
+              `${API_URL}/teams/${teamId}/matches/${matchId}/availabilities/mine`,
+              {
+                headers,
+              },
+            )
 
           if (
             availabilityResponse.status ===
             401
           ) {
-            localStorage.removeItem('token')
-            localStorage.removeItem('currentUser')
-
-            navigate('/login', {
-              replace: true,
-            })
+            await clearMatchSession()
 
             return
           }
@@ -218,8 +244,7 @@ function MatchPage() {
     let cancelled = false
 
     async function fetchRatingStatus() {
-      const token =
-        localStorage.getItem('token')
+      const token = getAuthToken()
 
       if (!token) return
 
@@ -238,12 +263,7 @@ function MatchPage() {
           response.status ===
           401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-
-          navigate('/login', {
-            replace: true,
-          })
+          await clearMatchSession()
 
           return
         }
@@ -580,6 +600,10 @@ function MatchPage() {
     return null
   }
 
+  // ========================================
+  // LOADING
+  // ========================================
+
   if (loading) {
     return (
       <p className="dashboard-message">
@@ -587,6 +611,10 @@ function MatchPage() {
       </p>
     )
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>

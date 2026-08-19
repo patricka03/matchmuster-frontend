@@ -5,82 +5,179 @@ import BackButton from '../components/BackButton'
 import './JoinPage.css'
 import API_URL from '../config/api'
 
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 const POSITIONS = [
-  { value: 'GK', label: 'Goalkeeper (GK)' },
-  { value: 'CB', label: 'Centre-back (CB)' },
-  { value: 'LB', label: 'Left-back (LB)' },
-  { value: 'RB', label: 'Right-back (RB)' },
-  { value: 'CDM', label: 'Defensive midfielder (CDM)' },
-  { value: 'CM', label: 'Central midfielder (CM)' },
-  { value: 'LW', label: 'Left winger (LW)' },
-  { value: 'RW', label: 'Right winger (RW)' },
-  { value: 'ST', label: 'Striker (ST)' },
+  {
+    value: 'GK',
+    label: 'Goalkeeper (GK)',
+  },
+  {
+    value: 'CB',
+    label: 'Centre-back (CB)',
+  },
+  {
+    value: 'LB',
+    label: 'Left-back (LB)',
+  },
+  {
+    value: 'RB',
+    label: 'Right-back (RB)',
+  },
+  {
+    value: 'CDM',
+    label:
+      'Defensive midfielder (CDM)',
+  },
+  {
+    value: 'CM',
+    label:
+      'Central midfielder (CM)',
+  },
+  {
+    value: 'LW',
+    label: 'Left winger (LW)',
+  },
+  {
+    value: 'RW',
+    label: 'Right winger (RW)',
+  },
+  {
+    value: 'ST',
+    label: 'Striker (ST)',
+  },
 ]
 
 function JoinPage() {
   const navigate = useNavigate()
 
-  const [currentUser, setCurrentUser] = useState(null)
-  const [inviteCode, setInviteCode] = useState('')
-  const [preferredPosition, setPreferredPosition] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(null)
+
+  const [
+    inviteCode,
+    setInviteCode,
+  ] = useState('')
+
+  const [
+    preferredPosition,
+    setPreferredPosition,
+  ] = useState('')
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [
+    submitting,
+    setSubmitting,
+  ] = useState(false)
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('')
+
+  const [
+    successMessage,
+    setSuccessMessage,
+  ] = useState('')
+
+  async function clearJoinSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
 
   useEffect(() => {
     async function fetchCurrentUser() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login', { replace: true })
+        await clearJoinSession()
         return
       }
 
       try {
-        const response = await fetch(
-          `${API_URL}/users/me`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: token,
-            },
-          }
-        )
+        const response =
+          await fetch(
+            `${API_URL}/users/me`,
+            {
+              headers: {
+                Accept:
+                  'application/json',
 
-        if (response.status === 401) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login', { replace: true })
+                Authorization:
+                  token,
+              },
+            },
+          )
+
+        if (
+          response.status === 401
+        ) {
+          await clearJoinSession()
           return
         }
 
-        const data = await response.json()
+        const data =
+          await response.json()
 
         if (!response.ok) {
           throw new Error(
-            data.error || 'Unable to load your account.'
+            data.error ||
+              'Unable to load your account.',
           )
         }
 
-        const user = data.user || data
+        const user =
+          data.user || data
 
-        const isPlayer = user.account_type === 'player'
+        const isPlayer =
+          user.account_type ===
+          'player'
 
         const isApprovedManager =
-          user.account_type === 'manager' &&
-          user.manager_verification_status === 'approved'
+          user.account_type ===
+            'manager' &&
+          user.manager_verification_status ===
+            'approved'
 
-        if (!isPlayer && !isApprovedManager) {
-          navigate('/team', { replace: true })
+        if (
+          !isPlayer &&
+          !isApprovedManager
+        ) {
+          navigate('/team', {
+            replace: true,
+          })
+
           return
         }
 
         setCurrentUser(user)
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to connect to the server.'
+          error.message ||
+            'Unable to connect to the server.',
         )
       } finally {
         setLoading(false)
@@ -93,22 +190,30 @@ function JoinPage() {
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const cleanedInviteCode = inviteCode.trim()
+    const cleanedInviteCode =
+      inviteCode.trim()
 
     if (!cleanedInviteCode) {
-      setErrorMessage('Please enter your team invite code.')
+      setErrorMessage(
+        'Please enter your team invite code.',
+      )
+
       return
     }
 
     if (!preferredPosition) {
-      setErrorMessage('Please select your preferred position.')
+      setErrorMessage(
+        'Please select your preferred position.',
+      )
+
       return
     }
 
-    const token = localStorage.getItem('token')
+    const token =
+      getAuthToken()
 
     if (!token) {
-      navigate('/login', { replace: true })
+      await clearJoinSession()
       return
     }
 
@@ -117,63 +222,91 @@ function JoinPage() {
     setSuccessMessage('')
 
     try {
-      const response = await fetch(
-        `${API_URL}/team_memberships/join`,
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: token,
-          },
-          body: JSON.stringify({
-            team_membership: {
-              invite_code: cleanedInviteCode,
-              preferred_position: preferredPosition,
-            },
-          }),
-        }
-      )
+      const response =
+        await fetch(
+          `${API_URL}/team_memberships/join`,
+          {
+            method: 'POST',
 
-      if (response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('currentUser')
-        navigate('/login', { replace: true })
+            headers: {
+              Accept:
+                'application/json',
+
+              'Content-Type':
+                'application/json',
+
+              Authorization:
+                token,
+            },
+
+            body:
+              JSON.stringify({
+                team_membership: {
+                  invite_code:
+                    cleanedInviteCode,
+
+                  preferred_position:
+                    preferredPosition,
+                },
+              }),
+          },
+        )
+
+      if (
+        response.status === 401
+      ) {
+        await clearJoinSession()
         return
       }
 
       let data = {}
 
       try {
-        data = await response.json()
+        data =
+          await response.json()
       } catch {
-        // The response may not contain JSON.
+        // Response may not contain JSON.
       }
 
       if (!response.ok) {
-        let message = 'Unable to join the team.'
+        let message =
+          'Unable to join the team.'
 
-        if (Array.isArray(data.errors)) {
-          message = data.errors.join(', ')
-        } else if (data.error) {
-          message = data.error
+        if (
+          Array.isArray(
+            data.errors,
+          )
+        ) {
+          message =
+            data.errors.join(', ')
+        } else if (
+          data.error
+        ) {
+          message =
+            data.error
         }
 
         throw new Error(message)
       }
 
-      localStorage.setItem('teamJoinPending', 'true')
+      // This is not sensitive authentication data,
+      // so localStorage is fine here.
+      localStorage.setItem(
+        'teamJoinPending',
+        'true',
+      )
 
       setSuccessMessage(
         data.message ||
-          'Your request has been sent to the team manager.'
+          'Your request has been sent to the team manager.',
       )
 
       setInviteCode('')
       setPreferredPosition('')
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to connect to the server.'
+        error.message ||
+          'Unable to connect to the server.',
       )
     } finally {
       setSubmitting(false)
@@ -190,7 +323,9 @@ function JoinPage() {
 
   return (
     <>
-      <Navbar currentUser={currentUser} />
+      <Navbar
+        currentUser={currentUser}
+      />
 
       <main className="dashboard-page">
         <section className="dashboard-content">
@@ -204,25 +339,35 @@ function JoinPage() {
               Team membership
             </p>
 
-            <h1>Join a team</h1>
+            <h1>
+              Join a team
+            </h1>
 
             <p>
-              Enter the invite code provided by your team
+              Enter the invite code
+              provided by your team
               manager.
             </p>
           </div>
 
           {errorMessage && (
-            <p className="team-error" role="alert">
+            <p
+              className="team-error"
+              role="alert"
+            >
               {errorMessage}
             </p>
           )}
 
           {successMessage ? (
             <article className="join-team-card">
-              <div className="card-icon">✓</div>
+              <div className="card-icon">
+                ✓
+              </div>
 
-              <h2>Request sent</h2>
+              <h2>
+                Request sent
+              </h2>
 
               <p
                 className="join-team-success"
@@ -232,13 +377,18 @@ function JoinPage() {
               </p>
 
               <p>
-                You’ll receive access after a manager approves
+                You’ll receive access
+                after a manager approves
                 your request.
               </p>
 
               <button
                 type="button"
-                onClick={() => navigate('/dashboard')}
+                onClick={() =>
+                  navigate(
+                    '/dashboard',
+                  )
+                }
               >
                 Back to Dashboard
               </button>
@@ -249,7 +399,9 @@ function JoinPage() {
               onSubmit={handleSubmit}
             >
               <label htmlFor="invite-code">
-                <span>Team invite code</span>
+                <span>
+                  Team invite code
+                </span>
 
                 <input
                   id="invite-code"
@@ -263,42 +415,56 @@ function JoinPage() {
                   required
                   onChange={(event) =>
                     setInviteCode(
-                      event.target.value.toUpperCase()
+                      event.target.value.toUpperCase(),
                     )
                   }
                 />
               </label>
 
               <label htmlFor="preferred-position">
-                <span>Preferred position</span>
+                <span>
+                  Preferred position
+                </span>
 
                 <select
                   id="preferred-position"
                   name="preferredPosition"
-                  value={preferredPosition}
+                  value={
+                    preferredPosition
+                  }
                   disabled={submitting}
                   required
                   onChange={(event) =>
-                    setPreferredPosition(event.target.value)
+                    setPreferredPosition(
+                      event.target.value,
+                    )
                   }
                 >
                   <option value="">
-                    Select your preferred position
+                    Select your preferred
+                    position
                   </option>
 
-                  {POSITIONS.map((position) => (
-                    <option
-                      key={position.value}
-                      value={position.value}
-                    >
-                      {position.label}
-                    </option>
-                  ))}
+                  {POSITIONS.map(
+                    (position) => (
+                      <option
+                        key={
+                          position.value
+                        }
+                        value={
+                          position.value
+                        }
+                      >
+                        {position.label}
+                      </option>
+                    ),
+                  )}
                 </select>
               </label>
 
               <p className="join-team-help">
-                Your membership will remain pending until a
+                Your membership will
+                remain pending until a
                 manager approves it.
               </p>
 

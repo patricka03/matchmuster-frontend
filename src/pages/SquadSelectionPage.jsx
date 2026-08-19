@@ -8,6 +8,11 @@ import '../styles/MatchdaySquadReadOnly.css'
 import '../styles/MatchdaySquad.mobile.css'
 import API_URL from '../config/api'
 
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 const benchPositions = [
   'GK',
   'CB',
@@ -600,9 +605,7 @@ function SquadSelectionPage() {
   useEffect(() => {
     async function fetchSquadData() {
       const token =
-        localStorage.getItem(
-          'token',
-        )
+        getAuthToken()
 
       if (!token) {
         navigate(
@@ -649,9 +652,7 @@ function SquadSelectionPage() {
           userResponse.status === 401 ||
           selectionResponse.status === 401
         ) {
-          localStorage.removeItem(
-            'token',
-          )
+          await clearAuthToken()
 
           localStorage.removeItem(
             'currentUser',
@@ -741,7 +742,7 @@ function SquadSelectionPage() {
             )
 
           if (availabilityResponse.status === 401) {
-            localStorage.removeItem('token')
+            await clearAuthToken()
             localStorage.removeItem('currentUser')
             navigate('/login', { replace: true })
             return
@@ -1469,9 +1470,7 @@ function SquadSelectionPage() {
       response.status ===
       401
     ) {
-      localStorage.removeItem(
-        'token',
-      )
+      await clearAuthToken()
 
       localStorage.removeItem(
         'currentUser',
@@ -1540,9 +1539,7 @@ function SquadSelectionPage() {
 
   async function handleSaveLineup() {
     const token =
-      localStorage.getItem(
-        'token',
-      )
+      getAuthToken()
 
     if (!token) {
       navigate(

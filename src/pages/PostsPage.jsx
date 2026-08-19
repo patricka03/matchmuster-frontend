@@ -1,25 +1,63 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import './PostsPage.css'
 import './PostsPage.mobile.css'
 import API_URL from '../config/api'
 
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 function PostsPage() {
   const { teamId } = useParams()
   const navigate = useNavigate()
 
-  const [posts, setPosts] = useState([])
-  const [currentUser, setCurrentUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [posts, setPosts] =
+    useState([])
+
+  const [currentUser, setCurrentUser] =
+    useState(null)
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [errorMessage, setErrorMessage] =
+    useState('')
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearPostsSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD POSTS
+  // ========================================
 
   useEffect(() => {
     async function loadPostsPage() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        await clearPostsSession()
         return
       }
 
@@ -29,23 +67,42 @@ function PostsPage() {
       }
 
       try {
-        const [userResponse, postsResponse] = await Promise.all([
-          fetch(`${API_URL}/users/me`, { headers }),
-          fetch(`${API_URL}/teams/${teamId}/posts`, { headers }),
+        const [
+          userResponse,
+          postsResponse,
+        ] = await Promise.all([
+          fetch(
+            `${API_URL}/users/me`,
+            {
+              headers,
+            },
+          ),
+
+          fetch(
+            `${API_URL}/teams/${teamId}/posts`,
+            {
+              headers,
+            },
+          ),
         ])
 
         if (
           userResponse.status === 401 ||
           postsResponse.status === 401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login')
+          await clearPostsSession()
           return
         }
 
-        const userData = await readResponse(userResponse)
-        const postsData = await readResponse(postsResponse)
+        const userData =
+          await readResponse(
+            userResponse,
+          )
+
+        const postsData =
+          await readResponse(
+            postsResponse,
+          )
 
         if (!userResponse.ok) {
           throw new Error(
@@ -65,17 +122,27 @@ function PostsPage() {
           )
         }
 
-        const loadedPosts = Array.isArray(postsData)
-          ? postsData
-          : Array.isArray(postsData.posts)
-            ? postsData.posts
-            : []
+        const loadedPosts =
+          Array.isArray(postsData)
+            ? postsData
+            : Array.isArray(
+                  postsData.posts,
+                )
+              ? postsData.posts
+              : []
 
-        setCurrentUser(userData.user || userData)
-        setPosts(loadedPosts)
+        setCurrentUser(
+          userData.user ||
+            userData,
+        )
+
+        setPosts(
+          loadedPosts,
+        )
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to load team posts.',
+          error.message ||
+            'Unable to load team posts.',
         )
       } finally {
         setLoading(false)
@@ -83,41 +150,80 @@ function PostsPage() {
     }
 
     loadPostsPage()
-  }, [navigate, teamId])
+  }, [
+    navigate,
+    teamId,
+  ])
 
-  function postTypeLabel(postType) {
-    if (postType === 'tactical') return 'Tactical'
-    if (postType === 'announcement') return 'Announcement'
+  // ========================================
+  // HELPERS
+  // ========================================
+
+  function postTypeLabel(
+    postType,
+  ) {
+    if (
+      postType === 'tactical'
+    ) {
+      return 'Tactical'
+    }
+
+    if (
+      postType === 'announcement'
+    ) {
+      return 'Announcement'
+    }
 
     return 'General'
   }
 
   function formatDate(date) {
-    if (!date) return ''
+    if (!date) {
+      return ''
+    }
 
-    return new Intl.DateTimeFormat('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(new Date(date))
+    return new Intl.DateTimeFormat(
+      'en-GB',
+      {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    ).format(
+      new Date(date),
+    )
   }
 
   const managerCanPost =
-    currentUser?.account_type === 'manager' &&
-    currentUser?.manager_verification_status === 'approved'
+    currentUser?.account_type ===
+      'manager' &&
+    currentUser?.manager_verification_status ===
+      'approved'
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>
-      <Navbar teamId={teamId} currentUser={currentUser} />
+      <Navbar
+        teamId={teamId}
+        currentUser={currentUser}
+      />
 
       <main className="posts-page">
         <section className="posts-container">
           <header className="posts-header">
             <div>
-              <p className="posts-label">Team communication</p>
-              <h1>Team Posts</h1>
+              <p className="posts-label">
+                Team communication
+              </p>
+
+              <h1>
+                Team Posts
+              </h1>
 
               <p>
                 View announcements, tactical instructions and general
@@ -136,57 +242,85 @@ function PostsPage() {
           </header>
 
           {errorMessage && (
-            <p className="posts-error" role="alert">
+            <p
+              className="posts-error"
+              role="alert"
+            >
               {errorMessage}
             </p>
           )}
 
           {loading ? (
-            <p className="posts-message">Loading posts...</p>
+            <p className="posts-message">
+              Loading posts...
+            </p>
           ) : posts.length === 0 ? (
             <section className="posts-empty">
-              <span>📣</span>
-              <h2>No posts yet</h2>
+              <span>
+                📣
+              </span>
+
+              <h2>
+                No posts yet
+              </h2>
+
               <p>
                 Team announcements and tactical posts will appear here.
               </p>
             </section>
           ) : (
             <section className="posts-list">
-              {posts.map((post) => (
-                <Link
-                  key={post.id}
-                  className="post-card"
-                  to={`/teams/${teamId}/posts/${post.id}`}
-                >
-                  <div className="post-card-heading">
-                    <span
-                      className={`post-type post-type-${post.post_type}`}
-                    >
-                      {postTypeLabel(post.post_type)}
-                    </span>
+              {posts.map(
+                (post) => (
+                  <Link
+                    key={post.id}
+                    className="post-card"
+                    to={`/teams/${teamId}/posts/${post.id}`}
+                  >
+                    <div className="post-card-heading">
+                      <span
+                        className={`post-type post-type-${post.post_type}`}
+                      >
+                        {postTypeLabel(
+                          post.post_type,
+                        )}
+                      </span>
 
-                    {post.pinned && (
-                      <span className="post-pinned">Pinned</span>
-                    )}
-                  </div>
+                      {post.pinned && (
+                        <span className="post-pinned">
+                          Pinned
+                        </span>
+                      )}
+                    </div>
 
-                  <h2>{post.title}</h2>
+                    <h2>
+                      {post.title}
+                    </h2>
 
-                  <p className="post-preview">{post.content}</p>
+                    <p className="post-preview">
+                      {post.content}
+                    </p>
 
-                  <div className="post-card-footer">
-                    <span>
-                      Posted by{' '}
-                      {post.user?.first_name || 'Team member'}
-                    </span>
+                    <div className="post-card-footer">
+                      <span>
+                        Posted by{' '}
+                        {post.user?.first_name ||
+                          'Team member'}
+                      </span>
 
-                    <time dateTime={post.created_at}>
-                      {formatDate(post.created_at)}
-                    </time>
-                  </div>
-                </Link>
-              ))}
+                      <time
+                        dateTime={
+                          post.created_at
+                        }
+                      >
+                        {formatDate(
+                          post.created_at,
+                        )}
+                      </time>
+                    </div>
+                  </Link>
+                ),
+              )}
             </section>
           )}
         </section>
@@ -195,24 +329,40 @@ function PostsPage() {
   )
 }
 
-async function readResponse(response) {
-  const responseText = await response.text()
+async function readResponse(
+  response,
+) {
+  const responseText =
+    await response.text()
 
-  if (!responseText) return {}
+  if (!responseText) {
+    return {}
+  }
 
   try {
-    return JSON.parse(responseText)
+    return JSON.parse(
+      responseText,
+    )
   } catch {
     return {}
   }
 }
 
-function getErrorMessage(data, fallbackMessage) {
-  if (Array.isArray(data.errors)) {
+function getErrorMessage(
+  data,
+  fallbackMessage,
+) {
+  if (
+    Array.isArray(data.errors)
+  ) {
     return data.errors.join(', ')
   }
 
-  return data.error || data.message || fallbackMessage
+  return (
+    data.error ||
+    data.message ||
+    fallbackMessage
+  )
 }
 
 export default PostsPage

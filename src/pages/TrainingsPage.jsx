@@ -10,9 +10,15 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 function TrainingsPage() {
   const navigate = useNavigate()
@@ -37,15 +43,41 @@ function TrainingsPage() {
       ?.manager_verification_status ===
       'approved'
 
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearTrainingsSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD TRAININGS
+  // ========================================
+
   useEffect(() => {
     async function loadTrainings() {
       const token =
-        localStorage.getItem('token')
+        getAuthToken()
 
       if (!token) {
-        navigate('/login', {
-          replace: true,
-        })
+        await clearTrainingsSession()
 
         return
       }
@@ -79,14 +111,7 @@ function TrainingsPage() {
           trainingsResponse.status === 401 ||
           userResponse.status === 401
         ) {
-          localStorage.removeItem('token')
-          localStorage.removeItem(
-            'currentUser',
-          )
-
-          navigate('/login', {
-            replace: true,
-          })
+          await clearTrainingsSession()
 
           return
         }
@@ -142,7 +167,14 @@ function TrainingsPage() {
     }
 
     loadTrainings()
-  }, [navigate, teamId])
+  }, [
+    navigate,
+    teamId,
+  ])
+
+  // ========================================
+  // DATE / TIME
+  // ========================================
 
   function formatDate(startsAt) {
     return new Intl.DateTimeFormat(
@@ -169,6 +201,10 @@ function TrainingsPage() {
     )
   }
 
+  // ========================================
+  // UPCOMING TRAININGS
+  // ========================================
+
   const upcomingTrainings =
     trainings
       .filter(
@@ -191,6 +227,10 @@ function TrainingsPage() {
           ).getTime(),
       )
 
+  // ========================================
+  // LOADING
+  // ========================================
+
   if (loading) {
     return (
       <p className="dashboard-message">
@@ -198,6 +238,10 @@ function TrainingsPage() {
       </p>
     )
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>

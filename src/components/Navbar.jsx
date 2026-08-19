@@ -4,6 +4,10 @@ import { Bell, Settings } from 'lucide-react'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import API_URL from '../config/api'
 import BottomNav from './BottomNav'
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 import './navbar.css'
 import './navbar.mobile.css'
 import './fixedNavigation.css'
@@ -139,7 +143,8 @@ function Navbar({
     let cancelled = false
 
     async function loadNavbarData() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
+
       if (!token) return
 
       const headers = {
@@ -166,7 +171,7 @@ function Navbar({
             (response) => response.status === 401,
           )
         ) {
-          clearSession()
+          await clearSession()
           return
         }
 
@@ -305,7 +310,8 @@ function Navbar({
     let cancelled = false
 
     async function loadLatestPlayedMatch() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
+
       if (!token) return
 
       try {
@@ -318,6 +324,11 @@ function Navbar({
             },
           },
         )
+
+        if (response.status === 401) {
+          await clearSession()
+          return
+        }
 
         if (!response.ok) return
 
@@ -374,7 +385,8 @@ function Navbar({
     let cancelled = false
 
     async function loadPlayerPaymentTarget() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
+
       if (!token) return
 
       const headers = {
@@ -388,10 +400,16 @@ function Navbar({
           { headers },
         )
 
+        if (notificationsResponse.status === 401) {
+          await clearSession()
+          return
+        }
+
         if (!notificationsResponse.ok) {
           if (!cancelled) {
             setPlayerPaymentMatchId(null)
           }
+
           return
         }
 
@@ -425,7 +443,7 @@ function Navbar({
             )
           })
 
-        let fallbackMatchId =
+        const fallbackMatchId =
           paymentRequests[0]?.match_id ||
           paymentRequests[0]?.match?.id ||
           null
@@ -444,6 +462,11 @@ function Navbar({
             { headers },
           )
 
+          if (response.status === 401) {
+            await clearSession()
+            return
+          }
+
           if (!response.ok) {
             continue
           }
@@ -454,6 +477,7 @@ function Navbar({
             if (!cancelled) {
               setPlayerPaymentMatchId(matchId)
             }
+
             return
           }
         }
@@ -485,12 +509,23 @@ function Navbar({
     resolvedTeamId,
   ])
 
-  function clearSession() {
-    localStorage.removeItem('token')
+  async function clearSession() {
+    /*
+     * Native iOS / Android:
+     * removes the JWT from secure storage.
+     *
+     * Web:
+     * removes the JWT from browser storage.
+     */
+    await clearAuthToken()
+
     localStorage.removeItem('currentUser')
     localStorage.removeItem('activeTeamId')
     localStorage.removeItem('activeTeamName')
-    navigate('/login', { replace: true })
+
+    navigate('/login', {
+      replace: true,
+    })
   }
 
   function handleTeamSwitch(nextTeamId) {
@@ -518,40 +553,59 @@ function Navbar({
     setPlayerPaymentMatchId(null)
 
     window.dispatchEvent(
-      new CustomEvent('matchmuster:active-team-changed', {
-        detail: {
-          teamId: nextTeam.id,
+      new CustomEvent(
+        'matchmuster:active-team-changed',
+        {
+          detail: {
+            teamId: nextTeam.id,
+          },
         },
-      }),
+      ),
     )
 
     navigate('/dashboard')
   }
 
   async function handleSignOut() {
-    const token = localStorage.getItem('token')
+    const token = getAuthToken()
 
     setSigningOut(true)
 
     try {
-      await fetch(`${API_URL}/users/sign_out`, {
-        method: 'DELETE',
-        headers: {
-          Accept: 'application/json',
-          Authorization: token,
-        },
-      })
+      if (token) {
+        await fetch(
+          `${API_URL}/users/sign_out`,
+          {
+            method: 'DELETE',
+
+            headers: {
+              Accept: 'application/json',
+              Authorization: token,
+            },
+          },
+        )
+      }
     } catch {
       // Local logout still succeeds if Rails is unavailable.
     } finally {
-      clearSession()
+      await clearSession()
     }
   }
 
   async function handleStripeAction() {
-    if (!resolvedTeamId || openingStripe) return
+    if (
+      !resolvedTeamId ||
+      openingStripe
+    ) {
+      return
+    }
 
-    const token = localStorage.getItem('token')
+    const token = getAuthToken()
+
+    if (!token) {
+      await clearSession()
+      return
+    }
 
     setOpeningStripe(true)
     setNavbarError('')
@@ -568,17 +622,19 @@ function Navbar({
       )
 
       if (statusResponse.status === 401) {
-        clearSession()
+        await clearSession()
         return
       }
 
-      const statusData = await statusResponse.json()
+      const statusData =
+        await statusResponse.json()
 
       if (!statusResponse.ok) {
         setNavbarError(
           statusData.error ||
             'Unable to check your Stripe account.',
         )
+
         return
       }
 
@@ -596,17 +652,19 @@ function Navbar({
       )
 
       if (stripeResponse.status === 401) {
-        clearSession()
+        await clearSession()
         return
       }
 
-      const stripeData = await stripeResponse.json()
+      const stripeData =
+        await stripeResponse.json()
 
       if (!stripeResponse.ok) {
         setNavbarError(
           stripeData.error ||
             'Unable to open your Stripe account.',
         )
+
         return
       }
 
@@ -618,19 +676,25 @@ function Navbar({
         setNavbarError(
           'Stripe did not provide a redirect URL.',
         )
+
         return
       }
 
       window.location.assign(stripeUrl)
     } catch {
-      setNavbarError('Unable to connect to Stripe.')
+      setNavbarError(
+        'Unable to connect to Stripe.',
+      )
     } finally {
       setOpeningStripe(false)
     }
   }
 
   const headerName = useMemo(() => {
-    if (resolvedTeamName) return resolvedTeamName
+    if (resolvedTeamName) {
+      return resolvedTeamName
+    }
+
     return 'MatchMuster'
   }, [resolvedTeamName])
 
@@ -649,7 +713,9 @@ function Navbar({
               aria-hidden="true"
             />
 
-            <strong>{headerName}</strong>
+            <strong>
+              {headerName}
+            </strong>
           </Link>
 
           <div className="app-topbar-actions">
@@ -673,7 +739,9 @@ function Navbar({
                   className="app-topbar-notification-badge"
                   aria-hidden="true"
                 >
-                  {unreadCount > 99 ? '99+' : unreadCount}
+                  {unreadCount > 99
+                    ? '99+'
+                    : unreadCount}
                 </span>
               )}
             </Link>
@@ -693,12 +761,17 @@ function Navbar({
         </div>
 
         {navbarError && (
-          <div className="app-topbar-error" role="alert">
+          <div
+            className="app-topbar-error"
+            role="alert"
+          >
             {navbarError}
 
             <button
               type="button"
-              onClick={() => setNavbarError('')}
+              onClick={() =>
+                setNavbarError('')
+              }
             >
               Dismiss
             </button>
@@ -714,16 +787,34 @@ function Navbar({
       <BottomNav
         teamId={resolvedTeamId}
         teams={teams}
-        latestPlayedMatchId={latestPlayedMatchId}
-        playerPaymentMatchId={playerPaymentMatchId}
-        canUseTeamNavigation={canUseTeamNavigation}
-        isApprovedManager={isApprovedManager}
-        isApprovedPlayer={isApprovedPlayer}
-        onTeamSwitch={handleTeamSwitch}
-        onSignOut={handleSignOut}
+        latestPlayedMatchId={
+          latestPlayedMatchId
+        }
+        playerPaymentMatchId={
+          playerPaymentMatchId
+        }
+        canUseTeamNavigation={
+          canUseTeamNavigation
+        }
+        isApprovedManager={
+          isApprovedManager
+        }
+        isApprovedPlayer={
+          isApprovedPlayer
+        }
+        onTeamSwitch={
+          handleTeamSwitch
+        }
+        onSignOut={
+          handleSignOut
+        }
         signingOut={signingOut}
-        onStripeAction={handleStripeAction}
-        openingStripe={openingStripe}
+        onStripeAction={
+          handleStripeAction
+        }
+        openingStripe={
+          openingStripe
+        }
       />
     </>
   )

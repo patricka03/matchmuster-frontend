@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
+
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 function CancelMatchPage() {
   const navigate = useNavigate()
@@ -13,12 +19,33 @@ function CancelMatchPage() {
   const [deleting, setDeleting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearCancelMatchSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD MATCH
+  // ========================================
+
   useEffect(() => {
     async function fetchMatch() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        await clearCancelMatchSession()
         return
       }
 
@@ -30,40 +57,53 @@ function CancelMatchPage() {
               Accept: 'application/json',
               Authorization: token,
             },
-          }
+          },
         )
 
         if (response.status === 401) {
-          localStorage.removeItem('token')
-          navigate('/login')
+          await clearCancelMatchSession()
           return
         }
 
-        const data = await response.json()
+        const data =
+          await response.json()
 
         if (!response.ok) {
           setErrorMessage(
-            data.error || 'Unable to load the fixture.'
+            data.error ||
+              'Unable to load the fixture.',
           )
+
           return
         }
 
         setMatch(data)
       } catch {
-        setErrorMessage('Unable to connect to the server.')
+        setErrorMessage(
+          'Unable to connect to the server.',
+        )
       } finally {
         setLoading(false)
       }
     }
 
     fetchMatch()
-  }, [navigate, teamId, matchId])
+  }, [
+    navigate,
+    teamId,
+    matchId,
+  ])
+
+  // ========================================
+  // CANCEL MATCH
+  // ========================================
 
   async function handleDelete() {
-    const token = localStorage.getItem('token')
+    const token =
+      getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearCancelMatchSession()
       return
     }
 
@@ -75,25 +115,30 @@ function CancelMatchPage() {
         `${API_URL}/teams/${teamId}/matches/${matchId}`,
         {
           method: 'DELETE',
+
           headers: {
             Accept: 'application/json',
             Authorization: token,
           },
-        }
+        },
       )
 
       if (response.status === 401) {
-        localStorage.removeItem('token')
-        navigate('/login')
+        await clearCancelMatchSession()
         return
       }
 
       if (!response.ok) {
-        let message = 'Unable to cancel the fixture.'
+        let message =
+          'Unable to cancel the fixture.'
 
         try {
-          const data = await response.json()
-          message = data.error || message
+          const data =
+            await response.json()
+
+          message =
+            data.error ||
+            message
         } catch {
           // Rails may return an empty response.
         }
@@ -102,11 +147,16 @@ function CancelMatchPage() {
         return
       }
 
-      navigate(`/teams/${teamId}/matches`, {
-        replace: true,
-      })
+      navigate(
+        `/teams/${teamId}/matches`,
+        {
+          replace: true,
+        },
+      )
     } catch {
-      setErrorMessage('Unable to connect to the server.')
+      setErrorMessage(
+        'Unable to connect to the server.',
+      )
     } finally {
       setDeleting(false)
     }
@@ -122,19 +172,23 @@ function CancelMatchPage() {
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
 
       <main className="dashboard-page">
-
         <section className="dashboard-content">
-        <BackButton to={`/teams/${teamId}/matches/${matchId}`} label="Back to match"/>
+          <BackButton
+            to={`/teams/${teamId}/matches/${matchId}`}
+            label="Back to match"
+          />
 
           <div className="dashboard-welcome">
             <p className="dashboard-label">
               Fixture management
             </p>
 
-            <h1>Cancel fixture</h1>
+            <h1>
+              Cancel fixture
+            </h1>
 
             <p>
               Review the fixture before permanently cancelling it.
@@ -142,21 +196,30 @@ function CancelMatchPage() {
           </div>
 
           {errorMessage && (
-            <p className="team-error">{errorMessage}</p>
+            <p className="team-error">
+              {errorMessage}
+            </p>
           )}
 
           {!errorMessage && match && (
             <article className="cancel-fixture-card">
               <div className="cancel-fixture-warning">
-                <span aria-hidden="true">⚠️</span>
+                <span aria-hidden="true">
+                  ⚠️
+                </span>
 
                 <div>
-                  <h2>Are you sure?</h2>
+                  <h2>
+                    Are you sure?
+                  </h2>
 
                   <p>
                     You are about to cancel the fixture against{' '}
-                    <strong>{match.opponent}</strong>. Approved
-                    players will receive a cancellation notification.
+                    <strong>
+                      {match.opponent}
+                    </strong>
+                    . Approved players will receive a cancellation
+                    notification.
                   </p>
                 </div>
               </div>

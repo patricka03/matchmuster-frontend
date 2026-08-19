@@ -6,6 +6,11 @@ import './CreateTeam.css'
 import './CreateTeam.mobile.css'
 import API_URL from '../config/api'
 
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
 function CreatTeam() {
   const navigate = useNavigate()
   const badgeInputRef = useRef(null)
@@ -14,19 +19,35 @@ function CreatTeam() {
   const [teamName, setTeamName] = useState('')
   const [description, setDescription] = useState('')
   const [badgeFile, setBadgeFile] = useState(null)
+
   const [badgePreviewUrl, setBadgePreviewUrl] =
     useState('')
-  const [createdTeamId, setCreatedTeamId] = useState(null)
+
+  const [createdTeamId, setCreatedTeamId] =
+    useState(null)
+
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
+  async function clearCreateTeamSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
   useEffect(() => {
     async function fetchCurrentUser() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
       if (!token) {
-        navigate('/login', { replace: true })
+        await clearCreateTeamSession()
         return
       }
 
@@ -38,13 +59,11 @@ function CreatTeam() {
               Accept: 'application/json',
               Authorization: token,
             },
-          }
+          },
         )
 
         if (response.status === 401) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login', { replace: true })
+          await clearCreateTeamSession()
           return
         }
 
@@ -52,7 +71,8 @@ function CreatTeam() {
 
         if (!response.ok) {
           throw new Error(
-            data.error || 'Unable to load your account.'
+            data.error ||
+              'Unable to load your account.',
           )
         }
 
@@ -60,17 +80,22 @@ function CreatTeam() {
 
         const isApprovedManager =
           user.account_type === 'manager' &&
-          user.manager_verification_status === 'approved'
+          user.manager_verification_status ===
+            'approved'
 
         if (!isApprovedManager) {
-          navigate('/team', { replace: true })
+          navigate('/team', {
+            replace: true,
+          })
+
           return
         }
 
         setCurrentUser(user)
       } catch (error) {
         setErrorMessage(
-          error.message || 'Unable to connect to the server.'
+          error.message ||
+            'Unable to connect to the server.',
         )
       } finally {
         setLoading(false)
@@ -83,14 +108,18 @@ function CreatTeam() {
   useEffect(() => {
     return () => {
       if (badgePreviewUrl) {
-        URL.revokeObjectURL(badgePreviewUrl)
+        URL.revokeObjectURL(
+          badgePreviewUrl,
+        )
       }
     }
   }, [badgePreviewUrl])
 
   function clearBadgeSelection() {
     if (badgePreviewUrl) {
-      URL.revokeObjectURL(badgePreviewUrl)
+      URL.revokeObjectURL(
+        badgePreviewUrl,
+      )
     }
 
     setBadgeFile(null)
@@ -102,7 +131,8 @@ function CreatTeam() {
   }
 
   function handleBadgeSelection(event) {
-    const selectedFile = event.target.files?.[0]
+    const selectedFile =
+      event.target.files?.[0]
 
     setErrorMessage('')
 
@@ -117,66 +147,93 @@ function CreatTeam() {
       'image/webp',
     ]
 
-    if (!allowedTypes.includes(selectedFile.type)) {
-      clearBadgeSelection()
-      setErrorMessage(
-        'Please select a JPG, PNG or WebP image.'
+    if (
+      !allowedTypes.includes(
+        selectedFile.type,
       )
+    ) {
+      clearBadgeSelection()
+
+      setErrorMessage(
+        'Please select a JPG, PNG or WebP image.',
+      )
+
       return
     }
 
-    if (selectedFile.size > 5 * 1024 * 1024) {
+    if (
+      selectedFile.size >
+      5 * 1024 * 1024
+    ) {
       clearBadgeSelection()
+
       setErrorMessage(
-        'The team badge must be smaller than 5 MB.'
+        'The team badge must be smaller than 5 MB.',
       )
+
       return
     }
 
     if (badgePreviewUrl) {
-      URL.revokeObjectURL(badgePreviewUrl)
+      URL.revokeObjectURL(
+        badgePreviewUrl,
+      )
     }
 
     setBadgeFile(selectedFile)
+
     setBadgePreviewUrl(
-      URL.createObjectURL(selectedFile)
+      URL.createObjectURL(
+        selectedFile,
+      ),
     )
   }
 
-  async function uploadBadge(teamId, token) {
+  async function uploadBadge(
+    teamId,
+    token,
+  ) {
     const formData = new FormData()
-    formData.append('badge', badgeFile)
+
+    formData.append(
+      'badge',
+      badgeFile,
+    )
 
     const response = await fetch(
       `${API_URL}/teams/${teamId}/badge`,
       {
         method: 'PATCH',
+
         headers: {
           Accept: 'application/json',
           Authorization: token,
         },
+
         body: formData,
-      }
+      },
     )
 
-    const data = await response.json().catch(() => ({}))
+    const data =
+      await response
+        .json()
+        .catch(() => ({}))
 
     if (response.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('currentUser')
-      navigate('/login', { replace: true })
+      await clearCreateTeamSession()
       return false
     }
 
     if (!response.ok) {
-      const errors = Array.isArray(data.errors)
-        ? data.errors.join(', ')
-        : ''
+      const errors =
+        Array.isArray(data.errors)
+          ? data.errors.join(', ')
+          : ''
 
       throw new Error(
         data.error ||
           errors ||
-          'Your team was created, but its badge could not be uploaded. Please try the badge upload again.'
+          'Your team was created, but its badge could not be uploaded. Please try the badge upload again.',
       )
     }
 
@@ -186,18 +243,24 @@ function CreatTeam() {
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const cleanedTeamName = teamName.trim()
-    const cleanedDescription = description.trim()
+    const cleanedTeamName =
+      teamName.trim()
+
+    const cleanedDescription =
+      description.trim()
 
     if (!cleanedTeamName) {
-      setErrorMessage('Please enter a team name.')
+      setErrorMessage(
+        'Please enter a team name.',
+      )
+
       return
     }
 
-    const token = localStorage.getItem('token')
+    const token = getAuthToken()
 
     if (!token) {
-      navigate('/login', { replace: true })
+      await clearCreateTeamSession()
       return
     }
 
@@ -212,34 +275,45 @@ function CreatTeam() {
           `${API_URL}/teams`,
           {
             method: 'POST',
+
             headers: {
               Accept: 'application/json',
-              'Content-Type': 'application/json',
+              'Content-Type':
+                'application/json',
               Authorization: token,
             },
+
             body: JSON.stringify({
               team: {
                 name: cleanedTeamName,
-                description: cleanedDescription,
+                description:
+                  cleanedDescription,
               },
             }),
-          }
+          },
         )
 
         if (response.status === 401) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('currentUser')
-          navigate('/login', { replace: true })
+          await clearCreateTeamSession()
           return
         }
 
-        const data = await response.json().catch(() => ({}))
+        const data =
+          await response
+            .json()
+            .catch(() => ({}))
 
         if (!response.ok) {
-          let message = 'Unable to create the team.'
+          let message =
+            'Unable to create the team.'
 
-          if (Array.isArray(data.errors)) {
-            message = data.errors.join(', ')
+          if (
+            Array.isArray(
+              data.errors,
+            )
+          ) {
+            message =
+              data.errors.join(', ')
           } else if (data.error) {
             message = data.error
           }
@@ -247,12 +321,17 @@ function CreatTeam() {
           throw new Error(message)
         }
 
-        const createdTeam = data.team || data
+        const createdTeam =
+          data.team || data
+
         teamId = createdTeam.id
 
-        if (badgeFile && !teamId) {
+        if (
+          badgeFile &&
+          !teamId
+        ) {
           throw new Error(
-            'Your team was created, but its badge could not be uploaded. Open Edit Team to add it.'
+            'Your team was created, but its badge could not be uploaded. Open Edit Team to add it.',
           )
         }
 
@@ -260,15 +339,22 @@ function CreatTeam() {
       }
 
       if (badgeFile) {
-        const uploaded = await uploadBadge(teamId, token)
+        const uploaded =
+          await uploadBadge(
+            teamId,
+            token,
+          )
 
         if (!uploaded) return
       }
 
-      navigate('/team', { replace: true })
+      navigate('/team', {
+        replace: true,
+      })
     } catch (error) {
       setErrorMessage(
-        error.message || 'Unable to connect to the server.'
+        error.message ||
+          'Unable to connect to the server.',
       )
     } finally {
       setSubmitting(false)
@@ -285,7 +371,9 @@ function CreatTeam() {
 
   return (
     <>
-      <Navbar currentUser={currentUser} />
+      <Navbar
+        currentUser={currentUser}
+      />
 
       <main className="dashboard-page">
         <section className="dashboard-content">
@@ -299,16 +387,22 @@ function CreatTeam() {
               Team management
             </p>
 
-            <h1>Create a team</h1>
+            <h1>
+              Create a team
+            </h1>
 
             <p>
-              Set up your football team and generate an invite
-              code for your squad.
+              Set up your football team
+              and generate an invite code
+              for your squad.
             </p>
           </div>
 
           {errorMessage && (
-            <p className="team-error" role="alert">
+            <p
+              className="team-error"
+              role="alert"
+            >
               {errorMessage}
             </p>
           )}
@@ -318,7 +412,9 @@ function CreatTeam() {
             onSubmit={handleSubmit}
           >
             <label htmlFor="team-name">
-              <span>Team name</span>
+              <span>
+                Team name
+              </span>
 
               <input
                 id="team-name"
@@ -331,13 +427,17 @@ function CreatTeam() {
                 disabled={submitting}
                 required
                 onChange={(event) =>
-                  setTeamName(event.target.value)
+                  setTeamName(
+                    event.target.value,
+                  )
                 }
               />
             </label>
 
             <label htmlFor="team-description">
-              <span>Team description</span>
+              <span>
+                Team description
+              </span>
 
               <textarea
                 id="team-description"
@@ -348,14 +448,18 @@ function CreatTeam() {
                 maxLength={500}
                 disabled={submitting}
                 onChange={(event) =>
-                  setDescription(event.target.value)
+                  setDescription(
+                    event.target.value,
+                  )
                 }
               />
             </label>
 
             <div className="create-team-badge-field">
               <label htmlFor="team-badge">
-                <span>Team badge (optional)</span>
+                <span>
+                  Team badge (optional)
+                </span>
               </label>
 
               <div className="create-team-badge-row">
@@ -366,7 +470,9 @@ function CreatTeam() {
                       alt="Selected team badge preview"
                     />
                   ) : (
-                    <span aria-hidden="true">⚽</span>
+                    <span aria-hidden="true">
+                      ⚽
+                    </span>
                   )}
                 </div>
 
@@ -379,11 +485,14 @@ function CreatTeam() {
                     accept="image/jpeg,image/png,image/webp"
                     disabled={submitting}
                     aria-describedby="team-badge-help"
-                    onChange={handleBadgeSelection}
+                    onChange={
+                      handleBadgeSelection
+                    }
                   />
 
                   <small id="team-badge-help">
-                    JPG, PNG or WebP. Maximum size 5 MB.
+                    JPG, PNG or WebP.
+                    Maximum size 5 MB.
                   </small>
 
                   {badgeFile && (
@@ -391,7 +500,9 @@ function CreatTeam() {
                       className="remove-team-badge-button"
                       type="button"
                       disabled={submitting}
-                      onClick={clearBadgeSelection}
+                      onClick={
+                        clearBadgeSelection
+                      }
                     >
                       Remove selected image
                     </button>
@@ -401,7 +512,8 @@ function CreatTeam() {
             </div>
 
             <p className="create-team-help">
-              An invite code will be generated after your team
+              An invite code will be
+              generated after your team
               has been created.
             </p>
 
@@ -427,7 +539,9 @@ function CreatTeam() {
                 type="button"
                 disabled={submitting}
                 onClick={() =>
-                  navigate('/team', { replace: true })
+                  navigate('/team', {
+                    replace: true,
+                  })
                 }
               >
                 Skip badge for now

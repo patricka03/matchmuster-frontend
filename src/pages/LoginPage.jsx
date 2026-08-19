@@ -1,22 +1,37 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom'
+
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
+
+import {
+  setAuthToken,
+} from '../utils/authStorage'
 
 function LoginPage() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const successMessage = location.state?.successMessage
+  const successMessage =
+    location.state?.successMessage
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
 
-  const [errorMessage, setErrorMessage] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [errorMessage, setErrorMessage] =
+    useState('')
+
+  const [isSubmitting, setIsSubmitting] =
+    useState(false)
+
+  const [showPassword, setShowPassword] =
+    useState(false)
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -38,26 +53,37 @@ function LoginPage() {
         `${API_URL}/users/sign_in`,
         {
           method: 'POST',
+
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
           },
+
           body: JSON.stringify({
             user: formData,
           }),
         },
       )
 
-      const responseText = await response.text()
-      const data = responseText ? JSON.parse(responseText) : {}
+      const responseText =
+        await response.text()
+
+      const data = responseText
+        ? JSON.parse(responseText)
+        : {}
 
       if (!response.ok) {
         throw new Error(
-          data.error || data.message || 'Invalid email or password.',
+          data.error ||
+            data.message ||
+            'Invalid email or password.',
         )
       }
 
-      const token = response.headers.get('Authorization')
+      const token =
+        response.headers.get(
+          'Authorization',
+        )
 
       if (!token) {
         throw new Error(
@@ -65,11 +91,24 @@ function LoginPage() {
         )
       }
 
-      localStorage.setItem('token', token)
+      /*
+       * Website:
+       * authStorage keeps the existing
+       * browser behaviour.
+       *
+       * iOS / Android:
+       * authStorage saves the JWT in
+       * secure native storage instead
+       * of normal localStorage.
+       */
+      await setAuthToken(token)
 
       navigate('/dashboard')
     } catch (error) {
-      setErrorMessage(error.message || 'Unable to log in.')
+      setErrorMessage(
+        error.message ||
+          'Unable to log in.',
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -78,7 +117,10 @@ function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link className="app-back-button" to="/">
+        <Link
+          className="app-back-button"
+          to="/"
+        >
           Back
         </Link>
 
@@ -90,23 +132,37 @@ function LoginPage() {
         />
 
         <h1>Welcome back</h1>
-        <p>Sign in to your MatchMuster account.</p>
+
+        <p>
+          Sign in to your MatchMuster account.
+        </p>
 
         {successMessage && (
-          <p className="auth-success" role="status">
+          <p
+            className="auth-success"
+            role="status"
+          >
             {successMessage}
           </p>
         )}
 
         {errorMessage && (
-          <p className="auth-error" role="alert">
+          <p
+            className="auth-error"
+            role="alert"
+          >
             {errorMessage}
           </p>
         )}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form
+          className="auth-form"
+          onSubmit={handleSubmit}
+        >
           <div className="form-group">
-            <label htmlFor="email">Email address</label>
+            <label htmlFor="email">
+              Email address
+            </label>
 
             <input
               id="email"
@@ -121,7 +177,9 @@ function LoginPage() {
 
           <div className="form-group">
             <div className="password-label-row">
-              <label htmlFor="password">Password{' '}</label>
+              <label htmlFor="password">
+                Password{' '}
+              </label>
 
               <Link
                 className="forgot-password-link"
@@ -135,7 +193,11 @@ function LoginPage() {
               <input
                 id="password"
                 name="password"
-                type={showPassword ? 'text' : 'password'}
+                type={
+                  showPassword
+                    ? 'text'
+                    : 'password'
+                }
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
@@ -145,9 +207,15 @@ function LoginPage() {
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() => setShowPassword((current) => !current)}
+                onClick={() =>
+                  setShowPassword(
+                    (current) => !current,
+                  )
+                }
               >
-                {showPassword ? 'Hide' : 'Show'}
+                {showPassword
+                  ? 'Hide'
+                  : 'Show'}
               </button>
             </div>
           </div>
@@ -157,18 +225,28 @@ function LoginPage() {
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Logging in...' : 'Log In'}
+            {isSubmitting
+              ? 'Logging in...'
+              : 'Log In'}
           </button>
         </form>
 
         <div className="account-recovery">
-          <span>Forgot which email you used?{' '}</span>
-          <Link to="/help">Need help signing in?</Link>
+          <span>
+            Forgot which email you used?{' '}
+          </span>
+
+          <Link to="/help">
+            Need help signing in?
+          </Link>
         </div>
 
         <p className="auth-footer">
           Don’t have an account?{' '}
-          <Link to="/signup">Create Account</Link>
+
+          <Link to="/signup">
+            Create Account
+          </Link>
         </p>
       </section>
     </main>

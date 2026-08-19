@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams, } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import './CreatePostPage.css'
 import './CreatePostPage.mobile.css'
 import API_URL from '../config/api'
 
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
 function CreatePostPage() {
   const { teamId } = useParams()
@@ -19,12 +28,32 @@ function CreatePostPage() {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessages, setErrorMessages] = useState([])
 
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearCreatePostSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD CURRENT USER
+  // ========================================
+
   useEffect(() => {
     async function loadCurrentUser() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        await clearCreatePostSession()
         return
       }
 
@@ -36,12 +65,11 @@ function CreatePostPage() {
               Accept: 'application/json',
               Authorization: token,
             },
-          }
+          },
         )
 
         if (response.status === 401) {
-          localStorage.removeItem('token')
-          navigate('/login')
+          await clearCreatePostSession()
           return
         }
 
@@ -49,7 +77,8 @@ function CreatePostPage() {
 
         if (!response.ok) {
           throw new Error(
-            data.error || 'Unable to load your account.'
+            data.error ||
+              'Unable to load your account.',
           )
         }
 
@@ -57,17 +86,25 @@ function CreatePostPage() {
 
         const approvedManager =
           user.account_type === 'manager' &&
-          user.manager_verification_status === 'approved'
+          user.manager_verification_status ===
+            'approved'
 
         if (!approvedManager) {
-          navigate(`/teams/${teamId}/posts`, { replace: true })
+          navigate(
+            `/teams/${teamId}/posts`,
+            {
+              replace: true,
+            },
+          )
+
           return
         }
 
         setCurrentUser(user)
       } catch (error) {
         setErrorMessages([
-          error.message || 'Unable to load your account.',
+          error.message ||
+            'Unable to load your account.',
         ])
       } finally {
         setLoading(false)
@@ -77,13 +114,17 @@ function CreatePostPage() {
     loadCurrentUser()
   }, [navigate, teamId])
 
+  // ========================================
+  // CREATE POST
+  // ========================================
+
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const token = localStorage.getItem('token')
+    const token = getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearCreatePostSession()
       return
     }
 
@@ -95,11 +136,13 @@ function CreatePostPage() {
         `${API_URL}/teams/${teamId}/posts`,
         {
           method: 'POST',
+
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: token,
           },
+
           body: JSON.stringify({
             post: {
               title: title.trim(),
@@ -108,12 +151,11 @@ function CreatePostPage() {
               pinned,
             },
           }),
-        }
+        },
       )
 
       if (response.status === 401) {
-        localStorage.removeItem('token')
-        navigate('/login')
+        await clearCreatePostSession()
         return
       }
 
@@ -122,13 +164,18 @@ function CreatePostPage() {
       if (!response.ok) {
         const errors = Array.isArray(data.errors)
           ? data.errors
-          : [data.error || 'Unable to create the post.']
+          : [
+              data.error ||
+                'Unable to create the post.',
+            ]
 
         setErrorMessages(errors)
         return
       }
 
-      navigate(`/teams/${teamId}/posts/${data.id}`)
+      navigate(
+        `/teams/${teamId}/posts/${data.id}`,
+      )
     } catch {
       setErrorMessages([
         'Unable to connect to the server. Please try again.',
@@ -137,6 +184,10 @@ function CreatePostPage() {
       setSubmitting(false)
     }
   }
+
+  // ========================================
+  // LOADING
+  // ========================================
 
   if (loading) {
     return (
@@ -151,6 +202,10 @@ function CreatePostPage() {
       </>
     )
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>
@@ -190,24 +245,32 @@ function CreatePostPage() {
                 className="create-post-errors"
                 role="alert"
               >
-                <strong>We couldn’t create the post:</strong>
+                <strong>
+                  We couldn’t create the post:
+                </strong>
 
                 <ul>
                   {errorMessages.map((error) => (
-                    <li key={error}>{error}</li>
+                    <li key={error}>
+                      {error}
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
 
             <div className="create-post-field">
-              <label htmlFor="post-title">Title</label>
+              <label htmlFor="post-title">
+                Title
+              </label>
 
               <input
                 id="post-title"
                 type="text"
                 value={title}
-                onChange={(event) => setTitle(event.target.value)}
+                onChange={(event) =>
+                  setTitle(event.target.value)
+                }
                 placeholder="e.g. Sunday match instructions"
                 maxLength={150}
                 required
@@ -219,7 +282,9 @@ function CreatePostPage() {
             </div>
 
             <fieldset className="create-post-fieldset">
-              <legend>Post type</legend>
+              <legend>
+                Post type
+              </legend>
 
               <div className="post-type-options">
                 <label
@@ -233,16 +298,25 @@ function CreatePostPage() {
                     type="radio"
                     name="postType"
                     value="announcement"
-                    checked={postType === 'announcement'}
+                    checked={
+                      postType === 'announcement'
+                    }
                     onChange={(event) =>
-                      setPostType(event.target.value)
+                      setPostType(
+                        event.target.value,
+                      )
                     }
                   />
 
-                  <span className="post-type-option-icon">📣</span>
+                  <span className="post-type-option-icon">
+                    📣
+                  </span>
 
                   <span>
-                    <strong>Announcement</strong>
+                    <strong>
+                      Announcement
+                    </strong>
+
                     <small>
                       Important club or team information
                     </small>
@@ -260,16 +334,25 @@ function CreatePostPage() {
                     type="radio"
                     name="postType"
                     value="tactical"
-                    checked={postType === 'tactical'}
+                    checked={
+                      postType === 'tactical'
+                    }
                     onChange={(event) =>
-                      setPostType(event.target.value)
+                      setPostType(
+                        event.target.value,
+                      )
                     }
                   />
 
-                  <span className="post-type-option-icon">🧠</span>
+                  <span className="post-type-option-icon">
+                    🧠
+                  </span>
 
                   <span>
-                    <strong>Tactical</strong>
+                    <strong>
+                      Tactical
+                    </strong>
+
                     <small>
                       Formation, roles and match instructions
                     </small>
@@ -287,16 +370,25 @@ function CreatePostPage() {
                     type="radio"
                     name="postType"
                     value="general"
-                    checked={postType === 'general'}
+                    checked={
+                      postType === 'general'
+                    }
                     onChange={(event) =>
-                      setPostType(event.target.value)
+                      setPostType(
+                        event.target.value,
+                      )
                     }
                   />
 
-                  <span className="post-type-option-icon">💬</span>
+                  <span className="post-type-option-icon">
+                    💬
+                  </span>
 
                   <span>
-                    <strong>General</strong>
+                    <strong>
+                      General
+                    </strong>
+
                     <small>
                       Everyday team news and discussion
                     </small>
@@ -306,12 +398,16 @@ function CreatePostPage() {
             </fieldset>
 
             <div className="create-post-field">
-              <label htmlFor="post-content">Message</label>
+              <label htmlFor="post-content">
+                Message
+              </label>
 
               <textarea
                 id="post-content"
                 value={content}
-                onChange={(event) => setContent(event.target.value)}
+                onChange={(event) =>
+                  setContent(event.target.value)
+                }
                 placeholder="Write your message to the team..."
                 rows={10}
                 required
@@ -323,12 +419,17 @@ function CreatePostPage() {
                 type="checkbox"
                 checked={pinned}
                 onChange={(event) =>
-                  setPinned(event.target.checked)
+                  setPinned(
+                    event.target.checked,
+                  )
                 }
               />
 
               <span>
-                <strong>Pin this post</strong>
+                <strong>
+                  Pin this post
+                </strong>
+
                 <small>
                   Keep it at the top of the team posts page
                 </small>
@@ -352,7 +453,9 @@ function CreatePostPage() {
                   !content.trim()
                 }
               >
-                {submitting ? 'Publishing...' : 'Publish post'}
+                {submitting
+                  ? 'Publishing...'
+                  : 'Publish post'}
               </button>
             </div>
           </form>

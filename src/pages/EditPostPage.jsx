@@ -1,28 +1,79 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams, } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import './CreatePostPage.css'
 import API_URL from '../config/api'
 
-function EditPostPage() {
-  const { teamId, postId } = useParams()
-  const navigate = useNavigate()
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
 
-  const [currentUser, setCurrentUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [postType, setPostType] = useState('announcement')
-  const [pinned, setPinned] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [errorMessages, setErrorMessages] = useState([])
+function EditPostPage() {
+  const {
+    teamId,
+    postId,
+  } = useParams()
+
+  const navigate =
+    useNavigate()
+
+  const [currentUser, setCurrentUser] =
+    useState(null)
+
+  const [title, setTitle] =
+    useState('')
+
+  const [content, setContent] =
+    useState('')
+
+  const [postType, setPostType] =
+    useState('announcement')
+
+  const [pinned, setPinned] =
+    useState(false)
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [submitting, setSubmitting] =
+    useState(false)
+
+  const [errorMessages, setErrorMessages] =
+    useState([])
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearEditPostSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('activeTeamId')
+    localStorage.removeItem('activeTeamName')
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD POST
+  // ========================================
 
   useEffect(() => {
     async function loadEditPostPage() {
-      const token = localStorage.getItem('token')
+      const token =
+        getAuthToken()
 
       if (!token) {
-        navigate('/login')
+        await clearEditPostSession()
         return
       }
 
@@ -32,11 +83,22 @@ function EditPostPage() {
       }
 
       try {
-        const [userResponse, postResponse] = await Promise.all([
-          fetch(`${API_URL}/users/me`, { headers }),
+        const [
+          userResponse,
+          postResponse,
+        ] = await Promise.all([
           fetch(
-           `${API_URL}/teams/${teamId}/posts/${postId}`,
-            { headers }
+            `${API_URL}/users/me`,
+            {
+              headers,
+            },
+          ),
+
+          fetch(
+            `${API_URL}/teams/${teamId}/posts/${postId}`,
+            {
+              headers,
+            },
           ),
         ])
 
@@ -44,51 +106,71 @@ function EditPostPage() {
           userResponse.status === 401 ||
           postResponse.status === 401
         ) {
-          localStorage.removeItem('token')
-          navigate('/login')
+          await clearEditPostSession()
           return
         }
 
-        const userData = await userResponse.json()
-        const postData = await postResponse.json()
+        const userData =
+          await userResponse.json()
+
+        const postData =
+          await postResponse.json()
 
         if (!userResponse.ok) {
           throw new Error(
-            userData.error || 'Unable to load your account.'
+            userData.error ||
+              'Unable to load your account.',
           )
         }
 
         if (!postResponse.ok) {
           throw new Error(
-            postData.error || 'Unable to load this post.'
+            postData.error ||
+              'Unable to load this post.',
           )
         }
 
-        const user = userData.user
+        const user =
+          userData.user
 
         const approvedManager =
-          user.account_type === 'manager' &&
-          user.manager_verification_status === 'approved'
+          user.account_type ===
+            'manager' &&
+          user.manager_verification_status ===
+            'approved'
 
         const canEditPost =
-          user.id === postData.user_id || approvedManager
+          user.id ===
+            postData.user_id ||
+          approvedManager
 
         if (!canEditPost) {
           navigate(
             `/teams/${teamId}/posts/${postId}`,
-            { replace: true }
+            {
+              replace: true,
+            },
           )
+
           return
         }
 
         setCurrentUser(user)
         setTitle(postData.title || '')
         setContent(postData.content || '')
-        setPostType(postData.post_type || 'announcement')
-        setPinned(Boolean(postData.pinned))
+        setPostType(
+          postData.post_type ||
+            'announcement',
+        )
+        setPinned(
+          Boolean(
+            postData.pinned,
+          ),
+        )
       } catch (error) {
         setErrorMessages([
-          error.message || 'Unable to load this post.',
+          error.message ||
+            'Unable to load this post.',
         ])
       } finally {
         setLoading(false)
@@ -96,15 +178,24 @@ function EditPostPage() {
     }
 
     loadEditPostPage()
-  }, [navigate, postId, teamId])
+  }, [
+    navigate,
+    postId,
+    teamId,
+  ])
+
+  // ========================================
+  // UPDATE POST
+  // ========================================
 
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const token = localStorage.getItem('token')
+    const token =
+      getAuthToken()
 
     if (!token) {
-      navigate('/login')
+      await clearEditPostSession()
       return
     }
 
@@ -116,11 +207,13 @@ function EditPostPage() {
         `${API_URL}/teams/${teamId}/posts/${postId}`,
         {
           method: 'PATCH',
+
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: token,
           },
+
           body: JSON.stringify({
             post: {
               title: title.trim(),
@@ -129,27 +222,38 @@ function EditPostPage() {
               pinned,
             },
           }),
-        }
+        },
       )
 
       if (response.status === 401) {
-        localStorage.removeItem('token')
-        navigate('/login')
+        await clearEditPostSession()
         return
       }
 
-      const data = await response.json()
+      const data =
+        await response.json()
 
       if (!response.ok) {
-        const errors = Array.isArray(data.errors)
-          ? data.errors
-          : [data.error || 'Unable to update the post.']
+        const errors =
+          Array.isArray(
+            data.errors,
+          )
+            ? data.errors
+            : [
+                data.error ||
+                  'Unable to update the post.',
+              ]
 
-        setErrorMessages(errors)
+        setErrorMessages(
+          errors,
+        )
+
         return
       }
 
-      navigate(`/teams/${teamId}/posts/${postId}`)
+      navigate(
+        `/teams/${teamId}/posts/${postId}`,
+      )
     } catch {
       setErrorMessages([
         'Unable to connect to the server. Please try again.',
@@ -158,6 +262,10 @@ function EditPostPage() {
       setSubmitting(false)
     }
   }
+
+  // ========================================
+  // LOADING
+  // ========================================
 
   if (loading) {
     return (
@@ -172,6 +280,10 @@ function EditPostPage() {
       </>
     )
   }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <>
@@ -194,11 +306,12 @@ function EditPostPage() {
               Team communication
             </p>
 
-            <h1>Edit post</h1>
+            <h1>
+              Edit post
+            </h1>
 
             <p>
-              Update the post’s title, type, message or pinned
-              status.
+              Update the post’s title, type, message or pinned status.
             </p>
           </header>
 
@@ -211,27 +324,40 @@ function EditPostPage() {
                 className="create-post-errors"
                 role="alert"
               >
-                <strong>We couldn’t update the post:</strong>
+                <strong>
+                  We couldn’t update the post:
+                </strong>
 
                 <ul>
-                  {errorMessages.map((error, index) => (
-                    <li key={`${error}-${index}`}>
-                      {error}
-                    </li>
-                  ))}
+                  {errorMessages.map(
+                    (
+                      error,
+                      index,
+                    ) => (
+                      <li
+                        key={`${error}-${index}`}
+                      >
+                        {error}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             )}
 
             <div className="create-post-field">
-              <label htmlFor="post-title">Title</label>
+              <label htmlFor="post-title">
+                Title
+              </label>
 
               <input
                 id="post-title"
                 type="text"
                 value={title}
                 onChange={(event) =>
-                  setTitle(event.target.value)
+                  setTitle(
+                    event.target.value,
+                  )
                 }
                 placeholder="e.g. Sunday match instructions"
                 maxLength={150}
@@ -244,7 +370,9 @@ function EditPostPage() {
             </div>
 
             <fieldset className="create-post-fieldset">
-              <legend>Post type</legend>
+              <legend>
+                Post type
+              </legend>
 
               <div className="post-type-options">
                 <label
@@ -258,9 +386,13 @@ function EditPostPage() {
                     type="radio"
                     name="postType"
                     value="announcement"
-                    checked={postType === 'announcement'}
+                    checked={
+                      postType === 'announcement'
+                    }
                     onChange={(event) =>
-                      setPostType(event.target.value)
+                      setPostType(
+                        event.target.value,
+                      )
                     }
                   />
 
@@ -269,7 +401,10 @@ function EditPostPage() {
                   </span>
 
                   <span>
-                    <strong>Announcement</strong>
+                    <strong>
+                      Announcement
+                    </strong>
+
                     <small>
                       Important club or team information
                     </small>
@@ -287,9 +422,13 @@ function EditPostPage() {
                     type="radio"
                     name="postType"
                     value="tactical"
-                    checked={postType === 'tactical'}
+                    checked={
+                      postType === 'tactical'
+                    }
                     onChange={(event) =>
-                      setPostType(event.target.value)
+                      setPostType(
+                        event.target.value,
+                      )
                     }
                   />
 
@@ -298,7 +437,10 @@ function EditPostPage() {
                   </span>
 
                   <span>
-                    <strong>Tactical</strong>
+                    <strong>
+                      Tactical
+                    </strong>
+
                     <small>
                       Formation, roles and match instructions
                     </small>
@@ -316,9 +458,13 @@ function EditPostPage() {
                     type="radio"
                     name="postType"
                     value="general"
-                    checked={postType === 'general'}
+                    checked={
+                      postType === 'general'
+                    }
                     onChange={(event) =>
-                      setPostType(event.target.value)
+                      setPostType(
+                        event.target.value,
+                      )
                     }
                   />
 
@@ -327,7 +473,10 @@ function EditPostPage() {
                   </span>
 
                   <span>
-                    <strong>General</strong>
+                    <strong>
+                      General
+                    </strong>
+
                     <small>
                       Everyday team news and discussion
                     </small>
@@ -337,13 +486,17 @@ function EditPostPage() {
             </fieldset>
 
             <div className="create-post-field">
-              <label htmlFor="post-content">Message</label>
+              <label htmlFor="post-content">
+                Message
+              </label>
 
               <textarea
                 id="post-content"
                 value={content}
                 onChange={(event) =>
-                  setContent(event.target.value)
+                  setContent(
+                    event.target.value,
+                  )
                 }
                 placeholder="Write your message to the team..."
                 rows={10}
@@ -356,12 +509,17 @@ function EditPostPage() {
                 type="checkbox"
                 checked={pinned}
                 onChange={(event) =>
-                  setPinned(event.target.checked)
+                  setPinned(
+                    event.target.checked,
+                  )
                 }
               />
 
               <span>
-                <strong>Pin this post</strong>
+                <strong>
+                  Pin this post
+                </strong>
+
                 <small>
                   Keep it at the top of the team posts page
                 </small>
@@ -385,7 +543,9 @@ function EditPostPage() {
                   !content.trim()
                 }
               >
-                {submitting ? 'Saving...' : 'Save changes'}
+                {submitting
+                  ? 'Saving...'
+                  : 'Save changes'}
               </button>
             </div>
           </form>

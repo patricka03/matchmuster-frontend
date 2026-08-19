@@ -6,13 +6,31 @@ import './EditProfilePage.css'
 import './EditProfilePage.mobile.css'
 import API_URL from '../config/api'
 
-const POSITIONS = ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'LW', 'RW', 'ST']
+import {
+  clearAuthToken,
+  getAuthToken,
+} from '../utils/authStorage'
+
+const POSITIONS = [
+  'GK',
+  'CB',
+  'LB',
+  'RB',
+  'CDM',
+  'CM',
+  'LW',
+  'RW',
+  'ST',
+]
 
 function EditProfilePage() {
   const navigate = useNavigate()
 
-  const [currentUser, setCurrentUser] = useState(null)
-  const [activeModal, setActiveModal] = useState(null)
+  const [currentUser, setCurrentUser] =
+    useState(null)
+
+  const [activeModal, setActiveModal] =
+    useState(null)
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -20,36 +38,113 @@ function EditProfilePage() {
     email: '',
   })
 
-  const [passwordData, setPasswordData] = useState({
-    current_password: '',
-    password: '',
-    password_confirmation: '',
-  })
+  const [passwordData, setPasswordData] =
+    useState({
+      current_password: '',
+      password: '',
+      password_confirmation: '',
+    })
 
-  const [deletePassword, setDeletePassword] = useState('')
-  const [deleteConfirmed, setDeleteConfirmed] = useState(false)
+  const [deletePassword, setDeletePassword] =
+    useState('')
 
-  const [preferredPosition, setPreferredPosition] = useState('')
-  const [selectedAvatar, setSelectedAvatar] = useState(null)
-  const [avatarPreview, setAvatarPreview] = useState('')
+  const [
+    deleteConfirmed,
+    setDeleteConfirmed,
+  ] = useState(false)
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSavingProfile, setIsSavingProfile] = useState(false)
-  const [isSavingPosition, setIsSavingPosition] = useState(false)
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
-  const [isChangingPassword, setIsChangingPassword] = useState(false)
-  const [isSigningOut, setIsSigningOut] = useState(false)
-  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
+  const [
+    preferredPosition,
+    setPreferredPosition,
+  ] = useState('')
 
-  const [errorMessage, setErrorMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
+  const [
+    selectedAvatar,
+    setSelectedAvatar,
+  ] = useState(null)
+
+  const [
+    avatarPreview,
+    setAvatarPreview,
+  ] = useState('')
+
+  const [isLoading, setIsLoading] =
+    useState(true)
+
+  const [
+    isSavingProfile,
+    setIsSavingProfile,
+  ] = useState(false)
+
+  const [
+    isSavingPosition,
+    setIsSavingPosition,
+  ] = useState(false)
+
+  const [
+    isUploadingAvatar,
+    setIsUploadingAvatar,
+  ] = useState(false)
+
+  const [
+    isChangingPassword,
+    setIsChangingPassword,
+  ] = useState(false)
+
+  const [
+    isSigningOut,
+    setIsSigningOut,
+  ] = useState(false)
+
+  const [
+    isDeletingAccount,
+    setIsDeletingAccount,
+  ] = useState(false)
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('')
+
+  const [
+    successMessage,
+    setSuccessMessage,
+  ] = useState('')
+
+  // ========================================
+  // SESSION
+  // ========================================
+
+  async function clearSession() {
+    await clearAuthToken()
+
+    localStorage.removeItem(
+      'currentUser',
+    )
+
+    localStorage.removeItem(
+      'activeTeamId',
+    )
+
+    localStorage.removeItem(
+      'activeTeamName',
+    )
+
+    navigate('/login', {
+      replace: true,
+    })
+  }
+
+  // ========================================
+  // LOAD PROFILE
+  // ========================================
 
   useEffect(() => {
     async function loadProfile() {
-      const token = localStorage.getItem('token')
+      const token = getAuthToken()
 
       if (!token) {
-        clearSession()
+        await clearSession()
         return
       }
 
@@ -58,16 +153,24 @@ function EditProfilePage() {
           `${API_URL}/users/me`,
           {
             headers: {
-              Accept: 'application/json',
-              Authorization: token,
+              Accept:
+                'application/json',
+
+              Authorization:
+                token,
             },
           },
         )
 
-        const data = await readResponse(response)
+        const data =
+          await readResponse(
+            response,
+          )
 
-        if (response.status === 401) {
-          clearSession()
+        if (
+          response.status === 401
+        ) {
+          await clearSession()
           return
         }
 
@@ -80,14 +183,21 @@ function EditProfilePage() {
           )
         }
 
-        const user = data.user || data
+        const user =
+          data.user ||
+          data
 
         setCurrentUser(user)
 
         setFormData({
-          first_name: user.first_name || '',
-          last_name: user.last_name || '',
-          email: user.email || '',
+          first_name:
+            user.first_name || '',
+
+          last_name:
+            user.last_name || '',
+
+          email:
+            user.email || '',
         })
 
         setPreferredPosition(
@@ -111,8 +221,14 @@ function EditProfilePage() {
     loadProfile()
   }, [])
 
+  // ========================================
+  // MODAL KEYBOARD / BODY LOCK
+  // ========================================
+
   useEffect(() => {
-    if (!activeModal) return undefined
+    if (!activeModal) {
+      return undefined
+    }
 
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
@@ -123,7 +239,8 @@ function EditProfilePage() {
     const previousOverflow =
       document.body.style.overflow
 
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow =
+      'hidden'
 
     document.addEventListener(
       'keydown',
@@ -141,16 +258,9 @@ function EditProfilePage() {
     }
   }, [activeModal])
 
-  function clearSession() {
-    localStorage.removeItem('token')
-    localStorage.removeItem('currentUser')
-    localStorage.removeItem('activeTeamId')
-    localStorage.removeItem('activeTeamName')
-
-    navigate('/login', {
-      replace: true,
-    })
-  }
+  // ========================================
+  // MODALS
+  // ========================================
 
   function openModal(modalName) {
     setErrorMessage('')
@@ -160,8 +270,10 @@ function EditProfilePage() {
       setFormData({
         first_name:
           currentUser?.first_name || '',
+
         last_name:
           currentUser?.last_name || '',
+
         email:
           currentUser?.email || '',
       })
@@ -169,7 +281,8 @@ function EditProfilePage() {
 
     if (modalName === 'position') {
       setPreferredPosition(
-        currentUser?.preferred_position || '',
+        currentUser?.preferred_position ||
+          '',
       )
     }
 
@@ -181,7 +294,10 @@ function EditProfilePage() {
       })
     }
 
-    if (modalName === 'delete-account') {
+    if (
+      modalName ===
+      'delete-account'
+    ) {
       setDeletePassword('')
       setDeleteConfirmed(false)
     }
@@ -190,7 +306,9 @@ function EditProfilePage() {
   }
 
   function closeModal() {
-    if (isDeletingAccount) return
+    if (isDeletingAccount) {
+      return
+    }
 
     setActiveModal(null)
     setErrorMessage('')
@@ -198,17 +316,31 @@ function EditProfilePage() {
     setDeleteConfirmed(false)
   }
 
-  function handleChange(event) {
-    const { name, value } = event.target
+  // ========================================
+  // FORM CHANGE
+  // ========================================
 
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      [name]: value,
-    }))
+  function handleChange(event) {
+    const {
+      name,
+      value,
+    } = event.target
+
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+        [name]: value,
+      }),
+    )
   }
 
-  function handlePasswordChange(event) {
-    const { name, value } = event.target
+  function handlePasswordChange(
+    event,
+  ) {
+    const {
+      name,
+      value,
+    } = event.target
 
     setPasswordData(
       (currentPasswordData) => ({
@@ -218,41 +350,62 @@ function EditProfilePage() {
     )
   }
 
-  function handleAvatarChange(event) {
-    const file = event.target.files?.[0]
+  // ========================================
+  // AVATAR
+  // ========================================
+
+  function handleAvatarChange(
+    event,
+  ) {
+    const file =
+      event.target.files?.[0]
 
     setErrorMessage('')
     setSuccessMessage('')
 
-    if (!file) return
+    if (!file) {
+      return
+    }
 
-    if (!file.type.startsWith('image/')) {
+    if (
+      !file.type.startsWith(
+        'image/',
+      )
+    ) {
       setErrorMessage(
         'Please select an image file.',
       )
 
       event.target.value = ''
+
       return
     }
 
     const maximumFileSize =
       10 * 1024 * 1024
 
-    if (file.size > maximumFileSize) {
+    if (
+      file.size >
+      maximumFileSize
+    ) {
       setErrorMessage(
         'Your image must be smaller than 10 MB.',
       )
 
       event.target.value = ''
+
       return
     }
 
     setSelectedAvatar(file)
 
-    const reader = new FileReader()
+    const reader =
+      new FileReader()
 
     reader.onloadend = () => {
-      setAvatarPreview(reader.result)
+      setAvatarPreview(
+        reader.result,
+      )
     }
 
     reader.readAsDataURL(file)
@@ -266,11 +419,10 @@ function EditProfilePage() {
       return
     }
 
-    const token =
-      localStorage.getItem('token')
+    const token = getAuthToken()
 
     if (!token) {
-      clearSession()
+      await clearSession()
       return
     }
 
@@ -278,7 +430,8 @@ function EditProfilePage() {
     setErrorMessage('')
     setSuccessMessage('')
 
-    const avatarData = new FormData()
+    const avatarData =
+      new FormData()
 
     avatarData.append(
       'avatar',
@@ -290,19 +443,28 @@ function EditProfilePage() {
         `${API_URL}/users/avatar`,
         {
           method: 'PATCH',
+
           headers: {
-            Accept: 'application/json',
-            Authorization: token,
+            Accept:
+              'application/json',
+
+            Authorization:
+              token,
           },
+
           body: avatarData,
         },
       )
 
       const data =
-        await readResponse(response)
+        await readResponse(
+          response,
+        )
 
-      if (response.status === 401) {
-        clearSession()
+      if (
+        response.status === 401
+      ) {
+        await clearSession()
         return
       }
 
@@ -318,16 +480,22 @@ function EditProfilePage() {
       const updatedUser =
         data.user || {
           ...currentUser,
-          avatar_url: data.avatar_url,
+          avatar_url:
+            data.avatar_url,
         }
 
-      setCurrentUser(updatedUser)
+      setCurrentUser(
+        updatedUser,
+      )
+
       setSelectedAvatar(null)
       setAvatarPreview('')
 
       localStorage.setItem(
         'currentUser',
-        JSON.stringify(updatedUser),
+        JSON.stringify(
+          updatedUser,
+        ),
       )
 
       setSuccessMessage(
@@ -343,14 +511,19 @@ function EditProfilePage() {
     }
   }
 
-  async function handleProfileSubmit(event) {
+  // ========================================
+  // PROFILE DETAILS
+  // ========================================
+
+  async function handleProfileSubmit(
+    event,
+  ) {
     event.preventDefault()
 
-    const token =
-      localStorage.getItem('token')
+    const token = getAuthToken()
 
     if (!token) {
-      clearSession()
+      await clearSession()
       return
     }
 
@@ -363,13 +536,18 @@ function EditProfilePage() {
         `${API_URL}/users/profile`,
         {
           method: 'PATCH',
+
           headers: {
             'Content-Type':
               'application/json',
+
             Accept:
               'application/json',
-            Authorization: token,
+
+            Authorization:
+              token,
           },
+
           body: JSON.stringify({
             user: formData,
           }),
@@ -377,10 +555,14 @@ function EditProfilePage() {
       )
 
       const data =
-        await readResponse(response)
+        await readResponse(
+          response,
+        )
 
-      if (response.status === 401) {
-        clearSession()
+      if (
+        response.status === 401
+      ) {
+        await clearSession()
         return
       }
 
@@ -394,26 +576,37 @@ function EditProfilePage() {
       }
 
       const updatedUser =
-        data.user || data
+        data.user ||
+        data
 
-      setCurrentUser(updatedUser)
+      setCurrentUser(
+        updatedUser,
+      )
 
       setFormData({
         first_name:
-          updatedUser.first_name || '',
+          updatedUser.first_name ||
+          '',
+
         last_name:
-          updatedUser.last_name || '',
+          updatedUser.last_name ||
+          '',
+
         email:
-          updatedUser.email || '',
+          updatedUser.email ||
+          '',
       })
 
       setPreferredPosition(
-        updatedUser.preferred_position || '',
+        updatedUser.preferred_position ||
+          '',
       )
 
       localStorage.setItem(
         'currentUser',
-        JSON.stringify(updatedUser),
+        JSON.stringify(
+          updatedUser,
+        ),
       )
 
       setActiveModal(null)
@@ -431,16 +624,19 @@ function EditProfilePage() {
     }
   }
 
+  // ========================================
+  // PREFERRED POSITION
+  // ========================================
+
   async function handlePreferredPositionSubmit(
     event,
   ) {
     event.preventDefault()
 
-    const token =
-      localStorage.getItem('token')
+    const token = getAuthToken()
 
     if (!token) {
-      clearSession()
+      await clearSession()
       return
     }
 
@@ -453,13 +649,18 @@ function EditProfilePage() {
         `${API_URL}/users/preferred_position`,
         {
           method: 'PATCH',
+
           headers: {
             'Content-Type':
               'application/json',
+
             Accept:
               'application/json',
-            Authorization: token,
+
+            Authorization:
+              token,
           },
+
           body: JSON.stringify({
             team_membership: {
               preferred_position:
@@ -470,10 +671,14 @@ function EditProfilePage() {
       )
 
       const data =
-        await readResponse(response)
+        await readResponse(
+          response,
+        )
 
-      if (response.status === 401) {
-        clearSession()
+      if (
+        response.status === 401
+      ) {
+        await clearSession()
         return
       }
 
@@ -488,11 +693,14 @@ function EditProfilePage() {
 
       const updatedUser = {
         ...currentUser,
+
         preferred_position:
           data.preferred_position,
       }
 
-      setCurrentUser(updatedUser)
+      setCurrentUser(
+        updatedUser,
+      )
 
       setPreferredPosition(
         data.preferred_position,
@@ -500,7 +708,9 @@ function EditProfilePage() {
 
       localStorage.setItem(
         'currentUser',
-        JSON.stringify(updatedUser),
+        JSON.stringify(
+          updatedUser,
+        ),
       )
 
       setActiveModal(null)
@@ -518,7 +728,13 @@ function EditProfilePage() {
     }
   }
 
-  async function handlePasswordSubmit(event) {
+  // ========================================
+  // CHANGE PASSWORD
+  // ========================================
+
+  async function handlePasswordSubmit(
+    event,
+  ) {
     event.preventDefault()
 
     setErrorMessage('')
@@ -536,7 +752,8 @@ function EditProfilePage() {
     }
 
     if (
-      passwordData.password.length < 6
+      passwordData.password.length <
+      6
     ) {
       setErrorMessage(
         'Your new password must contain at least 6 characters.',
@@ -545,11 +762,10 @@ function EditProfilePage() {
       return
     }
 
-    const token =
-      localStorage.getItem('token')
+    const token = getAuthToken()
 
     if (!token) {
-      clearSession()
+      await clearSession()
       return
     }
 
@@ -560,13 +776,18 @@ function EditProfilePage() {
         `${API_URL}/users/change_password`,
         {
           method: 'PATCH',
+
           headers: {
             'Content-Type':
               'application/json',
+
             Accept:
               'application/json',
-            Authorization: token,
+
+            Authorization:
+              token,
           },
+
           body: JSON.stringify({
             user: passwordData,
           }),
@@ -574,10 +795,14 @@ function EditProfilePage() {
       )
 
       const data =
-        await readResponse(response)
+        await readResponse(
+          response,
+        )
 
-      if (response.status === 401) {
-        clearSession()
+      if (
+        response.status === 401
+      ) {
+        await clearSession()
         return
       }
 
@@ -603,9 +828,22 @@ function EditProfilePage() {
           'Password updated successfully. Signing you out...',
       )
 
-      localStorage.removeItem('token')
+      /*
+       * Password changes invalidate
+       * the current MatchMuster session.
+       */
+      await clearAuthToken()
+
       localStorage.removeItem(
         'currentUser',
+      )
+
+      localStorage.removeItem(
+        'activeTeamId',
+      )
+
+      localStorage.removeItem(
+        'activeTeamName',
       )
 
       window.setTimeout(() => {
@@ -623,11 +861,16 @@ function EditProfilePage() {
     }
   }
 
-  async function handleSignOut() {
-    if (isSigningOut) return
+  // ========================================
+  // SIGN OUT
+  // ========================================
 
-    const token =
-      localStorage.getItem('token')
+  async function handleSignOut() {
+    if (isSigningOut) {
+      return
+    }
+
+    const token = getAuthToken()
 
     setIsSigningOut(true)
     setErrorMessage('')
@@ -639,20 +882,30 @@ function EditProfilePage() {
           `${API_URL}/users/sign_out`,
           {
             method: 'DELETE',
+
             headers: {
               Accept:
                 'application/json',
-              Authorization: token,
+
+              Authorization:
+                token,
             },
           },
         )
       }
     } catch {
-      // Still clear the local session if Rails is unavailable.
+      /*
+       * Still clear the device session
+       * if Rails is temporarily unavailable.
+       */
     } finally {
-      clearSession()
+      await clearSession()
     }
   }
+
+  // ========================================
+  // DELETE ACCOUNT
+  // ========================================
 
   async function handleDeleteAccount(
     event,
@@ -662,7 +915,9 @@ function EditProfilePage() {
     setErrorMessage('')
     setSuccessMessage('')
 
-    if (!deletePassword.trim()) {
+    if (
+      !deletePassword.trim()
+    ) {
       setErrorMessage(
         'Enter your current password to delete your account.',
       )
@@ -678,11 +933,10 @@ function EditProfilePage() {
       return
     }
 
-    const token =
-      localStorage.getItem('token')
+    const token = getAuthToken()
 
     if (!token) {
-      clearSession()
+      await clearSession()
       return
     }
 
@@ -693,13 +947,18 @@ function EditProfilePage() {
         `${API_URL}/users/account`,
         {
           method: 'DELETE',
+
           headers: {
             'Content-Type':
               'application/json',
+
             Accept:
               'application/json',
-            Authorization: token,
+
+            Authorization:
+              token,
           },
+
           body: JSON.stringify({
             current_password:
               deletePassword,
@@ -708,10 +967,14 @@ function EditProfilePage() {
       )
 
       const data =
-        await readResponse(response)
+        await readResponse(
+          response,
+        )
 
-      if (response.status === 401) {
-        clearSession()
+      if (
+        response.status === 401
+      ) {
+        await clearSession()
         return
       }
 
@@ -721,7 +984,12 @@ function EditProfilePage() {
           data.teams?.length
         ) {
           throw new Error(
-            `${data.message || data.error} Team: ${data.teams.join(', ')}.`,
+            `${
+              data.message ||
+              data.error
+            } Team: ${data.teams.join(
+              ', ',
+            )}.`,
           )
         }
 
@@ -733,14 +1001,28 @@ function EditProfilePage() {
         )
       }
 
-      localStorage.removeItem('token')
+      /*
+       * The account no longer exists,
+       * so remove the JWT from native
+       * secure storage immediately.
+       */
+      await clearAuthToken()
 
       localStorage.removeItem(
         'currentUser',
       )
 
+      localStorage.removeItem(
+        'activeTeamId',
+      )
+
+      localStorage.removeItem(
+        'activeTeamName',
+      )
+
       navigate('/', {
         replace: true,
+
         state: {
           successMessage:
             data.message ||
@@ -757,15 +1039,25 @@ function EditProfilePage() {
     }
   }
 
+  // ========================================
+  // DISPLAY HELPERS
+  // ========================================
+
   function userInitials() {
     const firstName =
-      currentUser?.first_name || ''
+      currentUser?.first_name ||
+      ''
 
     const lastName =
-      currentUser?.last_name || ''
+      currentUser?.last_name ||
+      ''
 
     return (
-      `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() ||
+      `${firstName.charAt(
+        0,
+      )}${lastName.charAt(
+        0,
+      )}`.toUpperCase() ||
       'U'
     )
   }
@@ -778,6 +1070,10 @@ function EditProfilePage() {
       .filter(Boolean)
       .join(' ')
   }
+
+  // ========================================
+  // LOADING
+  // ========================================
 
   if (isLoading) {
     return (
@@ -793,9 +1089,15 @@ function EditProfilePage() {
     )
   }
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <>
-      <Navbar currentUser={currentUser} />
+      <Navbar
+        currentUser={currentUser}
+      />
 
       <main className="edit-profile-page">
         <section className="edit-profile-card">
@@ -838,6 +1140,10 @@ function EditProfilePage() {
             </p>
           )}
 
+          {/* ========================================
+              PROFILE OVERVIEW
+          ======================================== */}
+
           <section className="profile-overview">
             <div className="profile-avatar-preview">
               {avatarPreview ||
@@ -848,7 +1154,8 @@ function EditProfilePage() {
                     currentUser.avatar_url
                   }
                   alt={`${
-                    fullName() || 'User'
+                    fullName() ||
+                    'User'
                   } profile`}
                 />
               ) : (
@@ -875,6 +1182,10 @@ function EditProfilePage() {
               </span>
             </div>
           </section>
+
+          {/* ========================================
+              PROFILE PICTURE
+          ======================================== */}
 
           <section className="profile-picture-section">
             <div>
@@ -923,6 +1234,10 @@ function EditProfilePage() {
             </div>
           </section>
 
+          {/* ========================================
+              ACCOUNT DETAILS
+          ======================================== */}
+
           <section className="profile-settings-section">
             <div className="profile-section-heading">
               <h2>
@@ -956,7 +1271,9 @@ function EditProfilePage() {
                   type="button"
                   className="profile-edit-button"
                   onClick={() =>
-                    openModal('details')
+                    openModal(
+                      'details',
+                    )
                   }
                 >
                   Edit
@@ -1081,10 +1398,13 @@ function EditProfilePage() {
 
           <section className="profile-settings-section">
             <div className="profile-section-heading">
-              <h2>Safety &amp; blocking</h2>
+              <h2>
+                Safety &amp; blocking
+              </h2>
 
               <p>
-                Review the accounts you have blocked and restore
+                Review the accounts you
+                have blocked and restore
                 access whenever you choose.
               </p>
             </div>
@@ -1096,10 +1416,13 @@ function EditProfilePage() {
                     Blocked accounts
                   </span>
 
-                  <strong>Manage blocked members</strong>
+                  <strong>
+                    Manage blocked members
+                  </strong>
 
                   <small>
-                    Unblock someone to see their content and activity
+                    Unblock someone to see
+                    their content and activity
                     again.
                   </small>
                 </div>
@@ -1107,7 +1430,11 @@ function EditProfilePage() {
                 <button
                   type="button"
                   className="profile-edit-button"
-                  onClick={() => openModal('blocked-users')}
+                  onClick={() =>
+                    openModal(
+                      'blocked-users',
+                    )
+                  }
                 >
                   Manage
                 </button>
@@ -1213,16 +1540,12 @@ function EditProfilePage() {
           </section>
 
           {/* =====================================
-              DELETE ACCOUNT / DANGER ZONE
+              DELETE ACCOUNT
           ===================================== */}
 
           <section className="profile-danger-section">
             <div className="profile-danger-heading">
               <div>
-                {/* <span className="profile-danger-label">
-                  Danger zone
-                </span> */}
-
                 <h2>
                   Delete account
                 </h2>
@@ -1252,7 +1575,10 @@ function EditProfilePage() {
         </section>
 
         <BlockedUsersModal
-          isOpen={activeModal === 'blocked-users'}
+          isOpen={
+            activeModal ===
+            'blocked-users'
+          }
           onClose={closeModal}
         />
 
@@ -1260,18 +1586,23 @@ function EditProfilePage() {
             PERSONAL DETAILS MODAL
         ===================================== */}
 
-        {activeModal === 'details' && (
+        {activeModal ===
+          'details' && (
           <div
             className="profile-modal-overlay"
             role="presentation"
-            onMouseDown={closeModal}
+            onMouseDown={
+              closeModal
+            }
           >
             <section
               className="profile-modal"
               role="dialog"
               aria-modal="true"
               aria-labelledby="details-modal-title"
-              onMouseDown={(event) =>
+              onMouseDown={(
+                event,
+              ) =>
                 event.stopPropagation()
               }
             >
@@ -1290,7 +1621,9 @@ function EditProfilePage() {
                 <button
                   type="button"
                   className="profile-modal-close"
-                  onClick={closeModal}
+                  onClick={
+                    closeModal
+                  }
                   aria-label="Close"
                 >
                   ×
@@ -1375,7 +1708,9 @@ function EditProfilePage() {
                   <button
                     type="button"
                     className="profile-secondary-button"
-                    onClick={closeModal}
+                    onClick={
+                      closeModal
+                    }
                   >
                     Cancel
                   </button>
@@ -1406,14 +1741,18 @@ function EditProfilePage() {
           <div
             className="profile-modal-overlay"
             role="presentation"
-            onMouseDown={closeModal}
+            onMouseDown={
+              closeModal
+            }
           >
             <section
               className="profile-modal profile-modal-small"
               role="dialog"
               aria-modal="true"
               aria-labelledby="position-modal-title"
-              onMouseDown={(event) =>
+              onMouseDown={(
+                event,
+              ) =>
                 event.stopPropagation()
               }
             >
@@ -1432,7 +1771,9 @@ function EditProfilePage() {
                 <button
                   type="button"
                   className="profile-modal-close"
-                  onClick={closeModal}
+                  onClick={
+                    closeModal
+                  }
                   aria-label="Close"
                 >
                   ×
@@ -1464,7 +1805,9 @@ function EditProfilePage() {
                     value={
                       preferredPosition
                     }
-                    onChange={(event) =>
+                    onChange={(
+                      event,
+                    ) =>
                       setPreferredPosition(
                         event.target
                           .value,
@@ -1482,10 +1825,16 @@ function EditProfilePage() {
                     {POSITIONS.map(
                       (position) => (
                         <option
-                          key={position}
-                          value={position}
+                          key={
+                            position
+                          }
+                          value={
+                            position
+                          }
                         >
-                          {position}
+                          {
+                            position
+                          }
                         </option>
                       ),
                     )}
@@ -1496,7 +1845,9 @@ function EditProfilePage() {
                   <button
                     type="button"
                     className="profile-secondary-button"
-                    onClick={closeModal}
+                    onClick={
+                      closeModal
+                    }
                   >
                     Cancel
                   </button>
@@ -1527,14 +1878,18 @@ function EditProfilePage() {
           <div
             className="profile-modal-overlay"
             role="presentation"
-            onMouseDown={closeModal}
+            onMouseDown={
+              closeModal
+            }
           >
             <section
               className="profile-modal"
               role="dialog"
               aria-modal="true"
               aria-labelledby="password-modal-title"
-              onMouseDown={(event) =>
+              onMouseDown={(
+                event,
+              ) =>
                 event.stopPropagation()
               }
             >
@@ -1553,7 +1908,9 @@ function EditProfilePage() {
                 <button
                   type="button"
                   className="profile-modal-close"
-                  onClick={closeModal}
+                  onClick={
+                    closeModal
+                  }
                   aria-label="Close"
                 >
                   ×
@@ -1641,7 +1998,9 @@ function EditProfilePage() {
                   <button
                     type="button"
                     className="profile-secondary-button"
-                    onClick={closeModal}
+                    onClick={
+                      closeModal
+                    }
                   >
                     Cancel
                   </button>
@@ -1672,14 +2031,18 @@ function EditProfilePage() {
           <div
             className="profile-modal-overlay"
             role="presentation"
-            onMouseDown={closeModal}
+            onMouseDown={
+              closeModal
+            }
           >
             <section
               className="profile-modal profile-delete-modal"
               role="dialog"
               aria-modal="true"
               aria-labelledby="delete-account-modal-title"
-              onMouseDown={(event) =>
+              onMouseDown={(
+                event,
+              ) =>
                 event.stopPropagation()
               }
             >
@@ -1703,7 +2066,9 @@ function EditProfilePage() {
                 <button
                   type="button"
                   className="profile-modal-close"
-                  onClick={closeModal}
+                  onClick={
+                    closeModal
+                  }
                   aria-label="Close"
                   disabled={
                     isDeletingAccount
@@ -1787,7 +2152,9 @@ function EditProfilePage() {
                     value={
                       deletePassword
                     }
-                    onChange={(event) =>
+                    onChange={(
+                      event,
+                    ) =>
                       setDeletePassword(
                         event.target
                           .value,
@@ -1810,7 +2177,9 @@ function EditProfilePage() {
                     checked={
                       deleteConfirmed
                     }
-                    onChange={(event) =>
+                    onChange={(
+                      event,
+                    ) =>
                       setDeleteConfirmed(
                         event.target
                           .checked,
@@ -1831,7 +2200,9 @@ function EditProfilePage() {
                   <button
                     type="button"
                     className="profile-secondary-button"
-                    onClick={closeModal}
+                    onClick={
+                      closeModal
+                    }
                     disabled={
                       isDeletingAccount
                     }
@@ -1862,7 +2233,13 @@ function EditProfilePage() {
   )
 }
 
-async function readResponse(response) {
+// ========================================
+// RESPONSE HELPERS
+// ========================================
+
+async function readResponse(
+  response,
+) {
   const responseText =
     await response.text()
 
@@ -1875,7 +2252,9 @@ function getErrorMessage(
   data,
   fallbackMessage,
 ) {
-  if (Array.isArray(data.errors)) {
+  if (
+    Array.isArray(data.errors)
+  ) {
     return data.errors.join(', ')
   }
 
