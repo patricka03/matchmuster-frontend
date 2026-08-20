@@ -7,13 +7,16 @@
 
    Adds:
    - iOS / Android safe-area friendly spacing
-   - larger touch targets where the layout allows
+   - proper touch targets for interactive pitch controls
+   - iOS form zoom prevention
    - better phone / small-phone pitch scaling
    - touch feedback for player swapping
    - safer substitute controls
    - landscape support
-   - fixed-bottom-nav clearance
    - reduced-motion support
+
+   Bottom-navigation clearance is handled centrally by
+   fixedNavigation.mobile.css through .dashboard-page.
 
    Platform hooks:
    html.platform-ios
@@ -21,7 +24,7 @@
 ========================================================== */
 
 /* ========================================
-   PAGE WIDTH / NAV CLEARANCE
+   PAGE WIDTH
 ======================================== */
 
 .lineup-builder,
@@ -29,17 +32,8 @@
 .save-lineup-bar {
   width: 100%;
   max-width: 1180px;
-  box-sizing: border-box;
-}
 
-.save-lineup-bar {
-  /*
-   * Leave enough room beneath the final action
-   * for MatchMuster's fixed bottom navigation.
-   */
-  margin-bottom: calc(
-    112px + env(safe-area-inset-bottom, 0px)
-  );
+  box-sizing: border-box;
 }
 
 /* ========================================
@@ -61,6 +55,7 @@
    TOUCH TARGETS
 ======================================== */
 
+.pitch-player-slot select,
 .formation-toolbar select,
 .lineup-role-fields select,
 .substitute-player-actions select,
@@ -74,6 +69,7 @@
   min-height: 44px;
 }
 
+html.platform-android .pitch-player-slot select,
 html.platform-android .formation-toolbar select,
 html.platform-android .lineup-role-fields select,
 html.platform-android .substitute-player-actions select,
@@ -114,24 +110,28 @@ html.platform-android .pitch-player-avatar {
   box-sizing: border-box;
 
   scroll-margin-top:
-    calc(84px + env(safe-area-inset-top, 0px));
+    calc(
+      84px + env(safe-area-inset-top, 0px)
+    );
 
   scroll-margin-bottom:
-    calc(160px + env(safe-area-inset-bottom, 0px));
+    calc(
+      160px + env(safe-area-inset-bottom, 0px)
+    );
 }
 
 /*
- * Keep regular app selects at 16px on phones to
- * prevent iOS Safari / Capacitor form zoom.
- *
- * Pitch selects remain intentionally compact because
- * 4–5 players may share one row. Their container still
- * gets improved touch spacing below.
+ * Prevent iOS Safari / Capacitor from zooming
+ * when any lineup select receives focus.
  */
 @media (max-width: 950px) {
   .formation-toolbar select,
   .lineup-role-fields select,
   .substitute-player-actions select {
+    font-size: 16px;
+  }
+
+  html.platform-ios .pitch-player-slot select {
     font-size: 16px;
   }
 }
@@ -143,6 +143,7 @@ html.platform-android .pitch-player-avatar {
 .football-pitch,
 .formation-grid {
   width: 100%;
+
   box-sizing: border-box;
 }
 
@@ -152,14 +153,22 @@ html.platform-android .pitch-player-avatar {
 }
 
 .pitch-player-slot select {
+  width: 100%;
   min-width: 0;
   max-width: 100%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
 
 .pitch-player-slot label {
   max-width: 100%;
+
   overflow: hidden;
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
@@ -173,7 +182,9 @@ html.platform-android .pitch-player-avatar {
    * Preserve your yellow selected state while
    * making it more obvious on a phone screen.
    */
-  outline: 3px solid rgba(250, 204, 21, 0.42);
+  outline:
+    3px solid rgba(250, 204, 21, 0.42);
+
   outline-offset: 2px;
 }
 
@@ -227,6 +238,7 @@ html.platform-ios .save-lineup-button {
   .lineup-roles-panel,
   .substitute-selection-panel {
     max-width: 100%;
+
     box-sizing: border-box;
   }
 
@@ -239,24 +251,30 @@ html.platform-ios .save-lineup-button {
   }
 
   /*
-   * Give the pitch a little more vertical room so
-   * touch-friendly avatars don't make rows feel cramped.
+   * Give the pitch enough vertical room for
+   * the larger mobile touch targets.
    */
   .football-pitch,
   .formation-grid {
-    min-height: 660px;
+    min-height: 680px;
   }
 
   .formation-grid {
     padding:
       26px
-      max(5px, env(safe-area-inset-right, 0px))
+      max(
+        5px,
+        env(safe-area-inset-right, 0px)
+      )
       26px
-      max(5px, env(safe-area-inset-left, 0px));
+      max(
+        5px,
+        env(safe-area-inset-left, 0px)
+      );
   }
 
   .formation-row {
-    min-height: 88px;
+    min-height: 92px;
   }
 
   .pitch-player-slot {
@@ -268,15 +286,40 @@ html.platform-ios .save-lineup-button {
     height: 40px;
 
     /*
-     * min-width/min-height above provides the
-     * larger tappable target without changing the
-     * visual formation spacing too aggressively.
+     * The min-width/min-height rule above
+     * provides the larger tappable area.
      */
   }
 
   .pitch-player-slot select {
-    padding: 7px 3px;
+    min-height: 44px;
+
+    padding:
+      6px
+      3px;
+
     border-radius: 9px;
+
+    /*
+     * Android does not suffer from the same
+     * automatic input zoom behaviour as iOS,
+     * so it can remain compact visually.
+     */
+    font-size: 11px;
+
+    line-height: 1.15;
+  }
+
+  html.platform-ios
+    .pitch-player-slot select {
+    font-size: 16px;
+  }
+
+  html.platform-android
+    .pitch-player-slot select {
+    min-height: 48px;
+
+    font-size: 11px;
   }
 
   .lineup-role-fields {
@@ -293,24 +336,35 @@ html.platform-ios .save-lineup-button {
 
   .substitute-player-actions {
     width: 100%;
+
     justify-content: stretch;
   }
 
   .substitute-player-actions select {
-    flex: 1 1 110px;
+    flex:
+      1
+      1
+      110px;
+
     width: auto;
   }
 
   .substitute-player-actions button {
-    flex: 1 1 110px;
+    flex:
+      1
+      1
+      110px;
+
     min-height: 44px;
+  }
+
+  html.platform-android
+    .substitute-player-actions button {
+    min-height: 48px;
   }
 
   .save-lineup-bar {
     gap: 12px;
-    margin-bottom: calc(
-      108px + env(safe-area-inset-bottom, 0px)
-    );
     padding: 16px;
   }
 
@@ -332,14 +386,17 @@ html.platform-ios .save-lineup-button {
 
   .football-pitch,
   .formation-grid {
-    min-height: 640px;
+    min-height: 680px;
   }
 
   .formation-grid {
-    padding: 22px 2px;
+    padding:
+      22px
+      2px;
   }
 
   .formation-row {
+    min-height: 92px;
     gap: 2px;
   }
 
@@ -350,17 +407,39 @@ html.platform-ios .save-lineup-button {
   .pitch-player-avatar {
     width: 38px;
     height: 38px;
-    font-size: 9px;
+
+    font-size: 10px;
   }
 
   .pitch-player-slot label {
     font-size: 10px;
   }
 
+  /*
+   * Keep the player picker tappable.
+   * Do not reduce interactive controls to 9px.
+   */
   .pitch-player-slot select {
-    padding-right: 1px;
-    padding-left: 1px;
-    font-size: 9px;
+    min-height: 44px;
+
+    padding-right: 2px;
+    padding-left: 2px;
+
+    font-size: 11px;
+
+    line-height: 1.1;
+  }
+
+  html.platform-ios
+    .pitch-player-slot select {
+    font-size: 16px;
+  }
+
+  html.platform-android
+    .pitch-player-slot select {
+    min-height: 48px;
+
+    font-size: 11px;
   }
 
   .pitch-role-badges {
@@ -386,8 +465,8 @@ html.platform-ios .save-lineup-button {
 @media (orientation: landscape) and (max-height: 600px) {
   .lineup-builder {
     /*
-     * Landscape has enough horizontal room to place
-     * the pitch and roles beside one another again.
+     * Landscape has enough horizontal room
+     * for pitch and roles side-by-side.
      */
     grid-template-columns:
       minmax(0, 1.6fr)
@@ -396,19 +475,25 @@ html.platform-ios .save-lineup-button {
 
   .lineup-roles-panel {
     position: sticky;
-    top: calc(
-      12px + env(safe-area-inset-top, 0px)
-    );
+
+    top:
+      calc(
+        12px +
+        env(safe-area-inset-top, 0px)
+      );
   }
 
   .football-pitch,
   .formation-grid {
-    min-height: 600px;
+    min-height: 620px;
   }
 
   .substitute-player-list {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 }
 

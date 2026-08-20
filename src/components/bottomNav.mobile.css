@@ -303,9 +303,17 @@ html.platform-android
     );
   }
 
+  /*
+   * Never reduce interactive tab targets below
+   * the 44pt iOS minimum in landscape.
+   */
   .bottom-nav-item {
-    min-height: 40px;
+    min-height: 44px;
     gap: 2px;
+  }
+
+  html.platform-android .bottom-nav-item {
+    min-height: 48px;
   }
 
   .bottom-nav-sheet-backdrop {

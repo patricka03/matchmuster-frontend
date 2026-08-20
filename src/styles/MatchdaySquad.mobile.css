@@ -108,6 +108,7 @@ html.platform-android .matchday-role-readout {
 .matchday-squad-readonly
   .substitute-player-card.selected {
   border-color: #bfdbfe;
+
   background:
     linear-gradient(
       135deg,
@@ -132,12 +133,15 @@ html.platform-android .matchday-role-readout {
 
   .matchday-player-name {
     max-width: 82px;
-    font-size: 10px;
+    font-size: 11px;
+    line-height: 1.2;
   }
 
   .matchday-role-readout {
     width: 100%;
+
     min-height: 44px;
+
     padding: 10px 12px;
   }
 }
@@ -148,8 +152,9 @@ html.platform-android .matchday-role-readout {
 
 @media (max-width: 380px) {
   .matchday-player-name {
-    max-width: 68px;
-    font-size: 9px;
+    max-width: 70px;
+    font-size: 10px;
+    line-height: 1.2;
   }
 
   .matchday-formation-readout strong {

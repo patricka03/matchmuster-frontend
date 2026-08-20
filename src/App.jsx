@@ -1,3 +1,4 @@
+import SupportPage from './pages/SupportPage'
 import {
   Route,
   Routes,
@@ -106,6 +107,8 @@ function App() {
           path="/help"
           element={<HelpPage />}
         />
+
+        <Route path="/support" element={<SupportPage />} />
 
         <Route
           path="/legal"

@@ -1,6 +1,6 @@
 /* ==========================================================
    MATCHMUSTER SQUAD PAGE — MOBILE APP POLISH
-   File: src/styles/SquadPage.mobile.css
+   File: src/pages/SquadPage.mobile.css
 
    Import this AFTER SquadPage.css.
 
@@ -12,10 +12,12 @@
    - safer action-card sizing
    - touch-first button behaviour
    - better badge wrapping
-   - bottom-nav clearance
    - very-small-phone support
    - landscape handling
    - reduced-motion support
+
+   Bottom-navigation clearance is provided centrally by
+   bottomNav.mobile.css through .dashboard-page.
 
    Platform hooks:
    html.platform-ios
@@ -150,16 +152,6 @@ html.platform-ios .upcoming-matches-button {
     width: auto;
     min-width: 160px;
   }
-}
-
-/* ========================================
-   BOTTOM NAV CLEARANCE
-======================================== */
-
-.squad-page-actions:last-child {
-  margin-bottom: calc(
-    116px + env(safe-area-inset-bottom, 0px)
-  );
 }
 
 /* ========================================
