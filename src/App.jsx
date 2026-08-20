@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import './App.mobile.css'
+import SupportPage from './pages/SupportPage'
 
 import WelcomePage from './pages/WelcomePage'
 import LoginPage from './pages/LoginPage'
@@ -61,6 +62,7 @@ function App() {
       <Route path="/profile/edit" element={<EditProfilePage />} />
       <Route path="/notifications" element={<NotificationsPage />} />
       <Route path="/help" element={<HelpPage />} />
+      <Route path="/support" element={<SupportPage />} />
 
       <Route path="/legal" element={<LegalHubPage />} />
       <Route path="/legal/:document" element={<LegalPage />} />

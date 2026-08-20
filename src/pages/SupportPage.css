@@ -1,0 +1,325 @@
+.support-public-page {
+  min-height: 100vh;
+
+  padding-bottom: 50px;
+
+  background: #f8fbff;
+
+  color: #0f172a;
+}
+
+
+/* HEADER */
+
+.support-public-header {
+  width: min(1080px, calc(100% - 40px));
+
+  min-height: 78px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+}
+
+.support-public-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: #0f172a;
+
+  text-decoration: none;
+
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.support-public-brand img {
+  width: 42px;
+  height: 42px;
+
+  object-fit: contain;
+}
+
+.support-public-header nav {
+  display: flex;
+
+  gap: 20px;
+}
+
+.support-public-header nav a {
+  color: #334155;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+/* HERO */
+
+.support-public-hero {
+  width: min(820px, calc(100% - 40px));
+
+  margin: 70px auto 0;
+
+  text-align: center;
+}
+
+.support-eyebrow {
+  margin: 0 0 12px;
+
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  letter-spacing: 0.12em;
+}
+
+.support-public-hero h1 {
+  margin: 0;
+
+  font-size: clamp(42px, 7vw, 64px);
+
+  letter-spacing: -0.04em;
+}
+
+.support-public-hero > p:last-child {
+  max-width: 680px;
+
+  margin: 22px auto 0;
+
+  color: #64748b;
+
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+
+/* TOPICS */
+
+.support-topic-grid {
+  width: min(1080px, calc(100% - 40px));
+
+  margin: 60px auto 0;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 18px;
+}
+
+.support-topic-grid article {
+  padding: 26px;
+
+  border: 1px solid #e5edf6;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 14px 34px rgba(15, 23, 42, 0.05);
+}
+
+.support-topic-grid h2 {
+  margin: 0 0 10px;
+
+  font-size: 18px;
+}
+
+.support-topic-grid p {
+  margin: 0;
+
+  color: #64748b;
+
+  line-height: 1.65;
+}
+
+
+/* CONTACT */
+
+.support-contact-panel {
+  width: min(1080px, calc(100% - 40px));
+
+  margin: 80px auto 0;
+  padding: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 36px;
+
+  border: 1px solid #e3eaf3;
+  border-radius: 26px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff1f7,
+      #eef6ff
+    );
+}
+
+.support-contact-panel > div {
+  max-width: 660px;
+}
+
+.support-contact-panel h2 {
+  margin: 0;
+
+  font-size: 34px;
+}
+
+.support-contact-panel p:last-child {
+  color: #64748b;
+
+  line-height: 1.7;
+}
+
+.support-email-button {
+  min-height: 50px;
+
+  padding: 0 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-weight: 800;
+}
+
+
+/* COMPANY */
+
+.support-company-panel {
+  width: min(1080px, calc(100% - 40px));
+
+  margin: 70px auto 0;
+
+  padding: 34px;
+
+  border: 1px solid #e5edf6;
+  border-radius: 20px;
+
+  background: #ffffff;
+}
+
+.support-company-panel h2 {
+  margin-top: 0;
+}
+
+.support-company-panel p {
+  margin: 7px 0;
+
+  color: #64748b;
+}
+
+
+/* FOOTER */
+
+.support-public-footer {
+  width: min(1080px, calc(100% - 40px));
+
+  margin: 70px auto 0;
+  padding-top: 30px;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 18px;
+
+  border-top: 1px solid #dde6f1;
+
+  color: #94a3b8;
+
+  font-size: 13px;
+}
+
+.support-public-footer a {
+  color: #475569;
+
+  text-decoration: none;
+
+  font-weight: 700;
+}
+
+
+/* TABLET */
+
+@media (max-width: 850px) {
+
+  .support-topic-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .support-contact-panel {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .support-public-header,
+  .support-public-hero,
+  .support-topic-grid,
+  .support-contact-panel,
+  .support-company-panel,
+  .support-public-footer {
+    width: calc(100% - 28px);
+  }
+
+  .support-public-header nav a:not(:last-child) {
+    display: none;
+  }
+
+  .support-public-hero {
+    margin-top: 45px;
+  }
+
+  .support-public-hero h1 {
+    font-size: 42px;
+  }
+
+  .support-topic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .support-contact-panel {
+    padding: 28px 22px;
+  }
+
+  .support-email-button {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    font-size: 14px;
+  }
+
+  .support-company-panel {
+    padding: 26px 22px;
+  }
+
+}
