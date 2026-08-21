@@ -207,7 +207,7 @@ function CreateMatchPage() {
       }
 
       navigate(
-        `/teams/${teamId}/matches`,
+        `/teams/${teamId}/schedule`,
       )
     } catch {
       setErrorMessages([
@@ -399,7 +399,7 @@ function CreateMatchPage() {
             <div className="match-form-actions">
               <Link
                 className="cancel-match-link"
-                to={`/teams/${teamId}/matches`}
+                to={`/teams/${teamId}/schedule`}
               >
                 Cancel
               </Link>

@@ -638,8 +638,8 @@ function MatchPage() {
             match && (
               <>
                 <BackButton
-                  to={`/teams/${teamId}/matches`}
-                  label="Back to fixtures"
+                  to={`/teams/${teamId}/schedule`}
+                  label="Back to schedule"
                 />
 
                 <div className="dashboard-welcome">

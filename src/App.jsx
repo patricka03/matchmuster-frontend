@@ -1,5 +1,6 @@
 import SupportPage from './pages/SupportPage'
 import {
+  Navigate,
   Route,
   Routes,
 } from 'react-router-dom'
@@ -16,7 +17,6 @@ import DashboardPage from './pages/DashboardPage'
 import EditProfilePage from './pages/EditProfilePage'
 import TeamPage from './pages/TeamPage'
 import SquadPage from './pages/SquadPage'
-import MatchesPage from './pages/MatchesPage'
 import CreateMatchPage from './pages/CreateMatchPage'
 import MatchPage from './pages/MatchPage'
 import EditMatchPage from './pages/EditMatchPage'
@@ -147,7 +147,13 @@ function App() {
 
         <Route
           path="/teams/:teamId/matches"
-          element={<MatchesPage />}
+          element={
+            <Navigate
+              to="../schedule"
+              relative="path"
+              replace
+            />
+          }
         />
 
         <Route

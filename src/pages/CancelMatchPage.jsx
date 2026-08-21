@@ -147,7 +147,7 @@ function CancelMatchPage() {
       }
 
       navigate(
-        `/teams/${teamId}/matches`,
+        `/teams/${teamId}/schedule`,
         {
           replace: true,
         },

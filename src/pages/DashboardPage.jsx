@@ -1108,7 +1108,7 @@ function DashboardPage() {
     }
 
     navigate(
-      `/teams/${teamId}/matches`,
+      `/teams/${teamId}/schedule`,
     )
   }
 
