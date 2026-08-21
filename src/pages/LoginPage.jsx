@@ -1,16 +1,9 @@
 import { useState } from 'react'
-import {
-  Link,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom'
-
+import { Link, useLocation, useNavigate, } from 'react-router-dom'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
-
-import {
-  setAuthToken,
-} from '../utils/authStorage'
+import { setAuthToken, } from '../utils/authStorage'
+import BackButton from '../components/BackButton'
 
 function LoginPage() {
   const location = useLocation()
@@ -117,13 +110,10 @@ function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link
-          className="app-back-button"
+        <BackButton
           to="/"
-        >
-          Back
-        </Link>
-
+          label="Back to welcome"
+        />
         <img
           className="matchmuster-page-logo"
           src={matchMusterLogo}

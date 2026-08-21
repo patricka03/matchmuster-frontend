@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
+import BackButton from '../components/BackButton'
 
 function SignupPage() {
   const navigate = useNavigate()
@@ -154,13 +155,10 @@ function SignupPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link
-          className="app-back-button"
+        <BackButton
           to="/"
-        >
-          Back
-        </Link>
-
+          label="Back to welcome"
+        />
         <img
           className="matchmuster-page-logo"
           src={matchMusterLogo}

@@ -9,7 +9,6 @@ import {
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
@@ -301,11 +300,6 @@ function EditTrainingPage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
-          <BackButton
-            to={`/teams/${teamId}/trainings/${trainingId}`}
-            label="Back to training"
-          />
-
           <div className="dashboard-welcome">
             <p className="dashboard-label">
               Training

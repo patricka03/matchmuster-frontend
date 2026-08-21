@@ -18,7 +18,6 @@ import {
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
@@ -607,11 +606,6 @@ function SchedulePage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
-          <BackButton
-            to="/dashboard"
-            label="Back to dashboard"
-          />
-
           <div className="matches-heading">
             <div>
               <p className="dashboard-label">

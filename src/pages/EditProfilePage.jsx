@@ -1113,12 +1113,6 @@ function EditProfilePage() {
               </p>
             </div>
 
-            <Link
-              className="app-back-button"
-              to="/dashboard"
-            >
-              Back to dashboard
-            </Link>
           </div>
 
           {errorMessage &&

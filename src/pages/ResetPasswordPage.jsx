@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
+import BackButton from '../components/BackButton'
 
 function ResetPasswordPage() {
   const navigate = useNavigate()
@@ -97,9 +98,10 @@ function ResetPasswordPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link className="app-back-button" to="/login">
-          Back to login
-        </Link>
+        <BackButton
+          to="/login"
+          label="Back to login"
+        />
 
         <img
           className="matchmuster-page-logo"

@@ -1,32 +1,14 @@
-import {
-  Link,
-  useNavigate,
-} from 'react-router-dom'
-
+import { Link } from 'react-router-dom'
 import './Legal.css'
-
 import matchMusterLogo from '../../assets/matchmuster-logo.png'
-
-import {
-  getAuthToken,
-} from '../../utils/authStorage'
+import BackButton from '../../components/BackButton'
+import { getAuthToken } from '../../utils/authStorage'
 
 function LegalHubPage() {
-  const navigate =
-    useNavigate()
-
-  function handleBack() {
-    const token =
-      getAuthToken()
-
-    if (token) {
-      navigate(
-        '/profile/edit',
-      )
-    } else {
-      navigate('/')
-    }
-  }
+  const backDestination =
+    getAuthToken()
+      ? '/profile/edit'
+      : '/'
 
   const legalDocuments = [
     {
@@ -132,15 +114,10 @@ function LegalHubPage() {
   return (
     <main className="legal-page">
       <div className="legal-container">
-        <button
-          type="button"
-          className="app-back-button"
-          onClick={
-            handleBack
-          }
-        >
-          Back
-        </button>
+        <BackButton
+          to={backDestination}
+          label="Back"
+        />
 
         <header className="legal-header">
           <img

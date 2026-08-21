@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react'
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
-
-import Navbar from '../components/Navbar'
+import { Link, useNavigate, useParams, } from 'react-router-dom'
 import BackButton from '../components/BackButton'
+import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
 
 import {
@@ -283,11 +278,6 @@ function EditAvailabilityPage() {
 
       <main className="edit-availability-page">
         <section className="edit-availability-container">
-          <BackButton
-            to={`/teams/${teamId}/matches/${matchId}`}
-            label="Back to match"
-          />
-
           <div className="edit-availability-heading">
             <p className="dashboard-label">
               Player availability
@@ -438,12 +428,10 @@ function EditAvailabilityPage() {
           )}
 
           {!availability && (
-            <Link
-              className="edit-availability-back"
+            <BackButton
               to={`/teams/${teamId}/matches/${matchId}`}
-            >
-              Back to fixture
-            </Link>
+              label="Back to fixture"
+            />
           )}
         </section>
       </main>

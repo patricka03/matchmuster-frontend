@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import BackButton from '../components/BackButton'
 import './HelpPage.css'
 import './HelpPage.mobile.css'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
@@ -7,9 +7,10 @@ function HelpPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link className="app-back-button" to="/login">
-          Back to login
-        </Link>
+        <BackButton
+          to="/login"
+          label="Back to login"
+        />
 
         <img
           className="matchmuster-page-logo"

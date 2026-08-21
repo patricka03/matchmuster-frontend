@@ -10,7 +10,6 @@ import {
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
@@ -382,11 +381,6 @@ function ConfirmAvailabilityPage() {
 
       <main className="edit-availability-page">
         <section className="edit-availability-container">
-          <BackButton
-            to={`/teams/${teamId}/matches/${matchId}`}
-            label="Back to match"
-          />
-
           <div className="edit-availability-heading">
             <p className="dashboard-label">
               Player availability

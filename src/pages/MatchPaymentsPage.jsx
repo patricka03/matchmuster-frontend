@@ -11,7 +11,6 @@ import {
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 
 import './MatchPaymentsPage.css'
 import './MatchPaymentsPage.mobile.css'
@@ -1034,11 +1033,6 @@ function MatchPaymentsPage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
-          <BackButton
-            to={`/teams/${teamId}/matches/${matchId}`}
-            label="Back to match"
-          />
-
           {match && (
             <div className="dashboard-welcome payment-page-heading">
               <p className="dashboard-label">

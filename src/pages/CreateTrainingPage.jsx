@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { SearchBox } from '@mapbox/search-js-react'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
@@ -256,10 +255,6 @@ function CreateTrainingPage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
-          <BackButton
-            to={`/teams/${teamId}/trainings`}
-            label="Back to training"
-          />
 
           <div className="dashboard-welcome">
             <p className="dashboard-label">

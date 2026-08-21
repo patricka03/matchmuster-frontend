@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { Link, useNavigate, useParams, } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
+import BackButton from '../components/BackButton'
 import ReportModal from '../components/ReportModal'
 import './PostPage.css'
 import './PostPage.mobile.css'
@@ -517,13 +514,10 @@ function PostPage() {
 
       <main className="post-page">
         <section className="post-page-container">
-          <Link
-            className="app-back-button"
+          <BackButton
             to={`/teams/${teamId}/posts`}
-          >
-            Back to posts
-          </Link>
-
+            label="Back to posts"
+          />
           {errorMessage && (
             <p
               className="post-page-error"

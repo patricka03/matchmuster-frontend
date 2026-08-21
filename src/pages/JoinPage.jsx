@@ -390,7 +390,7 @@ function JoinPage() {
                   )
                 }
               >
-                Back to Dashboard
+                Go to Home
               </button>
             </article>
           ) : (

@@ -1,21 +1,11 @@
-import {
-  useEffect,
-  useState,
-} from 'react'
+import { useEffect, useState, } from 'react'
 
-import {
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { useNavigate, useParams, } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
-import {
-  clearAuthToken,
-  getAuthToken,
-} from '../utils/authStorage'
+import { clearAuthToken, getAuthToken, } from '../utils/authStorage'
 
 import '../styles/TeamAwardsPage.css'
 import '../styles/TeamAwardsPage.mobile.css'
@@ -492,11 +482,6 @@ function TeamAwardsPage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
-          <BackButton
-            to={`/teams/${teamId}`}
-            label="Back to team"
-          />
-
           {errorMessage && (
             <p
               className="team-error"

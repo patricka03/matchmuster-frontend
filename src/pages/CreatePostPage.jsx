@@ -216,13 +216,6 @@ function CreatePostPage() {
 
       <main className="create-post-page">
         <section className="create-post-container">
-          <Link
-            className="app-back-button"
-            to={`/teams/${teamId}/posts`}
-          >
-            Back to posts
-          </Link>
-
           <header className="create-post-header">
             <p className="create-post-label">
               Team communication

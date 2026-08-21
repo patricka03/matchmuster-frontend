@@ -369,16 +369,6 @@ function TeamPage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
-          <button
-            className="app-back-button"
-            type="button"
-            onClick={() =>
-              navigate('/dashboard')
-            }
-          >
-            Back to dashboard
-          </button>
-
           <div className="dashboard-welcome">
             <p className="dashboard-label">
               Team details

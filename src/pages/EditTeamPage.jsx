@@ -573,16 +573,6 @@ function EditTeamPage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
-          <button
-            className="back-button"
-            type="button"
-            onClick={() =>
-              navigate('/team')
-            }
-          >
-            Back to my teams
-          </button>
-
           <div className="dashboard-welcome">
             <p className="dashboard-label">
               Team management
