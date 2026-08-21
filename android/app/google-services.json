@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "847249809330",
+    "project_id": "matchmuster",
+    "storage_bucket": "matchmuster.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847249809330:android:0c1318606113a28fedceab",
+        "android_client_info": {
+          "package_name": "uk.matchmuster.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGAe0_Nok6qZIUDUefyCkA9BNt17GwUVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
