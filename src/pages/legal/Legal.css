@@ -526,3 +526,11 @@
   outline-offset: 3px;
   border-radius: 4px;
 }
+
+.legal-page-authenticated {
+  padding-bottom:
+    calc(
+      116px +
+      env(safe-area-inset-bottom, 0px)
+    );
+}

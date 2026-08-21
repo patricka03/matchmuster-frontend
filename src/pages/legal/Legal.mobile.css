@@ -1,0 +1,11 @@
+/* ========================================
+   AUTHENTICATED LEGAL APP MODE
+======================================== */
+
+.legal-page-authenticated {
+  padding-bottom:
+    calc(
+      116px +
+      env(safe-area-inset-bottom, 0px)
+    );
+}

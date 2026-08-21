@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom'
+
 import './Legal.css'
+
 import matchMusterLogo from '../../assets/matchmuster-logo.png'
 import BackButton from '../../components/BackButton'
-import { getAuthToken } from '../../utils/authStorage'
+import Navbar from '../../components/Navbar'
+
+import {
+  getAuthToken,
+} from '../../utils/authStorage'
 
 function LegalHubPage() {
-  const backDestination =
-    getAuthToken()
-      ? '/profile/edit'
-      : '/'
+  const isAuthenticated =
+    Boolean(getAuthToken())
 
   const legalDocuments = [
     {
@@ -112,101 +116,108 @@ function LegalHubPage() {
   ]
 
   return (
-    <main className="legal-page">
-      <div className="legal-container">
-        <BackButton
-          to={backDestination}
-          label="Back"
-        />
+    <>
+      {isAuthenticated && (
+        <Navbar />
+      )}
 
-        <header className="legal-header">
-          <img
-            className="legal-page-logo"
-            src={
-              matchMusterLogo
-            }
-            alt="MatchMuster"
-          />
-
-          <h1>
-            Legal &amp; Privacy
-          </h1>
-
-          <p>
-            Information about your
-            rights, privacy and the
-            rules for using
-            MatchMuster.
-          </p>
-        </header>
-
-        <div className="legal-list">
-          {legalDocuments.map(
-            (document) => (
-              <Link
-                key={
-                  document.path
-                }
-                to={
-                  document.path
-                }
-                className="legal-card"
-              >
-                <div>
-                  <h2>
-                    {
-                      document.title
-                    }
-                  </h2>
-
-                  <p>
-                    {
-                      document.description
-                    }
-                  </p>
-                </div>
-
-                <span className="legal-arrow">
-                  ›
-                </span>
-              </Link>
-            ),
+      <main
+        className={
+          isAuthenticated
+            ? 'legal-page legal-page-authenticated'
+            : 'legal-page'
+        }
+      >
+        <div className="legal-container">
+          {!isAuthenticated && (
+            <BackButton
+              to="/"
+              label="Back to welcome"
+            />
           )}
+
+          <header className="legal-header">
+            <img
+              className="legal-page-logo"
+              src={matchMusterLogo}
+              alt="MatchMuster"
+            />
+
+            <h1>
+              Legal &amp; Privacy
+            </h1>
+
+            <p>
+              Information about your
+              rights, privacy and the
+              rules for using
+              MatchMuster.
+            </p>
+          </header>
+
+          <div className="legal-list">
+            {legalDocuments.map(
+              (document) => (
+                <Link
+                  key={document.path}
+                  to={document.path}
+                  className="legal-card"
+                >
+                  <div>
+                    <h2>
+                      {document.title}
+                    </h2>
+
+                    <p>
+                      {document.description}
+                    </p>
+                  </div>
+
+                  <span
+                    className="legal-arrow"
+                    aria-hidden="true"
+                  >
+                    ›
+                  </span>
+                </Link>
+              ),
+            )}
+          </div>
+
+          <div className="legal-contact">
+            <h2>
+              Need help?
+            </h2>
+
+            <p>
+              matchmuster.dev@gmail.com
+            </p>
+          </div>
+
+          <footer className="legal-company-details">
+            <p className="legal-company-name">
+              MATCHMUSTER LTD
+            </p>
+
+            <p>
+              Company number:
+              17400982
+            </p>
+
+            <p>
+              Registered in England
+              and Wales
+            </p>
+
+            <address>
+              Registered office: 8
+              Cancell Road, London,
+              SW9 6HN
+            </address>
+          </footer>
         </div>
-
-        <div className="legal-contact">
-          <h2>
-            Need help?
-          </h2>
-
-          <p>
-            matchmuster.dev@gmail.com
-          </p>
-        </div>
-
-        <footer className="legal-company-details">
-          <p className="legal-company-name">
-            MATCHMUSTER LTD
-          </p>
-
-          <p>
-            Company number:
-            17400982
-          </p>
-
-          <p>
-            Registered in England
-            and Wales
-          </p>
-
-          <address>
-            Registered office: 8
-            Cancell Road, London,
-            SW9 6HN
-          </address>
-        </footer>
-      </div>
-    </main>
+      </main>
+    </>
   )
 }
 

@@ -168,3 +168,118 @@ html.platform-ios .support-email {
     transition: none;
   }
 }
+
+/* ========================================
+   AUTHENTICATED APP MODE
+======================================== */
+
+/*
+ * When Help is opened from the signed-in
+ * MatchMuster More menu, it sits underneath
+ * the fixed Navbar and above the fixed BottomNav.
+ */
+.help-page-authenticated {
+  width: 100%;
+  min-height: 100dvh;
+
+  box-sizing: border-box;
+
+  align-items: flex-start;
+
+  padding-top: 20px;
+
+  padding-right:
+    max(
+      16px,
+      env(safe-area-inset-right, 0px)
+    );
+
+  padding-bottom:
+    calc(
+      116px +
+      env(safe-area-inset-bottom, 0px)
+    );
+
+  padding-left:
+    max(
+      16px,
+      env(safe-area-inset-left, 0px)
+    );
+}
+
+.help-page-authenticated .auth-card {
+  width: 100%;
+  max-width: 680px;
+
+  box-sizing: border-box;
+
+  margin: 0 auto;
+}
+
+/* ========================================
+   AUTHENTICATED MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+  .help-page-authenticated {
+    padding-top: 16px;
+
+    padding-right:
+      max(
+        14px,
+        env(safe-area-inset-right, 0px)
+      );
+
+    padding-left:
+      max(
+        14px,
+        env(safe-area-inset-left, 0px)
+      );
+  }
+
+  .help-page-authenticated .auth-card {
+    margin: 0 auto;
+  }
+}
+
+/* ========================================
+   AUTHENTICATED SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+  .help-page-authenticated {
+    padding-top: 12px;
+
+    padding-right:
+      max(
+        12px,
+        env(safe-area-inset-right, 0px)
+      );
+
+    padding-left:
+      max(
+        12px,
+        env(safe-area-inset-left, 0px)
+      );
+  }
+}
+
+/* ========================================
+   AUTHENTICATED LANDSCAPE
+======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .help-page-authenticated {
+    padding-top: 12px;
+
+    padding-bottom:
+      calc(
+        100px +
+        env(safe-area-inset-bottom, 0px)
+      );
+  }
+
+  .help-page-authenticated .auth-card {
+    max-width: 760px;
+  }
+}

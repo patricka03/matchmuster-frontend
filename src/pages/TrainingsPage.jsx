@@ -277,11 +277,6 @@ function TrainingsPage() {
                   )
                 }
               >
-                <Plus
-                  size={18}
-                  aria-hidden="true"
-                />
-
                 Create training
               </button>
             )}

@@ -236,7 +236,39 @@
 }
 
 .bottom-nav-sheet-links .bottom-nav-team-switcher-trigger {
+  width: 100%;
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 0 13px;
+
+  border: 0;
   border-radius: 0;
+
+  background: transparent;
+  color: #334155;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.bottom-nav-sheet-links
+  .bottom-nav-team-switcher-trigger:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #fff7fb,
+      #f5f9ff
+    );
+
+  color: #ff0a78;
 }
 
 .bottom-nav-team-switcher-trigger small {
