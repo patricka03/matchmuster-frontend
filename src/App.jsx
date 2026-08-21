@@ -9,6 +9,7 @@ import './App.css'
 import './App.mobile.css'
 
 import AppUrlListener from './components/AppUrlListener'
+import PushNotificationManager from './components/PushNotificationManager'
 
 import WelcomePage from './pages/WelcomePage'
 import LoginPage from './pages/LoginPage'
@@ -57,7 +58,7 @@ function App() {
   return (
     <>
       <AppUrlListener />
-
+      <PushNotificationManager />
       <Routes>
         <Route
           path="/"

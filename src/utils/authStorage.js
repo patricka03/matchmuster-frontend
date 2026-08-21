@@ -10,6 +10,17 @@ const TOKEN_KEY = 'token'
 let cachedToken = null
 let storageInitialised = false
 
+export const AUTH_CHANGED_EVENT =
+  'matchmuster-auth-changed'
+
+function notifyAuthChanged() {
+  window.dispatchEvent(
+    new CustomEvent(
+      AUTH_CHANGED_EVENT,
+    ),
+  )
+}
+
 export async function initialiseAuthStorage() {
   if (storageInitialised) {
     return
@@ -96,13 +107,17 @@ export async function setAuthToken(token) {
 
     localStorage.removeItem('token')
 
+    notifyAuthChanged()
+
     return
   }
 
   localStorage.setItem(
-    'token',
+    TOKEN_KEY,
     token,
   )
+
+  notifyAuthChanged()
 }
 
 export async function clearAuthToken() {
@@ -115,8 +130,12 @@ export async function clearAuthToken() {
 
     localStorage.removeItem('token')
 
+    notifyAuthChanged()
+
     return
   }
 
-  localStorage.removeItem('token')
+  localStorage.removeItem(TOKEN_KEY)
+
+  notifyAuthChanged()
 }
