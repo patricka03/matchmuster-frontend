@@ -1,6 +1,9 @@
-import { useEffect } from 'react'
+import {
+  useEffect,
+} from 'react'
 
 import {
+  AUTH_CHANGED_EVENT,
   getAuthToken,
 } from '../utils/authStorage'
 
@@ -11,14 +14,19 @@ import {
 
 function PushNotificationManager() {
   useEffect(() => {
-    const token = getAuthToken()
-
-    if (!token) {
-      return undefined
-    }
-
     let cleanup = null
     let cancelled = false
+
+    async function attemptRegistration() {
+      const token =
+        getAuthToken()
+
+      if (!token || cancelled) {
+        return
+      }
+
+      await registerForPushNotifications()
+    }
 
     async function initialisePushNotifications() {
       cleanup =
@@ -29,8 +37,24 @@ function PushNotificationManager() {
         return
       }
 
-      await registerForPushNotifications()
+      await attemptRegistration()
     }
+
+    function handleAuthChanged() {
+      void attemptRegistration().catch(
+        (error) => {
+          console.error(
+            'Unable to register MatchMuster push notifications after authentication changed.',
+            error,
+          )
+        },
+      )
+    }
+
+    window.addEventListener(
+      AUTH_CHANGED_EVENT,
+      handleAuthChanged,
+    )
 
     initialisePushNotifications().catch(
       (error) => {
@@ -43,6 +67,11 @@ function PushNotificationManager() {
 
     return () => {
       cancelled = true
+
+      window.removeEventListener(
+        AUTH_CHANGED_EVENT,
+        handleAuthChanged,
+      )
 
       if (cleanup) {
         void cleanup()
