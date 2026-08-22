@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "uk.matchmuster.app",
+      "sha256_cert_fingerprints": [
+        "AB:2B:C0:D6:55:49:9B:2C:C9:5A:2A:16:2E:33:B7:E1:BC:4D:63:13:F6:C6:75:42:9D:C9:21:DA:0D:62:22:07"
+      ]
+    }
+  }
+]
