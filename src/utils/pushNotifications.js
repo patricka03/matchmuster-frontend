@@ -42,7 +42,7 @@ async function registerPushDevice(
             'application/json',
 
           Authorization:
-            `Bearer ${authToken}`,
+            authToken,
         },
 
         body: JSON.stringify({
