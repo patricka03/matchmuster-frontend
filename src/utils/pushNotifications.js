@@ -7,6 +7,32 @@ import {
   getAuthToken,
 } from './authStorage'
 
+const ANDROID_PUSH_CHANNEL_ID =
+  'matchmuster_alerts'
+
+async function ensureAndroidPushChannel() {
+  if (
+    Capacitor.getPlatform() !==
+    'android'
+  ) {
+    return
+  }
+
+  await PushNotifications.createChannel({
+    id: ANDROID_PUSH_CHANNEL_ID,
+    name: 'MatchMuster alerts',
+    description:
+      'Important MatchMuster team and match notifications.',
+    importance: 4,
+    visibility: 1,
+    vibration: true,
+  })
+
+  console.info(
+    'MatchMuster Android notification channel ready.',
+  )
+}
+
 async function registerPushDevice(
   pushToken,
 ) {
@@ -84,6 +110,8 @@ export async function registerForPushNotifications() {
   if (!Capacitor.isNativePlatform()) {
     return
   }
+
+  await ensureAndroidPushChannel()
 
   let permissionStatus =
     await PushNotifications.checkPermissions()
