@@ -358,6 +358,432 @@ const FILTERS = [
   },
 ]
 
+const MOTM_ACTION_TYPES = [
+  'motm_voting_open',
+  'match_rating_open',
+  'match_rating_reminder',
+]
+
+const MOTM_ACTION_WINDOW_MS =
+  4 * 60 * 60 * 1000
+
+const AVAILABILITY_ACTION_TYPES = [
+  'fixture_created',
+  'availability_required',
+  'availability_reminder',
+]
+
+const PAYMENT_NOTIFICATION_TYPES = [
+  'match_payment_requested',
+  'match_payment_amount_changed',
+  'match_payment_reminder',
+  'match_payment_paid',
+  'match_payment_waived',
+]
+
+const PAYMENT_ACTION_REQUEST_TYPES = [
+  'match_payment_requested',
+  'match_payment_amount_changed',
+  'match_payment_reminder',
+]
+
+const JOIN_REQUEST_ACTION_TYPES = [
+  'join_request_received',
+  'team_join_requested',
+]
+
+function joinRequestResolution(
+  notification,
+) {
+  if (
+    !JOIN_REQUEST_ACTION_TYPES.includes(
+      notification
+        ?.notification_type,
+    )
+  ) {
+    return null
+  }
+
+  const status =
+    [
+      notification?.team_membership
+        ?.status,
+      notification?.membership
+        ?.status,
+      notification?.join_request
+        ?.status,
+      notification
+        ?.membership_status,
+      notification
+        ?.join_request_status,
+      notification?.metadata
+        ?.membership_status,
+      notification?.metadata
+        ?.join_request_status,
+      notification?.data
+        ?.membership_status,
+      notification?.data
+        ?.join_request_status,
+    ]
+      .find(
+        (value) =>
+          typeof value ===
+            'string' &&
+          value.trim(),
+      )
+      ?.trim()
+      .toLowerCase()
+
+  if (
+    [
+      'approved',
+      'accepted',
+      'active',
+    ].includes(status) ||
+    notification?.approved_at ||
+    notification?.team_membership
+      ?.approved_at ||
+    notification?.membership
+      ?.approved_at ||
+    notification?.join_request
+      ?.approved_at
+  ) {
+    return 'approved'
+  }
+
+  if (
+    [
+      'rejected',
+      'declined',
+    ].includes(status) ||
+    notification?.rejected_at ||
+    notification?.team_membership
+      ?.rejected_at ||
+    notification?.membership
+      ?.rejected_at ||
+    notification?.join_request
+      ?.rejected_at
+  ) {
+    return 'rejected'
+  }
+
+  if (
+    [
+      'cancelled',
+      'canceled',
+      'removed',
+      'expired',
+    ].includes(status) ||
+    notification?.resolved_at ||
+    notification?.actioned_at
+  ) {
+    return 'closed'
+  }
+
+  return null
+}
+
+function paymentResolution(
+  notification,
+) {
+  if (
+    !PAYMENT_NOTIFICATION_TYPES.includes(
+      notification
+        ?.notification_type,
+    )
+  ) {
+    return null
+  }
+
+  if (
+    notification
+      .notification_type ===
+    'match_payment_paid'
+  ) {
+    return 'paid'
+  }
+
+  if (
+    notification
+      .notification_type ===
+    'match_payment_waived'
+  ) {
+    return 'waived'
+  }
+
+  const status =
+    [
+      notification?.match_payment
+        ?.status,
+      notification?.payment
+        ?.status,
+      notification
+        ?.payment_status,
+      notification
+        ?.match_payment_status,
+      notification?.metadata
+        ?.payment_status,
+      notification?.data
+        ?.payment_status,
+    ]
+      .find(
+        (value) =>
+          typeof value ===
+            'string' &&
+          value.trim(),
+      )
+      ?.trim()
+      .toLowerCase()
+
+  if (
+    [
+      'paid',
+      'succeeded',
+      'complete',
+      'completed',
+    ].includes(status) ||
+    notification?.paid_at ||
+    notification?.match_payment
+      ?.paid_at ||
+    notification?.payment
+      ?.paid_at
+  ) {
+    return 'paid'
+  }
+
+  if (
+    status === 'waived' ||
+    notification?.waived_at ||
+    notification?.match_payment
+      ?.waived_at ||
+    notification?.payment
+      ?.waived_at
+  ) {
+    return 'waived'
+  }
+
+  if (
+    [
+      'cancelled',
+      'canceled',
+      'refunded',
+      'void',
+      'voided',
+    ].includes(status)
+  ) {
+    return 'closed'
+  }
+
+  return null
+}
+
+function isAvailabilityFixtureCancelled(
+  notification,
+) {
+  const status =
+    [
+      notification?.match
+        ?.status,
+      notification
+        ?.match_status,
+      notification?.metadata
+        ?.match_status,
+      notification?.data
+        ?.match_status,
+    ]
+      .find(
+        (value) =>
+          typeof value ===
+            'string' &&
+          value.trim(),
+      )
+      ?.trim()
+      .toLowerCase()
+
+  return Boolean(
+    [
+      'cancelled',
+      'canceled',
+    ].includes(status) ||
+      notification?.match
+        ?.cancelled === true ||
+      notification?.match
+        ?.is_cancelled === true ||
+      notification
+        ?.match_cancelled === true ||
+      notification?.match
+        ?.cancelled_at ||
+      notification
+        ?.match_cancelled_at,
+  )
+}
+
+function isAvailabilityActionExpired(
+  notification,
+  currentTime = Date.now(),
+) {
+  if (
+    !AVAILABILITY_ACTION_TYPES.includes(
+      notification
+        ?.notification_type,
+    )
+  ) {
+    return false
+  }
+
+  if (
+    isAvailabilityFixtureCancelled(
+      notification,
+    )
+  ) {
+    return true
+  }
+
+  const kickoffTime =
+    notification?.match
+      ?.kickoff_time ||
+    notification?.kickoff_time ||
+    notification
+      ?.match_kickoff_time ||
+    notification?.metadata
+      ?.kickoff_time ||
+    notification?.data
+      ?.kickoff_time ||
+    null
+
+  if (!kickoffTime) {
+    return false
+  }
+
+  const kickoffTimestamp =
+    new Date(
+      kickoffTime,
+    ).getTime()
+
+  return (
+    !Number.isNaN(
+      kickoffTimestamp,
+    ) &&
+    currentTime >=
+      kickoffTimestamp
+  )
+}
+
+function isMotmActionNotification(
+  notification,
+) {
+  return MOTM_ACTION_TYPES.includes(
+    notification
+      ?.notification_type,
+  )
+}
+
+function isMotmActionExpired(
+  notification,
+) {
+  if (
+    !isMotmActionNotification(
+      notification,
+    )
+  ) {
+    return false
+  }
+
+  if (
+    notification?.ratings_closed ===
+      true ||
+    notification?.match
+      ?.ratings_closed === true ||
+    notification?.ratings_closed_at ||
+    notification?.match
+      ?.ratings_closed_at ||
+    notification
+      ?.rating_window_closed_at ||
+    notification?.match
+      ?.rating_window_closed_at
+  ) {
+    return true
+  }
+
+  const explicitDeadline =
+    notification?.action_expires_at ||
+    notification?.voting_closes_at ||
+    notification?.ratings_close_at ||
+    notification?.match
+      ?.voting_closes_at ||
+    notification?.match
+      ?.ratings_close_at ||
+    notification?.match
+      ?.rating_window_closes_at
+
+  if (explicitDeadline) {
+    const deadlineTime =
+      new Date(
+        explicitDeadline,
+      ).getTime()
+
+    if (
+      !Number.isNaN(
+        deadlineTime,
+      )
+    ) {
+      return (
+        Date.now() >=
+        deadlineTime
+      )
+    }
+  }
+
+  const explicitOpenedAt =
+    notification
+      ?.rating_window_opened_at ||
+    notification?.ratings_opened_at ||
+    notification?.match
+      ?.rating_window_opened_at ||
+    notification?.match
+      ?.ratings_opened_at ||
+    notification?.match
+      ?.ratings_open_at
+
+  if (explicitOpenedAt) {
+    const openedTime =
+      new Date(
+        explicitOpenedAt,
+      ).getTime()
+
+    if (
+      !Number.isNaN(
+        openedTime,
+      )
+    ) {
+      return (
+        Date.now() >=
+        openedTime +
+          MOTM_ACTION_WINDOW_MS
+      )
+    }
+  }
+
+  const createdTime =
+    new Date(
+      notification?.created_at,
+    ).getTime()
+
+  if (
+    Number.isNaN(
+      createdTime,
+    )
+  ) {
+    return false
+  }
+
+  return (
+    Date.now() >=
+    createdTime +
+      MOTM_ACTION_WINDOW_MS
+  )
+}
+
 function authorizationHeaders(
   token,
 ) {
@@ -416,6 +842,9 @@ function NotificationsPage() {
   const [filter, setFilter] =
     useState('all')
 
+  const [currentTime, setCurrentTime] =
+    useState(() => Date.now())
+
   const redirectToLogin =
     useCallback(async () => {
       await clearAuthToken()
@@ -458,6 +887,23 @@ function NotificationsPage() {
       ),
     )
   }, [unreadCount])
+
+  useEffect(() => {
+    const timer =
+      window.setInterval(
+        () => {
+          setCurrentTime(
+            Date.now(),
+          )
+        },
+        30 * 1000,
+      )
+
+    return () =>
+      window.clearInterval(
+        timer,
+      )
+  }, [])
 
   useEffect(() => {
     if (
@@ -1153,13 +1599,15 @@ function NotificationsPage() {
       )
 
     if (
-      [
-        'fixture_created',
-        'availability_required',
-        'availability_reminder',
-      ].includes(type) &&
+      AVAILABILITY_ACTION_TYPES.includes(
+        type,
+      ) &&
       notificationTeamId &&
-      matchId
+      matchId &&
+      !isAvailabilityActionExpired(
+        notification,
+        currentTime,
+      )
     ) {
       return {
         label:
@@ -1193,15 +1641,14 @@ function NotificationsPage() {
     }
 
     if (
-      [
-        'match_payment_requested',
-        'match_payment_amount_changed',
-        'match_payment_reminder',
-        'match_payment_paid',
-        'match_payment_waived',
-      ].includes(type) &&
+      PAYMENT_NOTIFICATION_TYPES.includes(
+        type,
+      ) &&
       notificationTeamId &&
-      matchId
+      matchId &&
+      !paymentResolution(
+        notification,
+      )
     ) {
       const playerNeedsToPay =
         role === 'player' &&
@@ -1226,11 +1673,28 @@ function NotificationsPage() {
     }
 
     if (
-      [
-        'join_request_received',
-        'team_join_requested',
-        'player_joined',
-      ].includes(type) &&
+      JOIN_REQUEST_ACTION_TYPES.includes(
+        type,
+      ) &&
+      notificationTeamId &&
+      !joinRequestResolution(
+        notification,
+      )
+    ) {
+      return {
+        label:
+          'View squad',
+
+        path:
+          `/teams/${notificationTeamId}/squad`,
+
+        icon:
+          Users,
+      }
+    }
+
+    if (
+      type === 'player_joined' &&
       notificationTeamId
     ) {
       return {
@@ -1288,7 +1752,6 @@ function NotificationsPage() {
 
     if (
       [
-        'fixture_created',
         'fixture_updated',
         'fixture_cancelled',
       ].includes(type) &&
@@ -1308,20 +1771,21 @@ function NotificationsPage() {
     }
 
     if (
-      [
-        'motm_voting_open',
-        'match_rating_open',
-        'match_rating_reminder',
-      ].includes(type) &&
+      MOTM_ACTION_TYPES.includes(
+        type,
+      ) &&
       notificationTeamId &&
-      matchId
+      matchId &&
+      !isMotmActionExpired(
+        notification,
+      )
     ) {
       return {
         label:
-          'View match',
+          'Rate players',
 
         path:
-          `/teams/${notificationTeamId}/matches/${matchId}`,
+          `/teams/${notificationTeamId}/matches/${matchId}/ratings`,
 
         icon:
           Trophy,
@@ -1401,6 +1865,24 @@ function NotificationsPage() {
   function needsAction(
     notification,
   ) {
+    if (
+      isMotmActionExpired(
+        notification,
+      ) ||
+      isAvailabilityActionExpired(
+        notification,
+        currentTime,
+      ) ||
+      paymentResolution(
+        notification,
+      ) ||
+      joinRequestResolution(
+        notification,
+      )
+    ) {
+      return false
+    }
+
     return Boolean(
       (
         notification.requires_action ||
@@ -1522,6 +2004,44 @@ function NotificationsPage() {
         )
       : null
 
+  const selectedAvailabilityExpired =
+    selectedNotification
+      ? isAvailabilityActionExpired(
+          selectedNotification,
+          currentTime,
+        )
+      : false
+
+  const selectedAvailabilityCancelled =
+    selectedNotification
+      ? isAvailabilityFixtureCancelled(
+          selectedNotification,
+        )
+      : false
+
+  const selectedPaymentResolution =
+    selectedNotification
+      ? paymentResolution(
+          selectedNotification,
+        )
+      : null
+
+  const selectedPaymentActionClosed =
+    Boolean(
+      selectedPaymentResolution &&
+        PAYMENT_ACTION_REQUEST_TYPES.includes(
+          selectedNotification
+            ?.notification_type,
+        ),
+    )
+
+  const selectedJoinRequestResolution =
+    selectedNotification
+      ? joinRequestResolution(
+          selectedNotification,
+        )
+      : null
+
   const SelectedIcon =
     selectedMeta.icon
 
@@ -1530,12 +2050,6 @@ function NotificationsPage() {
 
   const SelectedContextIcon =
     selectedContextAction?.icon
-
-  const roleDescription =
-    currentUser?.account_type ===
-    'manager'
-      ? 'Player responses, squad activity, payments and MatchMuster announcements. All in one place.'
-      : 'Fixture changes, availability requests, squad news and payments. All in one place.'
 
   return (
     <>
@@ -1550,33 +2064,18 @@ function NotificationsPage() {
         <section className="updates-container">
           <header className="updates-heading">
             <div>
-              <p className="updates-eyebrow">
-                YOUR ACTIVITY
-              </p>
-
               <h1>
                 Notifications
               </h1>
 
               <p className="updates-description">
-                {roleDescription}
+                {unreadCount === 0
+                  ? 'You’re all caught up'
+                  : `${unreadCount} unread`}
               </p>
             </div>
 
             <div className="updates-heading-actions">
-              <div
-                className="updates-summary"
-                aria-live="polite"
-              >
-                <span>
-                  {unreadCount}
-                </span>
-
-                <p>
-                  Unread
-                </p>
-              </div>
-
               <button
                 className="updates-mark-read"
                 type="button"
@@ -1705,7 +2204,7 @@ function NotificationsPage() {
             0 ? (
             <EmptyState
               title="You’re all caught up"
-              message="New team activity and important MatchMuster updates will appear here."
+              message="Important team updates will appear here."
             />
           ) : filteredNotifications.length ===
             0 ? (
@@ -1715,7 +2214,7 @@ function NotificationsPage() {
                   item.value ===
                   filter,
               )?.label.toLowerCase()} notifications`}
-              message="There is nothing in this section right now."
+              message="Nothing here yet."
             />
           ) : (
             <div className="notification-groups">
@@ -1748,11 +2247,6 @@ function NotificationsPage() {
 
                           const unread =
                             isUnread(
-                              notification,
-                            )
-
-                          const action =
-                            notificationAction(
                               notification,
                             )
 
@@ -1813,9 +2307,11 @@ function NotificationsPage() {
                                   </span>
 
                                   {unread && (
-                                    <span className="update-unread-label">
-                                      New
-                                    </span>
+                                    <span
+                                      className="update-unread-label"
+                                      aria-label="Unread"
+                                      title="Unread"
+                                    />
                                   )}
 
                                   {notification.kept_at && (
@@ -1860,35 +2356,6 @@ function NotificationsPage() {
                                       notification.created_at,
                                     )}
                                   </time>
-
-                                  {action && (
-                                    <Link
-                                      className="update-inline-action"
-                                      to={
-                                        action.path
-                                      }
-                                      onClick={(
-                                        event,
-                                      ) => {
-                                        event.stopPropagation()
-
-                                        markNotificationOpened(
-                                          notification,
-                                        )
-                                      }}
-                                    >
-                                      {
-                                        action.label
-                                      }
-
-                                      <ArrowRight
-                                        size={
-                                          14
-                                        }
-                                        aria-hidden="true"
-                                      />
-                                    </Link>
-                                  )}
                                 </div>
                               </div>
 
@@ -1953,9 +2420,27 @@ function NotificationsPage() {
                 </p>
 
                 <h2 id="update-modal-title">
-                  {notificationTitle(
-                    selectedNotification,
-                  )}
+                  {selectedAvailabilityExpired
+                    ? 'Availability has closed'
+                    : selectedPaymentActionClosed
+                      ? selectedPaymentResolution ===
+                        'waived'
+                        ? 'Payment waived'
+                        : selectedPaymentResolution ===
+                            'paid'
+                          ? 'Payment completed'
+                          : 'Payment closed'
+                      : selectedJoinRequestResolution ===
+                          'approved'
+                        ? 'Join request approved'
+                        : selectedJoinRequestResolution ===
+                            'rejected'
+                          ? 'Join request rejected'
+                          : selectedJoinRequestResolution
+                            ? 'Join request closed'
+                    : notificationTitle(
+                        selectedNotification,
+                      )}
                 </h2>
               </div>
 
@@ -2014,9 +2499,29 @@ function NotificationsPage() {
             ) : (
               <div className="update-modal-message">
                 <p>
-                  {notificationMessage(
-                    selectedNotification,
-                  )}
+                  {selectedAvailabilityExpired
+                    ? selectedAvailabilityCancelled
+                      ? 'This fixture was cancelled. Availability can no longer be changed.'
+                      : 'This fixture has started. Availability can no longer be changed.'
+                    : selectedPaymentActionClosed
+                      ? selectedPaymentResolution ===
+                        'waived'
+                        ? 'This match fee was waived. No action is needed.'
+                        : selectedPaymentResolution ===
+                            'paid'
+                          ? 'This match fee has been paid. No action is needed.'
+                          : 'This payment request is closed. No action is needed.'
+                      : selectedJoinRequestResolution ===
+                          'approved'
+                        ? 'This player has joined the squad. No action is needed.'
+                        : selectedJoinRequestResolution ===
+                            'rejected'
+                          ? 'This join request was rejected. No action is needed.'
+                          : selectedJoinRequestResolution
+                            ? 'This join request is closed. No action is needed.'
+                    : notificationMessage(
+                        selectedNotification,
+                      )}
                 </p>
               </div>
             )}
@@ -2028,9 +2533,7 @@ function NotificationsPage() {
                   aria-hidden="true"
                 />
 
-                Saved for later. You
-                can find this in the
-                Saved filter.
+                Saved for later.
               </p>
             )}
 
@@ -2125,17 +2628,6 @@ function NotificationsPage() {
                 Delete
               </button>
 
-              <button
-                className="update-modal-done"
-                type="button"
-                onClick={() =>
-                  setSelectedNotification(
-                    null,
-                  )
-                }
-              >
-                Close
-              </button>
             </div>
           </section>
         </div>
@@ -2234,6 +2726,11 @@ function MotmNotificationCard({
       'match_rating_result' &&
     !featuredPlayer
 
+  const actionExpired =
+    isMotmActionExpired(
+      notification,
+    )
+
   const heading =
     isWinner
       ? formatMotmHeading(
@@ -2247,7 +2744,9 @@ function MotmNotificationCard({
         : isClosedWithoutWinner
           ? notification.title ||
             'Player ratings closed'
-          : 'MOTM voting is open'
+          : actionExpired
+            ? 'Voting has closed'
+            : 'MOTM voting is open'
 
   const label =
     isWinner
@@ -2256,7 +2755,9 @@ function MotmNotificationCard({
         ? 'Vote received'
         : isClosedWithoutWinner
           ? 'Voting update'
-          : 'Time to choose your standout player'
+          : actionExpired
+            ? 'Voting update'
+            : 'Time to choose your standout player'
 
   return (
     <article className="notification-motm-card">
@@ -2314,9 +2815,13 @@ function MotmNotificationCard({
       </div>
 
       <span>
-        <MotmMessage
-          message={message}
-        />
+        {actionExpired ? (
+          'This voting window has closed.'
+        ) : (
+          <MotmMessage
+            message={message}
+          />
+        )}
       </span>
     </article>
   )
