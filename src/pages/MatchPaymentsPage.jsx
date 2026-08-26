@@ -1444,7 +1444,7 @@ function MatchPaymentsPage() {
                     >
                       <div className="match-payment-player">
                         <div
-                          className="player-avatar"
+                          className="match-payment-player-avatar"
                           aria-hidden="true"
                         >
                           {playerName(

@@ -1,5 +1,14 @@
 .public-site {
   min-height: 100vh;
+  min-height: 100dvh;
+
+  padding-top: var(--app-safe-top, env(safe-area-inset-top, 0px));
+  padding-right: var(--app-safe-right, env(safe-area-inset-right, 0px));
+  padding-bottom: var(--app-safe-bottom, env(safe-area-inset-bottom, 0px));
+  padding-left: var(--app-safe-left, env(safe-area-inset-left, 0px));
+
+  box-sizing: border-box;
+
   background: #f8fbff;
   color: #0f172a;
 }
@@ -639,5 +648,57 @@
 
   .public-footer {
     margin-top: 72px;
+  }
+}
+
+/* ========================================
+   IOS PUBLIC-PAGE SAFE-AREA GLASS
+======================================== */
+
+html.platform-ios .public-site {
+  --public-native-safe-top: max(
+    var(--app-safe-top, env(safe-area-inset-top, 0px)),
+    54px
+  );
+
+  min-height: 100dvh;
+
+  padding-top: calc(var(--public-native-safe-top) + 10px);
+  padding-right: var(--app-safe-right, env(safe-area-inset-right, 0px));
+  padding-bottom: var(--app-safe-bottom, env(safe-area-inset-bottom, 0px));
+  padding-left: var(--app-safe-left, env(safe-area-inset-left, 0px));
+}
+
+html.platform-ios .public-site::before {
+  content: '';
+
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  height: calc(var(--public-native-safe-top) + 18px);
+
+  background: linear-gradient(
+    to bottom,
+    rgba(248, 251, 255, 0.97) 0%,
+    rgba(248, 251, 255, 0.91) 68%,
+    rgba(248, 251, 255, 0.18) 92%,
+    rgba(248, 251, 255, 0) 100%
+  );
+
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
+  backdrop-filter: blur(18px) saturate(1.12);
+
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html.platform-ios .public-site::before {
+    background: rgba(248, 251, 255, 0.98);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

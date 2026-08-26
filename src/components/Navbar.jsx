@@ -760,29 +760,30 @@ function Navbar({
           </div>
         </div>
 
-        {navbarError && (
-          <div
-            className="app-topbar-error"
-            role="alert"
-          >
-            {navbarError}
-
-            <button
-              type="button"
-              onClick={() =>
-                setNavbarError('')
-              }
-            >
-              Dismiss
-            </button>
-          </div>
-        )}
       </header>
 
       <div
         className="app-topbar-fixed-spacer"
         aria-hidden="true"
       />
+
+      {navbarError && (
+        <div
+          className="app-topbar-error"
+          role="alert"
+        >
+          {navbarError}
+
+          <button
+            type="button"
+            onClick={() =>
+              setNavbarError('')
+            }
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       <BottomNav
         teamId={resolvedTeamId}

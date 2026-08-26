@@ -2782,6 +2782,9 @@
   border-radius: 10px;
   background: #f0fdf4;
   color: #15803d;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .availability-groups {
@@ -3540,13 +3543,6 @@
 .upload-team-badge-button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
-}
-
-.team-success {
-  margin: 0;
-  color: #15803d;
-  font-size: 14px;
-  font-weight: 500;
 }
 
 @media (max-width: 600px) {

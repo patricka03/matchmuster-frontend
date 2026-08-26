@@ -766,7 +766,7 @@
   min-width: 0;
 }
 
-.player-avatar {
+.match-payment-player-avatar {
   display: grid;
   flex: 0 0 46px;
   width: 46px;
@@ -1121,7 +1121,7 @@
     font-size: 0.7rem;
   }
 
-  .player-avatar {
+  .match-payment-player-avatar {
     flex-basis: 42px;
     width: 42px;
     height: 42px;

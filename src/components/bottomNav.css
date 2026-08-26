@@ -77,6 +77,16 @@
   opacity: 0.42;
 }
 
+.bottom-nav-item:focus-visible,
+.bottom-nav-sheet-heading > button:focus-visible,
+.bottom-nav-sheet-links a:focus-visible,
+.bottom-nav-sheet-links > button:focus-visible,
+.bottom-nav-team-switcher-trigger:focus-visible,
+.bottom-nav-team-option:focus-visible {
+  outline: 3px solid rgba(79, 156, 255, 0.28);
+  outline-offset: 2px;
+}
+
 .bottom-nav-more-icon {
   position: relative;
   display: inline-flex;

@@ -3,6 +3,6 @@
   "appName": "MatchMuster",
   "webDir": "dist",
   "ios": {
-    "contentInset": "always"
+    "contentInset": "never"
   }
 }
