@@ -1,0 +1,223 @@
+.support-public-page {
+  --support-safe-top: env(safe-area-inset-top, 0px);
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  padding-bottom: max(36px, env(safe-area-inset-bottom, 0px));
+}
+
+html.platform-ios .support-public-page {
+  --support-safe-top: max(env(safe-area-inset-top, 0px), 54px);
+}
+
+.support-public-header {
+  position: relative;
+  z-index: 30;
+}
+
+.support-public-header a:focus-visible,
+.support-email-button:focus-visible,
+.support-public-footer a:focus-visible {
+  border-radius: 10px;
+  outline: 3px solid rgba(37, 99, 235, 0.24);
+  outline-offset: 3px;
+}
+
+.support-public-login {
+  min-height: 44px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.support-public-login:hover {
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.support-contact-panel {
+  flex-wrap: wrap;
+}
+
+.support-contact-panel p.support-email-address {
+  width: 100%;
+  margin: -20px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .support-public-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    padding: calc(var(--support-safe-top) + 10px) 16px 12px;
+    gap: 12px;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.72);
+    background: rgba(248, 251, 255, 0.9);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+
+  .support-public-brand {
+    min-width: 0;
+    gap: 8px;
+    font-size: 18px;
+  }
+
+  .support-public-brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .support-public-header nav {
+    flex-shrink: 0;
+  }
+
+  .support-public-header nav a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 14px;
+  }
+
+  .support-public-header nav .support-public-login {
+    padding: 0 12px;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+
+  .support-public-hero,
+  .support-topic-grid,
+  .support-contact-panel,
+  .support-company-panel,
+  .support-public-footer {
+    width: calc(100% - 28px);
+    box-sizing: border-box;
+  }
+
+  .support-public-hero {
+    margin-top: 30px;
+  }
+
+  .support-public-hero h1 {
+    font-size: 36px;
+    line-height: 1.08;
+  }
+
+  .support-public-hero > p:last-child {
+    margin-top: 14px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .support-topic-grid {
+    margin-top: 30px;
+    gap: 12px;
+  }
+
+  .support-topic-grid article {
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.045);
+  }
+
+  .support-topic-grid h2 {
+    margin-bottom: 6px;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+
+  .support-topic-grid p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .support-contact-panel {
+    margin-top: 40px;
+    padding: 22px 20px;
+    gap: 20px;
+    border-radius: 20px;
+  }
+
+  .support-contact-panel h2 {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  .support-contact-panel p:last-child {
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .support-email-button {
+    min-height: 50px;
+    font-size: 15px;
+  }
+
+  .support-contact-panel p.support-email-address {
+    margin: -12px 0 0;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .support-company-panel {
+    margin-top: 28px;
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .support-company-panel h2 {
+    margin-bottom: 16px;
+    font-size: 23px;
+  }
+
+  .support-company-panel p {
+    margin: 6px 0;
+    font-size: 14px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .support-public-footer {
+    margin-top: 34px;
+    padding: 24px 0 max(10px, env(safe-area-inset-bottom, 0px));
+    gap: 14px 18px;
+    font-size: 12px;
+  }
+
+  .support-public-footer a,
+  .support-public-footer span {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .support-public-brand span {
+    font-size: 16px;
+  }
+
+  .support-public-hero h1 {
+    font-size: 32px;
+  }
+}
