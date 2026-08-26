@@ -1,5 +1,5 @@
 {
-  "appId": "uk.matchmuster.app",
+  "appId": "uk.matchmuster.mobile",
   "appName": "MatchMuster",
   "webDir": "dist",
   "ios": {
