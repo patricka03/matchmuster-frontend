@@ -1067,10 +1067,15 @@ function DashboardPage() {
   // ========================================
 
   function openNextFixture() {
-    if (
-      !teamId ||
-      !nextMatch
-    ) {
+    if (!teamId) {
+      return
+    }
+
+    if (!nextMatch) {
+      navigate(
+        `/teams/${teamId}/schedule`,
+      )
+
       return
     }
 
@@ -1313,8 +1318,10 @@ function DashboardPage() {
                 onClick={
                   openNextFixture
                 }
-                disabled={
-                  !nextMatch
+                aria-label={
+                  nextMatch
+                    ? `View next fixture against ${nextMatch.opponent}`
+                    : 'View team schedule'
                 }
               >
                 <span className="home-dashboard-fixture-label">
@@ -1386,9 +1393,20 @@ function DashboardPage() {
                     )}
                   </>
                 ) : (
-                  <span className="home-dashboard-no-fixture">
-                    No upcoming fixture has
-                    been added yet.
+                  <span className="home-dashboard-fixture-empty">
+                    <span className="home-dashboard-no-fixture">
+                      No upcoming fixture has
+                      been added yet.
+                    </span>
+
+                    <span className="home-dashboard-fixture-schedule">
+                      View schedule
+
+                      <ArrowRight
+                        size={21}
+                        aria-hidden="true"
+                      />
+                    </span>
                   </span>
                 )}
               </button>

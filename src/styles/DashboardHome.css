@@ -130,9 +130,27 @@
 }
 
 .home-dashboard-no-fixture {
-  padding: 16px 0 4px;
+  padding: 0;
   font-size: 16px;
   font-weight: 700;
+}
+
+.home-dashboard-fixture-empty {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 0 2px;
+}
+
+.home-dashboard-fixture-schedule {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
 .home-dashboard-availability {
@@ -207,12 +225,12 @@
 }
 
 .home-dashboard-action-card {
-  min-height: 148px;
+  min-height: 134px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 9px;
-  padding: 18px;
+  gap: 7px;
+  padding: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 19px;
   background: #ffffff;
@@ -439,8 +457,8 @@
   }
 
   .home-dashboard-action-card {
-    min-height: 137px;
-    padding: 15px;
+    min-height: 122px;
+    padding: 14px;
     border-radius: 17px;
   }
 
@@ -456,6 +474,7 @@
 
   .home-dashboard-action-card small {
     font-size: 12px;
+    line-height: 1.3;
   }
 
   .home-dashboard-availability-grid article {

@@ -103,9 +103,14 @@ html.platform-android
 
 @media (hover: none) and (pointer: coarse) {
   .home-dashboard-fixture-card:not(:disabled):hover,
-  .home-dashboard-training-card:not(:disabled):hover,
+  .home-dashboard-training-card:not(:disabled):hover {
+    transform: none;
+  }
+
   .home-dashboard-action-card:hover {
     transform: none;
+    border-color: #e2e8f0;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
   }
 
   .home-dashboard-fixture-card:not(:disabled):active,
@@ -113,6 +118,10 @@ html.platform-android
   .home-dashboard-action-card:active,
   .home-dashboard-state-actions button:active {
     transform: scale(0.985);
+  }
+
+  .home-dashboard-action-card:active {
+    border-color: rgba(255, 10, 120, 0.25);
   }
 }
 
@@ -229,7 +238,11 @@ html.platform-android
      * Two-column grid stays exactly as designed.
      * Give cards a comfortable mobile press area.
      */
-    min-height: 140px;
+    min-height: 122px;
+  }
+
+  .home-dashboard-fixture-empty {
+    align-items: flex-end;
   }
 
   .home-dashboard-card-icon {
@@ -273,8 +286,14 @@ html.platform-android
   }
 
   .home-dashboard-action-card {
-    min-height: 134px;
-    padding: 14px;
+    min-height: 116px;
+    padding: 13px;
+  }
+
+  .home-dashboard-fixture-empty {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .home-dashboard-fixture-card,
