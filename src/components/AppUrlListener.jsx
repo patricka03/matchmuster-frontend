@@ -3,8 +3,10 @@ import { App as CapacitorApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { useNavigate } from 'react-router-dom'
 
-const MATCHMUSTER_DEEP_LINK_HOST =
-  'www.matchmuster.uk'
+const MATCHMUSTER_DEEP_LINK_HOSTS = new Set([
+  'matchmuster.uk',
+  'www.matchmuster.uk',
+])
 
 const ALLOWED_PROTOCOLS = [
   'http:',
@@ -28,8 +30,9 @@ function getInternalPath(rawUrl) {
     }
 
     if (
-      url.hostname.toLowerCase() !==
-      MATCHMUSTER_DEEP_LINK_HOST
+      !MATCHMUSTER_DEEP_LINK_HOSTS.has(
+        url.hostname.toLowerCase(),
+      )
     ) {
       return null
     }
