@@ -32,6 +32,11 @@ function readStoredUser() {
   }
 }
 
+function teamIsLocked(team) {
+  return team.multi_team_access
+    ?.locked === true
+}
+
 function Navbar({
   teamId: suppliedTeamId,
   teamName: suppliedTeamName,
@@ -239,6 +244,12 @@ function Navbar({
               ? teamsData
               : teamsData.teams || []
 
+          const selectableTeams =
+            loadedTeams.filter(
+              (team) =>
+                !teamIsLocked(team),
+            )
+
           const storedActiveTeamId =
             readStoredTeamId()
 
@@ -247,23 +258,27 @@ function Navbar({
             routeTeamId ||
             storedActiveTeamId ||
             resolvedTeamId ||
-            loadedTeams[0]?.id
+            selectableTeams[0]?.id
 
           const currentTeam =
-            loadedTeams.find(
+            selectableTeams.find(
               (team) =>
                 String(team.id) === String(preferredTeamId),
             ) ||
-            loadedTeams[0] ||
+            selectableTeams[0] ||
             null
 
           if (!cancelled) {
-            setTeams(loadedTeams)
+            setTeams(selectableTeams)
           }
 
           if (!cancelled && currentTeam) {
             const currentTeamName =
-              suppliedTeamName || currentTeam.name || ''
+              String(currentTeam.id) ===
+                String(suppliedTeamId) &&
+              suppliedTeamName
+                ? suppliedTeamName
+                : currentTeam.name || ''
 
             setResolvedTeamId(currentTeam.id)
             setResolvedTeamName(currentTeamName)
@@ -277,6 +292,29 @@ function Navbar({
               'activeTeamName',
               currentTeamName,
             )
+
+            if (
+              storedActiveTeamId &&
+              String(storedActiveTeamId) !==
+                String(currentTeam.id)
+            ) {
+              window.dispatchEvent(
+                new CustomEvent(
+                  'matchmuster:active-team-changed',
+                  {
+                    detail: {
+                      teamId: currentTeam.id,
+                    },
+                  },
+                ),
+              )
+            }
+          } else if (!cancelled) {
+            setResolvedTeamId(null)
+            setResolvedTeamName('')
+
+            localStorage.removeItem('activeTeamId')
+            localStorage.removeItem('activeTeamName')
           }
         }
       } catch {
