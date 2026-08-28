@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
@@ -1080,7 +1081,7 @@ function EditProfilePage() {
       <>
         <Navbar />
 
-        <main className="edit-profile-page">
+        <main className="edit-profile-page mm-minimal-page">
           <p className="profile-loading">
             Loading your profile...
           </p>
@@ -1099,7 +1100,7 @@ function EditProfilePage() {
         currentUser={currentUser}
       />
 
-      <main className="edit-profile-page">
+      <main className="edit-profile-page mm-minimal-page">
         <section className="edit-profile-card">
           <div className="edit-profile-heading">
             <div>

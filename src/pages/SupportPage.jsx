@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { Link } from 'react-router-dom'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import './SupportPage.css'
@@ -32,7 +33,7 @@ const supportTopics = [
 
 function SupportPage() {
   return (
-    <main className="support-public-page">
+    <main className="support-public-page mm-minimal-page">
 
       <header className="support-public-header">
 

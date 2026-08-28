@@ -785,24 +785,12 @@ function SquadPage() {
         }
       />
 
-      <main className="dashboard-page">
-        <section className="dashboard-content">
-          <div className="dashboard-welcome">
-            <p className="dashboard-label">
-              {isApprovedManager
-                ? 'Team management'
-                : 'Team squad'}
-            </p>
-
+      <main className="dashboard-page squad-page">
+        <section className="dashboard-content squad-content">
+          <div className="dashboard-welcome squad-heading">
             <h1>
               Squad
             </h1>
-
-            <p>
-              {isApprovedManager
-                ? 'View players and managers, and manage pending join requests.'
-                : 'View the players and managers in your team.'}
-            </p>
           </div>
 
           {errorMessage && (
@@ -817,18 +805,18 @@ function SquadPage() {
           {currentUser && (
             <>
               {isApprovedManager && (
-                <section className="squad-section">
+                <section
+                  className={
+                    pendingMemberships.length === 0
+                      ? 'squad-section squad-section-compact'
+                      : 'squad-section'
+                  }
+                >
                   <div className="squad-section-heading">
                     <div>
                       <h2>
                         Pending requests
                       </h2>
-
-                      <p>
-                        Players and
-                        managers waiting
-                        to join your team.
-                      </p>
                     </div>
 
                     <span className="squad-count">
@@ -840,11 +828,7 @@ function SquadPage() {
 
                   {pendingMemberships.length ===
                   0 ? (
-                    <div className="squad-empty">
-                      There are no
-                      pending join
-                      requests.
-                    </div>
+                    null
                   ) : (
                     <div className="membership-list">
                       {pendingMemberships.map(
@@ -931,11 +915,6 @@ function SquadPage() {
                     <h2>
                       Players
                     </h2>
-
-                    <p>
-                      Approved members
-                      of the squad.
-                    </p>
                   </div>
 
                   <span className="squad-count">
@@ -948,9 +927,7 @@ function SquadPage() {
                 {approvedPlayers.length ===
                 0 ? (
                   <div className="squad-empty">
-                    There are no
-                    approved players
-                    yet.
+                    No players yet.
                   </div>
                 ) : (
                   <div className="membership-list">
@@ -1011,11 +988,6 @@ function SquadPage() {
                     <h2>
                       Managers
                     </h2>
-
-                    <p>
-                      Approved managers
-                      of this team.
-                    </p>
                   </div>
 
                   <span className="squad-count">
@@ -1028,9 +1000,7 @@ function SquadPage() {
                 {approvedManagers.length ===
                 0 ? (
                   <div className="squad-empty">
-                    There are no
-                    approved managers
-                    yet.
+                    No managers yet.
                   </div>
                 ) : (
                   <div className="membership-list">

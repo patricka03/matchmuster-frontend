@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, } from 'react-router-dom'
 
@@ -463,7 +464,7 @@ function PostPage() {
       <>
         <Navbar teamId={teamId} />
 
-        <main className="post-page">
+        <main className="post-page mm-minimal-page">
           <p className="post-page-message">
             Loading post...
           </p>
@@ -512,7 +513,7 @@ function PostPage() {
         currentUser={currentUser}
       />
 
-      <main className="post-page">
+      <main className="post-page mm-minimal-page">
         <section className="post-page-container">
           <BackButton
             to={`/teams/${teamId}/posts`}

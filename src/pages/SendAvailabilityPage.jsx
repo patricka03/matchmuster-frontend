@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useState,
@@ -321,7 +322,7 @@ function SendAvailabilityPage() {
           teamId={teamId}
         />
 
-        <main className="send-availability-page">
+        <main className="send-availability-page mm-minimal-page">
           <p className="send-availability-message">
             Loading fixture...
           </p>
@@ -343,7 +344,7 @@ function SendAvailabilityPage() {
         }
       />
 
-      <main className="send-availability-page">
+      <main className="send-availability-page mm-minimal-page">
         <section className="send-availability-container">
           {errorMessage && (
             <p

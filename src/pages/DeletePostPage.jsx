@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import {
   Link,
@@ -231,7 +232,7 @@ function DeletePostPage() {
       <>
         <Navbar teamId={teamId} />
 
-        <main className="delete-post-page">
+        <main className="delete-post-page mm-minimal-page">
           <p className="delete-post-message">
             Loading post...
           </p>
@@ -251,7 +252,7 @@ function DeletePostPage() {
         currentUser={currentUser}
       />
 
-      <main className="delete-post-page">
+      <main className="delete-post-page mm-minimal-page">
         <section className="delete-post-container">
           {errorMessage && (
             <p

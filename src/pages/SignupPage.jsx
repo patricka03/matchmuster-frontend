@@ -286,6 +286,21 @@ function SignupPage() {
           </button>
         </div>
 
+        {formData.account_type ===
+          'manager' && (
+          <div className="signup-plus-preview-note">
+            <strong>
+              30-day MatchMuster Plus Preview
+            </strong>
+
+            <span>
+              Starts when you create
+              your first team. No
+              payment required.
+            </span>
+          </div>
+        )}
+
         <form
           className="auth-form"
           onSubmit={handleSubmit}

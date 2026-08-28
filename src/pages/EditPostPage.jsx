@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import {
   Link,
@@ -272,7 +273,7 @@ function EditPostPage() {
       <>
         <Navbar teamId={teamId} />
 
-        <main className="create-post-page">
+        <main className="create-post-page mm-minimal-page">
           <p className="create-post-message">
             Loading post...
           </p>
@@ -292,7 +293,7 @@ function EditPostPage() {
         currentUser={currentUser}
       />
 
-      <main className="create-post-page">
+      <main className="create-post-page mm-minimal-page">
         <section className="create-post-container">
           <header className="create-post-header">
             <p className="create-post-label">

@@ -1,3 +1,5 @@
+import ManagerPlusPrompt from '../components/ManagerPlusPrompt'
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -532,7 +534,7 @@ function MatchAvailabilityPage() {
           : destination ===
               'substitute'
             ? 'Substitutes'
-            : 'Available players'
+            : 'Available'
 
       setSuccessMessage(
         `${playerName(player)} moved to ${destinationLabel}.`,
@@ -638,7 +640,7 @@ function MatchAvailabilityPage() {
               'available'
           }
         >
-          Available players
+          Not selected
         </button>
       </div>
     )
@@ -655,7 +657,7 @@ function MatchAvailabilityPage() {
   ) {
     const statusLabel =
       status === 'pending'
-        ? 'Awaiting response'
+        ? 'Pending'
         : status[0].toUpperCase() +
           status.slice(1)
 
@@ -748,7 +750,7 @@ function MatchAvailabilityPage() {
         currentUser={currentUser}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           {errorMessage && (
             <p
@@ -780,8 +782,8 @@ function MatchAvailabilityPage() {
 
             <h1>
               {match?.opponent
-                ? `Player availability vs ${match.opponent}`
-                : 'Player availability'}
+                ? `Availability vs ${match.opponent}`
+                : 'Availability'}
             </h1>
 
             <p>
@@ -791,6 +793,16 @@ function MatchAvailabilityPage() {
               available-player pool.
             </p>
           </div>
+
+          {summary.awaiting_response > 0 && (
+            <ManagerPlusPrompt
+              teamId={teamId}
+              currentUser={currentUser}
+              compact
+              title="Auto-remind the waiting players"
+              description={`${summary.awaiting_response} still to reply. Plus can chase missing responses for you.`}
+            />
+          )}
 
           <section
             className="availability-summary"
@@ -818,7 +830,7 @@ function MatchAvailabilityPage() {
 
             <article className="availability-summary-card pending">
               <span>
-                Awaiting response
+                Pending
               </span>
 
               <strong>
@@ -831,19 +843,19 @@ function MatchAvailabilityPage() {
 
           <div className="availability-groups">
             {renderPlayerGroup(
-              'Available players',
+              'Available',
               'available',
               playersByStatus.available,
             )}
 
             {renderPlayerGroup(
-              'Unavailable players',
+              'Unavailable',
               'unavailable',
               playersByStatus.unavailable,
             )}
 
             {renderPlayerGroup(
-              'Awaiting response',
+              'Pending',
               'pending',
               playersByStatus.pending,
             )}

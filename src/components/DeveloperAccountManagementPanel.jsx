@@ -238,13 +238,26 @@ function DeveloperAccountManagementPanel() {
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={loadUsers}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Refreshing…' : 'Refresh'}
-        </button>
+        <div className="developer-accounts-header-actions">
+          <button
+            type="button"
+            onClick={() =>
+              navigate(
+                '/developer/launch-clubs',
+              )
+            }
+          >
+            Launch Clubs
+          </button>
+
+          <button
+            type="button"
+            onClick={loadUsers}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Refreshing…' : 'Refresh'}
+          </button>
+        </div>
       </header>
 
       {summary && (

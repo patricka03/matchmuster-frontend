@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { SearchBox } from '@mapbox/search-js-react'
@@ -5,6 +6,7 @@ import { SearchBox } from '@mapbox/search-js-react'
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
 
+import { MATCHMUSTER_SEARCH_THEME } from '../utils/mapboxSearchTheme'
 import {
   clearAuthToken,
   getAuthToken,
@@ -142,6 +144,34 @@ function CreateMatchPage() {
   // SUBMIT
   // ========================================
 
+  // ========================================
+  // DATE / TIME PAYLOAD
+  // ========================================
+
+  function buildMatchPayload() {
+    const localKickoff =
+      new Date(
+        formData.kickoff_time,
+      )
+
+    return {
+      ...formData,
+
+      /*
+       * datetime-local contains the manager's device-local
+       * time with no timezone. Convert it at the browser
+       * boundary so Rails receives an unambiguous UTC ISO
+       * timestamp. This follows BST/GMT automatically.
+       */
+      kickoff_time:
+        Number.isNaN(
+          localKickoff.getTime(),
+        )
+          ? formData.kickoff_time
+          : localKickoff.toISOString(),
+    }
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -182,7 +212,7 @@ function CreateMatchPage() {
           },
 
           body: JSON.stringify({
-            match: formData,
+            match: buildMatchPayload(),
           }),
         },
       )
@@ -222,7 +252,7 @@ function CreateMatchPage() {
     <>
       <Navbar />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           <div className="dashboard-welcome">
             <p className="dashboard-label">
@@ -272,7 +302,7 @@ function CreateMatchPage() {
                 type="text"
                 value={formData.opponent}
                 onChange={handleChange}
-                placeholder="e.g. Camden Athletic"
+                placeholder=""
                 required
               />
             </div>
@@ -321,25 +351,13 @@ function CreateMatchPage() {
                   onClear={
                     handleLocationClear
                   }
-                  placeholder="Search for a football ground, park or address"
+                  placeholder=""
                   options={{
                     country: 'GB',
                     language: 'en',
                     limit: 8,
                   }}
-                  theme={{
-                    icons: {
-                      search: `
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="1"
-                          height="1"
-                          viewBox="0 0 1 1"
-                        >
-                        </svg>
-                      `,
-                    },
-                  }}
+                  theme={MATCHMUSTER_SEARCH_THEME}
                 />
               ) : (
                 <p
@@ -383,7 +401,7 @@ function CreateMatchPage() {
 
             <div className="form-group">
               <label htmlFor="description">
-                Match information
+                Notes
               </label>
 
               <textarea
@@ -391,7 +409,7 @@ function CreateMatchPage() {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="e.g. Wear the blue kit and bring shin pads and boots."
+                placeholder=""
                 rows={5}
               />
             </div>

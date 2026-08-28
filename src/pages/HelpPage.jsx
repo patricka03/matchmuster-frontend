@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import BackButton from '../components/BackButton'
 import Navbar from '../components/Navbar'
 
@@ -23,8 +24,8 @@ function HelpPage() {
       <main
         className={
           isAuthenticated
-            ? 'auth-page help-page-authenticated'
-            : 'auth-page'
+            ? 'auth-page help-page-authenticated mm-minimal-page'
+            : 'auth-page mm-minimal-page'
         }
       >
         <section className="auth-card">

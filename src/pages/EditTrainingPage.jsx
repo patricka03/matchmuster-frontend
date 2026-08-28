@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useState,
@@ -11,10 +12,15 @@ import {
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
 
+import { MATCHMUSTER_SEARCH_THEME } from '../utils/mapboxSearchTheme'
+import { localDateTimeToIso } from '../utils/dateTime'
 import {
   clearAuthToken,
   getAuthToken,
 } from '../utils/authStorage'
+
+const MAPBOX_TOKEN =
+  import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
 function EditTrainingPage() {
   const navigate = useNavigate()
@@ -32,6 +38,8 @@ function EditTrainingPage() {
     starts_at: '',
     meet_time: '',
     location: '',
+    latitude: null,
+    longitude: null,
     description: '',
   })
 
@@ -148,7 +156,15 @@ function EditTrainingPage() {
             ),
 
           location:
-            data.location || '',
+              data.location || '',
+
+            latitude:
+              data.latitude ??
+              null,
+
+            longitude:
+              data.longitude ??
+              null,
 
           description:
             data.description || '',
@@ -189,8 +205,129 @@ function EditTrainingPage() {
   }
 
   // ========================================
+  // MAPBOX LOCATION
+  // ========================================
+
+  function handleLocationChange(
+    value,
+  ) {
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+
+        location: value,
+        latitude: null,
+        longitude: null,
+      }),
+    )
+  }
+
+  function handleLocationRetrieve(
+    result,
+  ) {
+    const feature =
+      result?.features?.[0]
+
+    if (!feature) {
+      return
+    }
+
+    const coordinates =
+      feature.geometry
+        ?.coordinates
+
+    if (
+      !Array.isArray(
+        coordinates,
+      ) ||
+      coordinates.length < 2
+    ) {
+      return
+    }
+
+    const [
+      longitude,
+      latitude,
+    ] = coordinates
+
+    const properties =
+      feature.properties || {}
+
+    const locationName =
+      properties.full_address ||
+      [
+        properties.name,
+        properties.place_formatted,
+      ]
+        .filter(Boolean)
+        .join(', ')
+
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+
+        location:
+          locationName ||
+          currentFormData.location,
+
+        latitude,
+        longitude,
+      }),
+    )
+
+    setErrorMessage('')
+  }
+
+  function handleLocationClear() {
+    setFormData(
+      (currentFormData) => ({
+        ...currentFormData,
+
+        location: '',
+        latitude: null,
+        longitude: null,
+      }),
+    )
+  }
+
+  // ========================================
   // UPDATE TRAINING
   // ========================================
+
+  // ========================================
+  // DATE / TIME PAYLOAD
+  // ========================================
+
+  function localDateTimeToIso(
+    value,
+  ) {
+    if (!value) return value
+
+    const localDate =
+      new Date(value)
+
+    return Number.isNaN(
+      localDate.getTime(),
+    )
+      ? value
+      : localDate.toISOString()
+  }
+
+  function buildTrainingPayload() {
+    return {
+      ...formData,
+
+      starts_at:
+        localDateTimeToIso(
+          formData.starts_at,
+        ),
+
+      meet_time:
+        localDateTimeToIso(
+          formData.meet_time,
+        ),
+    }
+  }
 
   async function handleSubmit(
     event,
@@ -229,7 +366,7 @@ function EditTrainingPage() {
             body:
               JSON.stringify({
                 training:
-                  formData,
+                  buildTrainingPayload(),
               }),
           },
         )
@@ -298,7 +435,7 @@ function EditTrainingPage() {
     <>
       <Navbar teamId={teamId} />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           <div className="dashboard-welcome">
             <p className="dashboard-label">
@@ -388,27 +525,68 @@ function EditTrainingPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="training-location">
+              <label>
                 Location
               </label>
 
-              <input
-                id="training-location"
-                name="location"
-                type="text"
-                value={
-                  formData.location
-                }
-                onChange={
-                  handleChange
-                }
-                required
-              />
+              {MAPBOX_TOKEN ? (
+                <SearchBox
+                  accessToken={
+                    MAPBOX_TOKEN
+                  }
+                  value={
+                    formData.location
+                  }
+                  onChange={
+                    handleLocationChange
+                  }
+                  onRetrieve={
+                    handleLocationRetrieve
+                  }
+                  onClear={
+                    handleLocationClear
+                  }
+                  placeholder=""
+                  options={{
+                    country: 'GB',
+                    language: 'en',
+                    limit: 8,
+                  }}
+                  theme={
+                    MATCHMUSTER_SEARCH_THEME
+                  }
+                />
+              ) : (
+                <p
+                  className="team-error"
+                  role="alert"
+                >
+                  Location search is
+                  unavailable.
+                </p>
+              )}
+
+              {formData.latitude !==
+                null &&
+                formData.longitude !==
+                  null && (
+                  <div className="selected-match-location">
+                    <span>
+                      Location selected
+                    </span>
+
+                    <strong>
+                      {
+                        formData.location
+                      }
+                    </strong>
+                  </div>
+                )}
             </div>
 
             <div className="form-group">
               <label htmlFor="training-description">
-                Description
+                Notes
               </label>
 
               <textarea

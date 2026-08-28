@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 
 import Navbar from '../components/Navbar'
+import TeamPlanBadge from '../components/TeamPlanBadge'
 import API_URL from '../config/api'
 import './TeamPage.css'
 import './TeamPage.mobile.css'
@@ -214,10 +215,29 @@ function TeamPage() {
           ?.locked !== true,
     )
 
+  const ownershipMetadataAvailable =
+    teams.some(
+      (team) =>
+        typeof team.multi_team_access
+          ?.owned_by_current_manager ===
+        'boolean',
+    )
+
+  const ownsTeam =
+    teams.some(
+      (team) =>
+        team.multi_team_access
+          ?.owned_by_current_manager ===
+        true,
+    ) ||
+    (!ownershipMetadataAvailable &&
+      teams.length > 0)
+
   const canCreateAdditionalTeam =
+    !ownsTeam ||
     managerAccess
-      ?.can_create_additional_team !==
-    false
+      ?.can_create_additional_team ===
+      true
 
   const subscriptionTeam =
     managerAccess
@@ -292,6 +312,25 @@ function TeamPage() {
         },
       )
     }
+  }
+
+  function openSubscriptionPage() {
+    const subscriptionTeamId =
+      subscriptionTeam?.id ||
+      primaryTeam?.id
+
+    if (!subscriptionTeamId) {
+      setErrorMessage(
+        'Subscription team could not be found.',
+      )
+      return
+    }
+
+    closePlusPrompt()
+
+    navigate(
+      `/teams/${subscriptionTeamId}/subscription`,
+    )
   }
 
   // ========================================
@@ -598,9 +637,18 @@ function TeamPage() {
                             )}
                           </div>
 
-                          <h2>
-                            {team.name}
-                          </h2>
+                          <div className="matchmuster-team-name-row">
+                            <h2>
+                              {team.name}
+                            </h2>
+
+                            {isApprovedManager && (
+                              <TeamPlanBadge
+                                team={team}
+                                compact
+                              />
+                            )}
+                          </div>
 
                           <p className="team-description">
                             {team.description ||
@@ -688,6 +736,21 @@ function TeamPage() {
                               >
                                 Edit team
                               </button>
+
+                              {ownedByCurrentManager &&
+                                primaryManagerTeam && (
+                                  <button
+                                    className="matchmuster-plan-button"
+                                    type="button"
+                                    onClick={() =>
+                                      navigate(
+                                        `/teams/${team.id}/subscription`,
+                                      )
+                                    }
+                                  >
+                                    Plan
+                                  </button>
+                                )}
 
                               {ownedByCurrentManager && (
                                 <button
@@ -783,7 +846,7 @@ function TeamPage() {
                   >
                     {canCreateAdditionalTeam
                       ? 'Add team'
-                      : 'View Plus'}
+                      : 'Unlock with Plus'}
                   </button>
                 </article>
               )}
@@ -879,13 +942,29 @@ function TeamPage() {
                 )}
               </div>
 
-              <button
-                className="matchmuster-plus-dismiss"
-                type="button"
-                onClick={closePlusPrompt}
-              >
-                Got it
-              </button>
+              <div className="matchmuster-plus-actions">
+                {!plusPromptForCoManagedTeam && (
+                  <button
+                    className="matchmuster-plus-manage"
+                    type="button"
+                    onClick={
+                      openSubscriptionPage
+                    }
+                  >
+                    View Plus
+                  </button>
+                )}
+
+                <button
+                  className="matchmuster-plus-dismiss"
+                  type="button"
+                  onClick={closePlusPrompt}
+                >
+                  {plusPromptForCoManagedTeam
+                    ? 'Got it'
+                    : 'Not now'}
+                </button>
+              </div>
             </section>
           </div>
         )}

@@ -11,6 +11,7 @@ import {
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
+import BackButton from '../components/BackButton'
 
 import './MatchPaymentsPage.css'
 import './MatchPaymentsPage.mobile.css'
@@ -43,6 +44,16 @@ function MatchPaymentsPage() {
   const [
     isManager,
     setIsManager,
+  ] = useState(false)
+
+  const [
+    currentTeam,
+    setCurrentTeam,
+  ] = useState(null)
+
+  const [
+    analyticsLocked,
+    setAnalyticsLocked,
   ] = useState(false)
 
   const [amount, setAmount] =
@@ -120,6 +131,113 @@ function MatchPaymentsPage() {
       },
       [redirectToLogin],
     )
+
+  // ========================================
+  // LOAD PAYMENT ACCOUNT CONTEXT
+  // ========================================
+
+  const loadPaymentAccountContext =
+    useCallback(async () => {
+      const token =
+        getAuthToken()
+
+      if (!token) {
+        await redirectToLogin()
+        return
+      }
+
+      const headers = {
+        Accept:
+          'application/json',
+
+        Authorization:
+          token,
+      }
+
+      try {
+        const [
+          userResponse,
+          teamResponse,
+        ] = await Promise.all([
+          fetch(
+            `${API_URL}/users/me`,
+            {
+              headers,
+            },
+          ),
+
+          fetch(
+            `${API_URL}/teams/${teamId}`,
+            {
+              headers,
+            },
+          ),
+        ])
+
+        if (
+          (await handleUnauthorised(
+            userResponse,
+          )) ||
+          (await handleUnauthorised(
+            teamResponse,
+          ))
+        ) {
+          return
+        }
+
+        const [
+          userData,
+          teamData,
+        ] = await Promise.all([
+          userResponse
+            .json()
+            .catch(() => ({})),
+
+          teamResponse
+            .json()
+            .catch(() => ({})),
+        ])
+
+        if (
+          !userResponse.ok ||
+          !teamResponse.ok
+        ) {
+          setIsManager(false)
+          return
+        }
+
+        const user =
+          userData.user ||
+          userData
+
+        const team =
+          teamData.team ||
+          teamData
+
+        setCurrentTeam(
+          team,
+        )
+
+        setIsManager(
+          user.account_type ===
+            'manager' &&
+          user.manager_verification_status ===
+            'approved' &&
+          team.membership_role ===
+            'manager',
+        )
+      } catch {
+        setIsManager(false)
+      }
+    }, [
+      handleUnauthorised,
+      redirectToLogin,
+      teamId,
+    ])
+
+  useEffect(() => {
+    loadPaymentAccountContext()
+  }, [loadPaymentAccountContext])
 
   // ========================================
   // LOAD PAYMENT DATA
@@ -235,12 +353,25 @@ function MatchPaymentsPage() {
             summaryData,
           )
 
-          setIsManager(
-            true,
+          setAnalyticsLocked(
+            false,
           )
         } else {
           setSummary(null)
-          setIsManager(false)
+
+          const summaryError =
+            await summaryResponse
+              .json()
+              .catch(
+                () => ({}),
+              )
+
+          setAnalyticsLocked(
+            summaryResponse.status ===
+              403 &&
+            summaryError.code ===
+              'plus_required',
+          )
         }
       } catch {
         setErrorMessage(
@@ -543,6 +674,13 @@ function MatchPaymentsPage() {
         0
 
       if (
+        createdCount === 0 &&
+        skippedCount === 0
+      ) {
+        setErrorMessage(
+          'Select your Matchday squad before sending match subs.',
+        )
+      } else if (
         createdCount ===
           0 &&
         skippedCount > 0
@@ -1033,6 +1171,11 @@ function MatchPaymentsPage() {
 
       <main className="dashboard-page">
         <section className="dashboard-content">
+          <BackButton
+            to={`/teams/${teamId}/matches/${matchId}`}
+            label="Back to match"
+          />
+
           {match && (
             <div className="dashboard-welcome payment-page-heading">
               <p className="dashboard-label">
@@ -1187,6 +1330,48 @@ function MatchPaymentsPage() {
               </section>
             )}
 
+          {isManager &&
+            analyticsLocked && (
+              <section className="payment-analytics-lock-card">
+                <div>
+                  <p className="dashboard-label">
+                    MatchMuster Plus
+                  </p>
+
+                  <h2>
+                    Payment overview
+                  </h2>
+
+                  <p>
+                    Unlock sent, paid,
+                    outstanding and
+                    collection totals.
+                  </p>
+                </div>
+
+                {currentTeam
+                  ?.multi_team_access
+                  ?.owned_by_current_manager ===
+                  true ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(
+                        '/team?plus=required',
+                      )
+                    }
+                  >
+                    View Plus
+                  </button>
+                ) : (
+                  <span className="payment-analytics-owner-note">
+                    Plus is managed by
+                    the team owner.
+                  </span>
+                )}
+              </section>
+            )}
+
           {isManager && (
             <form
               className="payment-request-form"
@@ -1254,7 +1439,7 @@ function MatchPaymentsPage() {
                           .value,
                       )
                     }
-                    placeholder="10.00"
+                    placeholder=""
                     disabled={
                       submitting
                     }
@@ -1271,7 +1456,7 @@ function MatchPaymentsPage() {
                 >
                   {submitting
                     ? 'Sending requests...'
-                    : 'Request payments'}
+                    : 'Send match subs'}
                 </button>
               </div>
             </form>
@@ -1444,7 +1629,7 @@ function MatchPaymentsPage() {
                     >
                       <div className="match-payment-player">
                         <div
-                          className="match-payment-player-avatar"
+                          className="player-avatar"
                           aria-hidden="true"
                         >
                           {playerName(

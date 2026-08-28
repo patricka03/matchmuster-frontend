@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useState,
@@ -557,7 +558,7 @@ function MatchRatingsPage() {
         teamId={teamId}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           <BackButton
             to={`/teams/${teamId}/matches/${matchId}`}
@@ -589,7 +590,7 @@ function MatchRatingsPage() {
               </p>
 
               <h1>
-                Player ratings vs{' '}
+                Ratings vs{' '}
                 {
                   match.opponent
                 }
@@ -822,7 +823,7 @@ function MatchRatingsPage() {
                             maxLength={
                               300
                             }
-                            placeholder="Anything you'd like to say about their performance?"
+                            placeholder="Performance note (optional)"
                             value={
                               playerRating.comment
                             }

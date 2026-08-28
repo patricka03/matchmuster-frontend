@@ -26,6 +26,11 @@ function CreatTeam() {
   const [createdTeamId, setCreatedTeamId] =
     useState(null)
 
+  const [
+    hadOwnedTeamBeforeCreate,
+    setHadOwnedTeamBeforeCreate,
+  ] = useState(false)
+
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -118,6 +123,15 @@ function CreatTeam() {
             ? teamsData
             : teamsData.teams || []
 
+        setHadOwnedTeamBeforeCreate(
+          loadedTeams.some(
+            (team) =>
+              team.multi_team_access
+                ?.owned_by_current_manager ===
+              true,
+          ),
+        )
+
         const creationAccess =
           loadedTeams
             .map(
@@ -137,10 +151,33 @@ function CreatTeam() {
             )
             .find(Boolean)
 
-        if (
+        const ownershipMetadataAvailable =
+          loadedTeams.some(
+            (team) =>
+              typeof team
+                .multi_team_access
+                ?.owned_by_current_manager ===
+              'boolean',
+          )
+
+        const ownsTeam =
+          loadedTeams.some(
+            (team) =>
+              team.multi_team_access
+                ?.owned_by_current_manager ===
+              true,
+          ) ||
+          (!ownershipMetadataAvailable &&
+            loadedTeams.length > 0)
+
+        const canCreateTeam =
+          !ownsTeam ||
           creationAccess
             ?.can_create_additional_team ===
-          false
+            true
+
+        if (
+          !canCreateTeam
         ) {
           navigate(
             '/team?plus=required',
@@ -421,6 +458,25 @@ function CreatTeam() {
           )
 
         if (!uploaded) return
+      }
+
+      if (
+        !hadOwnedTeamBeforeCreate &&
+        teamId
+      ) {
+        navigate(
+          `/teams/${teamId}/subscription`,
+          {
+            replace: true,
+
+            state: {
+              showPreviewIntro:
+                true,
+            },
+          },
+        )
+
+        return
       }
 
       navigate('/team', {

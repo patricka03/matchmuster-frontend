@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, } from 'react-router-dom'
 import BackButton from '../components/BackButton'
@@ -258,7 +259,7 @@ function EditAvailabilityPage() {
       <>
         <Navbar teamId={teamId} />
 
-        <main className="edit-availability-page">
+        <main className="edit-availability-page mm-minimal-page">
           <p className="edit-availability-message">
             Loading your
             availability...
@@ -276,7 +277,7 @@ function EditAvailabilityPage() {
     <>
       <Navbar teamId={teamId} />
 
-      <main className="edit-availability-page">
+      <main className="edit-availability-page mm-minimal-page">
         <section className="edit-availability-container">
           <div className="edit-availability-heading">
             <p className="dashboard-label">

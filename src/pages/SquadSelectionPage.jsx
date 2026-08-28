@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
@@ -1978,7 +1979,7 @@ function SquadSelectionPage() {
       />
 
       <main
-        className={`dashboard-page ${
+        className={`dashboard-page mm-minimal-page ${
           isPlayerView
             ? 'matchday-squad-readonly'
             : ''
@@ -2000,19 +2001,12 @@ function SquadSelectionPage() {
 
               <h1>
                 {canManageSquad
-                  ? 'Build your matchday squad'
+                  ? 'Matchday Squad'
                   : 'Matchday Squad'}
               </h1>
 
-              <p>
-                {canManageSquad
-                  ? 'Choose the formation, starting XI and substitutes against '
-                  : 'View the starting XI, substitutes and match roles against '}
-
-                <strong>
-                  {match.opponent}
-                </strong>
-                .
+              <p className="mm-keep-context">
+                vs <strong>{match.opponent}</strong>
               </p>
             </div>
           )}

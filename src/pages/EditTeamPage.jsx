@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useRef,
@@ -571,7 +572,7 @@ function EditTeamPage() {
         }
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           <div className="dashboard-welcome">
             <p className="dashboard-label">

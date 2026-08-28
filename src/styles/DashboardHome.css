@@ -498,3 +498,40 @@
     width: 100%;
   }
 }
+
+/* MATCHMUSTER DASHBOARD SQUAD ARROW V2 */
+.home-dashboard-action-card {
+  position: relative;
+}
+
+.home-dashboard-squad-arrow {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+  display: block !important;
+  flex: 0 0 auto;
+  color: #64748b;
+}
+
+/* MATCHMUSTER DASHBOARD PLAN STATUS */
+
+.home-dashboard-plan-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.home-dashboard-plan-row > button {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid #dbeafe;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #2563eb;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}

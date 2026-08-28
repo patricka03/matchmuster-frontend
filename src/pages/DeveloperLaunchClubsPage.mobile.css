@@ -1,0 +1,32 @@
+@media (max-width: 700px) {
+  .developer-launch-page {
+    padding: 20px 14px;
+  }
+
+  .developer-launch-header,
+  .developer-launch-card,
+  .developer-launch-search,
+  .developer-launch-target {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .developer-launch-header h1 {
+    font-size: 29px;
+  }
+
+  .developer-launch-target small {
+    margin-left: 0;
+  }
+
+  .developer-launch-header button,
+  .developer-launch-search button,
+  .developer-launch-actions button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .developer-launch-actions {
+    width: 100%;
+  }
+}

@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
@@ -327,11 +328,11 @@ function JoinPage() {
         currentUser={currentUser}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           <BackButton
             to="/dashboard"
-            label="Back to Dashboard"
+            label="Back"
           />
 
           <div className="dashboard-welcome">
@@ -475,7 +476,7 @@ function JoinPage() {
               >
                 {submitting
                   ? 'Sending request...'
-                  : 'Request to join team'}
+                  : 'Request to join'}
               </button>
             </form>
           )}

@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import mapboxgl from 'mapbox-gl'
@@ -623,7 +624,7 @@ function MatchPage() {
         currentUser={currentUser}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           {errorMessage && (
             <p

@@ -10,6 +10,8 @@ import './App.mobile.css'
 
 import AppUrlListener from './components/AppUrlListener'
 import PushNotificationManager from './components/PushNotificationManager'
+import NetworkStatusBanner from './components/NetworkStatusBanner'
+import NotificationPermissionPrompt from './components/NotificationPermissionPrompt'
 
 import WelcomePage from './pages/WelcomePage'
 import LoginPage from './pages/LoginPage'
@@ -53,12 +55,16 @@ import TrainingPage from './pages/TrainingPage'
 import CreateTrainingPage from './pages/CreateTrainingPage'
 import EditTrainingPage from './pages/EditTrainingPage'
 import SchedulePage from './pages/SchedulePage'
+import SubscriptionPage from './pages/SubscriptionPage'
+import DeveloperLaunchClubsPage from './pages/DeveloperLaunchClubsPage'
 
 function App() {
   return (
     <>
       <AppUrlListener />
       <PushNotificationManager />
+      <NetworkStatusBanner />
+      <NotificationPermissionPrompt />
       <Routes>
         <Route
           path="/"
@@ -85,6 +91,15 @@ function App() {
           element={
             <DeveloperProtectedRoute>
               <DeveloperDashboardPage />
+            </DeveloperProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/developer/launch-clubs"
+          element={
+            <DeveloperProtectedRoute>
+              <DeveloperLaunchClubsPage />
             </DeveloperProtectedRoute>
           }
         />
@@ -139,6 +154,11 @@ function App() {
         <Route
           path="/teams/:teamId/edit"
           element={<EditTeamPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/subscription"
+          element={<SubscriptionPage />}
         />
 
         <Route

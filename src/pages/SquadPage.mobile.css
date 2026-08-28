@@ -4,57 +4,97 @@
 
    Import this AFTER SquadPage.css.
 
-   Keeps the current MatchMuster squad actions, button styling
-   and membership badges unchanged.
-
-   Adds:
-   - iOS / Android touch target sizing
-   - safer action-card sizing
-   - touch-first button behaviour
-   - better badge wrapping
-   - very-small-phone support
-   - landscape handling
-   - reduced-motion support
-
-   Bottom-navigation clearance is provided centrally by
-   bottomNav.mobile.css through .dashboard-page.
-
-   Platform hooks:
-   html.platform-ios
-   html.platform-android
+   The shared App.mobile.css layer already owns global safe-area,
+   bottom-navigation and 44pt / 48dp touch-target behaviour.
+   This file concentrates on the Squad screen itself.
 ========================================================== */
 
 /* ========================================
-   ACTION PANEL SAFETY
+   PAGE / CONTENT SAFETY
 ======================================== */
 
-.squad-page-actions {
+.squad-page,
+.squad-page .squad-content,
+.squad-page .squad-section,
+.squad-page .squad-section-heading,
+.squad-page .membership-list,
+.squad-page .membership-card,
+.squad-page .member-details,
+.squad-page .membership-actions,
+.squad-page .squad-empty,
+.squad-page .team-error {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
 }
 
+.squad-page .squad-section-heading > div,
+.squad-page .member-details,
+.squad-page .membership-badges {
+  min-width: 0;
+}
+
+.squad-page .dashboard-welcome h1,
+.squad-page .dashboard-welcome p,
+.squad-page .squad-section-heading h2,
+.squad-page .squad-section-heading p,
+.squad-page .member-details h3,
+.squad-page .member-details p,
+.squad-page .team-error,
+.squad-page .squad-empty {
+  overflow-wrap: anywhere;
+}
+
 /* ========================================
-   ACTION BUTTONS
+   MEMBERSHIP CARDS / BADGES
 ======================================== */
 
-.create-fixture-button,
-.upcoming-matches-button {
-  min-height: 44px;
+.squad-page .member-avatar {
+  -webkit-user-drag: none;
+  user-select: none;
+}
 
+.squad-page .membership-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.squad-page .position-badge,
+.squad-page .manager-badge,
+.squad-page .pending-badge {
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   MANAGER ACTIONS
+======================================== */
+
+.squad-page .approve-button,
+.squad-page .reject-button,
+.squad-page .remove-button {
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   box-sizing: border-box;
-
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-html.platform-android .create-fixture-button,
-html.platform-android .upcoming-matches-button {
+html.platform-android .squad-page .approve-button,
+html.platform-android .squad-page .reject-button,
+html.platform-android .squad-page .remove-button {
   min-height: 48px;
+}
+
+.squad-page .approve-button:disabled,
+.squad-page .reject-button:disabled,
+.squad-page .remove-button:disabled {
+  cursor: not-allowed;
 }
 
 /* ========================================
@@ -62,36 +102,26 @@ html.platform-android .upcoming-matches-button {
 ======================================== */
 
 @media (hover: none) and (pointer: coarse) {
-  .create-fixture-button:hover,
-  .upcoming-matches-button:hover {
+  .squad-page .approve-button:hover:not(:disabled),
+  .squad-page .reject-button:hover:not(:disabled),
+  .squad-page .remove-button:hover:not(:disabled) {
     transform: none;
   }
 
-  .create-fixture-button:active,
-  .upcoming-matches-button:active {
+  .squad-page .approve-button:active:not(:disabled),
+  .squad-page .reject-button:active:not(:disabled),
+  .squad-page .remove-button:active:not(:disabled) {
     transform: scale(0.985);
   }
-}
-
-/* ========================================
-   MEMBERSHIP BADGES
-======================================== */
-
-.membership-badges {
-  min-width: 0;
-}
-
-.pending-badge {
-  max-width: 100%;
-  overflow-wrap: anywhere;
 }
 
 /* ========================================
    IOS POLISH
 ======================================== */
 
-html.platform-ios .create-fixture-button,
-html.platform-ios .upcoming-matches-button {
+html.platform-ios .squad-page .approve-button,
+html.platform-ios .squad-page .reject-button,
+html.platform-ios .squad-page .remove-button {
   -webkit-touch-callout: none;
   user-select: none;
 }
@@ -101,26 +131,121 @@ html.platform-ios .upcoming-matches-button {
 ======================================== */
 
 @media (max-width: 600px) {
-  .squad-page-actions {
-    gap: 10px;
-    margin: 18px 0;
+  .squad-page .squad-heading {
+    margin-bottom: 16px;
+  }
+
+  .squad-page .dashboard-welcome h1 {
+    line-height: 1.08;
+  }
+
+  .squad-page .squad-section {
+    margin-bottom: 18px;
+    border-radius: 18px;
+  }
+
+  .squad-page .squad-section-heading {
+    align-items: center;
+    gap: 12px;
     padding: 16px;
-    border-radius: 14px;
   }
 
-  .create-fixture-button,
-  .upcoming-matches-button {
-    width: 100%;
-    min-height: 48px;
+  .squad-page .squad-section-heading h2 {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.2;
   }
 
-  .membership-badges {
-    gap: 6px;
+  .squad-page .squad-section-compact .squad-section-heading {
+    border-bottom: 0;
   }
 
-  .pending-badge {
+  .squad-page .squad-section-heading p {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .squad-page .squad-count {
+    flex: 0 0 auto;
+    min-width: 32px;
+    padding: 6px 9px;
+    box-sizing: border-box;
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .squad-page .membership-card {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    padding: 16px;
+  }
+
+  .squad-page .member-avatar {
+    grid-column: 1;
+    grid-row: 1;
+    width: 48px;
+    height: 48px;
+  }
+
+  .squad-page .member-details {
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+  }
+
+  .squad-page .member-details h3 {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  .squad-page .member-details p {
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .squad-page .position-badge,
+  .squad-page .manager-badge,
+  .squad-page .pending-badge {
+    line-height: 1.2;
+  }
+
+  .squad-page .pending-badge {
     padding: 5px 8px;
     font-size: 11px;
+  }
+
+  .squad-page .membership-actions,
+  .squad-page .membership-card > .remove-button {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin: 4px 0 0;
+  }
+
+  .squad-page .membership-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .squad-page .membership-actions button,
+  .squad-page .membership-card > .remove-button {
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
+  }
+
+  .squad-page .squad-empty {
+    padding: 22px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .squad-page .team-error {
+    margin-bottom: 18px;
   }
 }
 
@@ -129,11 +254,31 @@ html.platform-ios .upcoming-matches-button {
 ======================================== */
 
 @media (max-width: 380px) {
-  .squad-page-actions {
+  .squad-page .squad-section-heading,
+  .squad-page .membership-card {
     padding: 14px;
   }
 
-  .pending-badge {
+  .squad-page .membership-card {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .squad-page .member-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 13px;
+  }
+
+  .squad-page .member-details h3 {
+    font-size: 15px;
+  }
+
+  .squad-page .membership-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .squad-page .pending-badge {
     font-size: 10px;
   }
 }
@@ -143,14 +288,12 @@ html.platform-ios .upcoming-matches-button {
 ======================================== */
 
 @media (orientation: landscape) and (max-height: 600px) {
-  .squad-page-actions {
-    flex-direction: row;
+  .squad-page .squad-section {
+    margin-bottom: 16px;
   }
 
-  .create-fixture-button,
-  .upcoming-matches-button {
-    width: auto;
-    min-width: 160px;
+  .squad-page .membership-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -159,8 +302,9 @@ html.platform-ios .upcoming-matches-button {
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .create-fixture-button,
-  .upcoming-matches-button {
+  .squad-page .approve-button,
+  .squad-page .reject-button,
+  .squad-page .remove-button {
     transition: none;
   }
 }

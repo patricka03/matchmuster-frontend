@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useRef,
@@ -705,7 +706,7 @@ function TrainingPage() {
       return 'Unavailable'
     }
 
-    return 'Awaiting response'
+    return 'Pending'
   }
 
   // ========================================
@@ -756,7 +757,7 @@ function TrainingPage() {
         currentUser={currentUser}
       />
 
-      <main className="dashboard-page training-page">
+      <main className="dashboard-page training-page mm-minimal-page">
         <section className="dashboard-content">
           <BackButton
             to={`/teams/${teamId}/trainings`}
@@ -1124,7 +1125,7 @@ function TrainingPage() {
 
                     <article className="availability-summary-card pending">
                       <span>
-                        Awaiting
+                        Pending
                       </span>
 
                       <strong>
@@ -1147,8 +1148,7 @@ function TrainingPage() {
 
                       {
                         key: 'pending',
-                        title:
-                          'Awaiting response',
+                        title: 'Pending',
                       },
                     ].map(
                       (group) => {

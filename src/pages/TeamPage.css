@@ -288,3 +288,44 @@
   font-weight: 800;
   cursor: pointer;
 }
+
+/* MATCHMUSTER SUBSCRIPTION V2 */
+
+.matchmuster-team-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.matchmuster-team-name-row h2 {
+  margin: 0;
+}
+
+.matchmuster-plan-button {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.matchmuster-plus-actions {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.matchmuster-plus-manage,
+.matchmuster-plus-dismiss {
+  width: 100%;
+  min-height: 46px;
+}
+
+.matchmuster-plus-manage {
+  border: 0;
+  border-radius: 11px;
+  background: #2563eb;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}

@@ -3,6 +3,14 @@ import {
 } from 'react'
 
 import {
+  Capacitor,
+} from '@capacitor/core'
+
+import {
+  PushNotifications,
+} from '@capacitor/push-notifications'
+
+import {
   AUTH_CHANGED_EVENT,
   getAuthToken,
 } from '../utils/authStorage'
@@ -22,6 +30,23 @@ function PushNotificationManager() {
         getAuthToken()
 
       if (!token || cancelled) {
+        return
+      }
+
+      if (
+        !Capacitor.isNativePlatform()
+      ) {
+        return
+      }
+
+      const permission =
+        await PushNotifications
+          .checkPermissions()
+
+      if (
+        permission.receive !==
+        'granted'
+      ) {
         return
       }
 

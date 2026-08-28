@@ -11,6 +11,8 @@ import {
 } from 'lucide-react'
 
 import Navbar from '../components/Navbar'
+import TeamPlanBadge from '../components/TeamPlanBadge'
+import SubscriptionLifecycleNotice from '../components/SubscriptionLifecycleNotice'
 import API_URL from '../config/api'
 
 import {
@@ -1166,6 +1168,38 @@ function DashboardPage() {
 
       <main className="home-dashboard-page">
         <section className="home-dashboard-content">
+          {teamId &&
+            isApprovedManager && (
+              <div className="home-dashboard-plan-row">
+                <TeamPlanBadge
+                  team={team}
+                />
+
+                {team
+                  ?.multi_team_access
+                  ?.owned_by_current_manager ===
+                  true && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(
+                        `/teams/${teamId}/subscription`,
+                      )
+                    }
+                  >
+                    Plan
+                  </button>
+                )}
+              </div>
+            )}
+
+          <SubscriptionLifecycleNotice
+            team={team}
+            isApprovedManager={
+              isApprovedManager
+            }
+          />
+
           {paymentSuccess && (
             <div
               className="home-dashboard-success"
@@ -1468,7 +1502,7 @@ function DashboardPage() {
                         </strong>
 
                         <span>
-                          Awaiting
+                          Pending
                         </span>
                       </article>
                     </div>
@@ -1505,6 +1539,12 @@ function DashboardPage() {
                       ? 'Manage your team'
                       : 'View your team'}
                   </small>
+
+                  <ArrowRight
+                    className="home-dashboard-squad-arrow"
+                    size={19}
+                    aria-hidden="true"
+                  />
                 </button>
 
                 <button
@@ -1711,7 +1751,7 @@ function DashboardPage() {
                         </strong>
 
                         <span>
-                          Awaiting
+                          Pending
                         </span>
                       </article>
                     </div>

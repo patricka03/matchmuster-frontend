@@ -255,3 +255,32 @@ html.platform-ios .signup-page::before {
   margin: 10px 0 0;
   padding-left: 22px;
 }
+
+/* MATCHMUSTER MANAGER PLUS PREVIEW */
+
+.signup-plus-preview-note {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: -4px 0 18px;
+  padding: 12px 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      135deg,
+      #fff8fb,
+      #eff6ff
+    );
+}
+
+.signup-plus-preview-note strong {
+  color: #0f2747;
+  font-size: 13px;
+}
+
+.signup-plus-preview-note span {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+}

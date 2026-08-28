@@ -21,7 +21,8 @@
     "mapbox-gl": "^3.28.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.2"
+    "react-router-dom": "^7.18.2",
+    "@capgo/native-purchases": "^8.6.6"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",

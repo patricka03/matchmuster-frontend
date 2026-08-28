@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import {
   CalendarDays,
@@ -249,7 +250,7 @@ function TrainingsPage() {
         currentUser={currentUser}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           <div className="matches-heading">
             <div>
@@ -258,7 +259,7 @@ function TrainingsPage() {
               </p>
 
               <h1>
-                Training sessions
+                Training
               </h1>
 
               <p>
@@ -277,7 +278,7 @@ function TrainingsPage() {
                   )
                 }
               >
-                Create training
+                New training
               </button>
             )}
           </div>
@@ -384,7 +385,7 @@ function TrainingsPage() {
                           )
                         }
                       >
-                        View training
+                        Open
 
                         <ChevronRight
                           size={16}

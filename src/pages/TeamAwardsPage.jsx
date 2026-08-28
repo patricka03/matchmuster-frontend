@@ -1,3 +1,5 @@
+import ManagerPlusPrompt from '../components/ManagerPlusPrompt'
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState, } from 'react'
 
 import { useNavigate, useParams, } from 'react-router-dom'
@@ -480,7 +482,7 @@ function TeamAwardsPage() {
         }
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           {errorMessage && (
             <p
@@ -500,8 +502,7 @@ function TeamAwardsPage() {
                   </p>
 
                   <h1>
-                    Team Awards &amp;
-                    Stats
+                    Awards &amp; Stats
                   </h1>
 
                   <p>
@@ -511,6 +512,13 @@ function TeamAwardsPage() {
                     statistics.
                   </p>
                 </div>
+
+                <ManagerPlusPrompt
+                  teamId={teamId}
+                  currentUser={currentUser}
+                  title="More from every season"
+                  description="Player of the Month, Player of the Season and deeper team insights with Plus."
+                />
 
                 <section className="team-awards-hero-grid">
                   <article className="team-award-hero-card">
@@ -551,7 +559,7 @@ function TeamAwardsPage() {
                     </p>
 
                     <h2>
-                      Season Player
+                      Player of the Season
                     </h2>
 
                     {renderAwardLeaders(

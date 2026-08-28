@@ -114,6 +114,43 @@ function Navbar({
   }, [suppliedCurrentUser])
 
   useEffect(() => {
+    function handleNotificationCount(
+      event,
+    ) {
+      const nextCount =
+        Number(
+          event.detail
+            ?.unreadCount,
+        )
+
+      if (
+        Number.isFinite(
+          nextCount,
+        )
+      ) {
+        setUnreadCount(
+          Math.max(
+            0,
+            nextCount,
+          ),
+        )
+      }
+    }
+
+    window.addEventListener(
+      'matchmuster:notifications-updated',
+      handleNotificationCount,
+    )
+
+    return () => {
+      window.removeEventListener(
+        'matchmuster:notifications-updated',
+        handleNotificationCount,
+      )
+    }
+  }, [])
+
+  useEffect(() => {
     if (isPendingManager) {
       setResolvedTeamId(null)
       return

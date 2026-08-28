@@ -70,6 +70,32 @@ const TYPE_META = {
       'New team post',
   },
 
+  training_availability_updated: {
+    label: 'Training response',
+    tone: 'blue',
+    icon: UserCheck,
+    defaultTitle:
+      'Training availability updated',
+  },
+
+  training_availability_reminder: {
+    label: 'Training reminder',
+    tone: 'amber',
+    icon: BellRing,
+    defaultTitle:
+      'Training availability needed',
+    requiresAction: true,
+  },
+
+  subscription_preview_reminder: {
+    label: 'Plus',
+    tone: 'blue',
+    icon: BellRing,
+    defaultTitle:
+      'MatchMuster Plus',
+    requiresAction: true,
+  },
+
   fixture_created: {
     label: 'Fixture',
     tone: 'blue',
@@ -1516,9 +1542,48 @@ function NotificationsPage() {
     )
   }
 
+  function playerIsNotSelected(
+    notification,
+  ) {
+    if (
+      currentUser?.account_type !==
+        'player' ||
+      notification
+        ?.notification_type !==
+        'squad_updated' ||
+      !Array.isArray(
+        notification
+          ?.game_squad,
+      )
+    ) {
+      return false
+    }
+
+    return !notification
+      .game_squad
+      .some(
+        (selection) =>
+          String(
+            selection.user_id ||
+              selection.user?.id,
+          ) ===
+          String(
+            currentUser.id,
+          ),
+      )
+  }
+
   function notificationTitle(
     notification,
   ) {
+    if (
+      playerIsNotSelected(
+        notification,
+      )
+    ) {
+      return 'Not selected for this fixture'
+    }
+
     return (
       notification.post?.title ||
       notification.title ||
@@ -1531,6 +1596,20 @@ function NotificationsPage() {
   function notificationMessage(
     notification,
   ) {
+    if (
+      playerIsNotSelected(
+        notification,
+      )
+    ) {
+      const opponent =
+        notification
+          ?.match?.opponent
+
+      return opponent
+        ? `You are not in the Matchday squad for the fixture against ${opponent}.`
+        : 'You are not in the Matchday squad for this fixture.'
+    }
+
     return notificationMessageText(
       notification,
     )
@@ -1542,6 +1621,16 @@ function NotificationsPage() {
     return (
       notification?.match_id ||
       notification?.match?.id ||
+      null
+    )
+  }
+
+  function getTrainingId(
+    notification,
+  ) {
+    return (
+      notification?.training_id ||
+      notification?.training?.id ||
       null
     )
   }
@@ -1564,6 +1653,8 @@ function NotificationsPage() {
       notification?.match
         ?.team_id ||
       notification?.post
+        ?.team_id ||
+      notification?.training
         ?.team_id ||
       teamId ||
       null
@@ -1597,6 +1688,51 @@ function NotificationsPage() {
       getPostId(
         notification,
       )
+
+    const trainingId =
+      getTrainingId(
+        notification,
+      )
+
+    if (
+      [
+        'training_availability_reminder',
+        'training_availability_updated',
+      ].includes(type) &&
+      notificationTeamId &&
+      trainingId
+    ) {
+      return {
+        label:
+          role === 'player'
+            ? 'Set availability'
+            : 'View training',
+
+        path:
+          `/teams/${notificationTeamId}/trainings/${trainingId}`,
+
+        icon:
+          CalendarClock,
+      }
+    }
+
+    if (
+      type ===
+        'subscription_preview_reminder' &&
+      notificationTeamId &&
+      role === 'manager'
+    ) {
+      return {
+        label:
+          'View Plus',
+
+        path:
+          `/teams/${notificationTeamId}/subscription`,
+
+        icon:
+          BellRing,
+      }
+    }
 
     if (
       AVAILABILITY_ACTION_TYPES.includes(
