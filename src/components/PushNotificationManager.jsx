@@ -3,6 +3,10 @@ import {
 } from 'react'
 
 import {
+  useNavigate,
+} from 'react-router-dom'
+
+import {
   Capacitor,
 } from '@capacitor/core'
 
@@ -20,7 +24,159 @@ import {
   registerForPushNotifications,
 } from '../utils/pushNotifications'
 
+function pushNotificationRoute(
+  data = {},
+) {
+  const type =
+    data.notification_type
+
+  const teamId =
+    data.team_id
+
+  const matchId =
+    data.match_id
+
+  const postId =
+    data.post_id
+
+  const trainingId =
+    data.training_id
+
+  if (
+    [
+      'fixture_created',
+      'availability_required',
+      'availability_reminder',
+    ].includes(type) &&
+    teamId &&
+    matchId
+  ) {
+    return (
+      `/teams/${teamId}/matches/${matchId}/availabilities/confirm`
+    )
+  }
+
+  if (
+    [
+      'squad_selected',
+      'squad_updated',
+    ].includes(type) &&
+    teamId &&
+    matchId
+  ) {
+    return (
+      `/teams/${teamId}/matches/${matchId}/squad`
+    )
+  }
+
+  if (
+    [
+      'motm_voting_open',
+      'match_rating_open',
+      'match_rating_reminder',
+      'motm_announced',
+      'man_of_the_match',
+      'match_rating_result',
+    ].includes(type) &&
+    teamId &&
+    matchId
+  ) {
+    return (
+      `/teams/${teamId}/matches/${matchId}/ratings`
+    )
+  }
+
+  if (
+    [
+      'match_payment_requested',
+      'match_payment_amount_changed',
+      'match_payment_reminder',
+      'match_payment_paid',
+      'match_payment_waived',
+    ].includes(type) &&
+    teamId &&
+    matchId
+  ) {
+    return (
+      `/teams/${teamId}/matches/${matchId}/payments`
+    )
+  }
+
+  if (
+    [
+      'announcement',
+      'tactical_post',
+      'post_created',
+    ].includes(type) &&
+    teamId &&
+    postId
+  ) {
+    return (
+      `/teams/${teamId}/posts/${postId}`
+    )
+  }
+
+  if (
+    [
+      'fixture_updated',
+      'fixture_cancelled',
+      'player_availability_updated',
+    ].includes(type) &&
+    teamId &&
+    matchId
+  ) {
+    return (
+      `/teams/${teamId}/matches/${matchId}`
+    )
+  }
+
+  if (
+    [
+      'training_availability_reminder',
+      'training_availability_updated',
+    ].includes(type) &&
+    teamId &&
+    trainingId
+  ) {
+    return (
+      `/teams/${teamId}/trainings/${trainingId}`
+    )
+  }
+
+  if (
+    [
+      'join_request_received',
+      'team_join_requested',
+      'player_joined',
+    ].includes(type) &&
+    teamId
+  ) {
+    return (
+      `/teams/${teamId}/squad`
+    )
+  }
+
+  if (
+    [
+      'membership_approved',
+      'membership_rejected',
+      'team_join_approved',
+      'team_join_rejected',
+      'team_membership_removed',
+      'team_updated',
+      'manager_status_updated',
+    ].includes(type)
+  ) {
+    return '/dashboard'
+  }
+
+  return '/notifications'
+}
+
 function PushNotificationManager() {
+  const navigate =
+    useNavigate()
+
   useEffect(() => {
     let cleanup = null
     let cancelled = false
@@ -55,7 +211,29 @@ function PushNotificationManager() {
 
     async function initialisePushNotifications() {
       cleanup =
-        await initialisePushNotificationListeners()
+        await initialisePushNotificationListeners({
+          onNotificationOpened:
+            (notification) => {
+              /*
+               * Apple first:
+               * do not change Android tap
+               * behaviour during the iOS
+               * launch phase.
+               */
+              if (
+                Capacitor.getPlatform() !==
+                'ios'
+              ) {
+                return
+              }
+
+              navigate(
+                pushNotificationRoute(
+                  notification?.data || {},
+                ),
+              )
+            },
+        })
 
       if (cancelled) {
         await cleanup()
@@ -102,7 +280,7 @@ function PushNotificationManager() {
         void cleanup()
       }
     }
-  }, [])
+  }, [navigate])
 
   return null
 }

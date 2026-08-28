@@ -139,7 +139,9 @@ export async function registerForPushNotifications() {
   await PushNotifications.register()
 }
 
-export async function initialisePushNotificationListeners() {
+export async function initialisePushNotificationListeners({
+  onNotificationOpened,
+} = {}) {
   if (!Capacitor.isNativePlatform()) {
     return () => {}
   }
@@ -196,10 +198,29 @@ export async function initialisePushNotificationListeners() {
     await PushNotifications.addListener(
       'pushNotificationActionPerformed',
       (action) => {
+        const notification =
+          action.notification
+
         console.info(
           'Push notification opened:',
-          action.notification,
+          notification,
         )
+
+        if (
+          typeof onNotificationOpened ===
+          'function'
+        ) {
+          try {
+            onNotificationOpened(
+              notification,
+            )
+          } catch (error) {
+            console.error(
+              'Unable to handle opened MatchMuster push notification:',
+              error,
+            )
+          }
+        }
       },
     )
 

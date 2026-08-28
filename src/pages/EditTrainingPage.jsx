@@ -9,6 +9,8 @@ import {
   useParams,
 } from 'react-router-dom'
 
+import { SearchBox } from '@mapbox/search-js-react'
+
 import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
 
@@ -297,21 +299,6 @@ function EditTrainingPage() {
   // ========================================
   // DATE / TIME PAYLOAD
   // ========================================
-
-  function localDateTimeToIso(
-    value,
-  ) {
-    if (!value) return value
-
-    const localDate =
-      new Date(value)
-
-    return Number.isNaN(
-      localDate.getTime(),
-    )
-      ? value
-      : localDate.toISOString()
-  }
 
   function buildTrainingPayload() {
     return {

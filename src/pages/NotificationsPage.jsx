@@ -391,6 +391,9 @@ const MOTM_ACTION_TYPES = [
 ]
 
 const MOTM_ACTION_WINDOW_MS =
+  2 * 60 * 60 * 1000
+
+const MOTM_CLOSE_AFTER_KICKOFF_MS =
   4 * 60 * 60 * 1000
 
 const AVAILABILITY_ACTION_TYPES = [
@@ -756,6 +759,37 @@ function isMotmActionExpired(
       return (
         Date.now() >=
         deadlineTime
+      )
+    }
+  }
+
+  const kickoffTime =
+    notification?.match
+      ?.kickoff_time ||
+    notification?.kickoff_time ||
+    notification
+      ?.match_kickoff_time ||
+    notification?.metadata
+      ?.kickoff_time ||
+    notification?.data
+      ?.kickoff_time ||
+    null
+
+  if (kickoffTime) {
+    const kickoffTimestamp =
+      new Date(
+        kickoffTime,
+      ).getTime()
+
+    if (
+      !Number.isNaN(
+        kickoffTimestamp,
+      )
+    ) {
+      return (
+        Date.now() >=
+        kickoffTimestamp +
+          MOTM_CLOSE_AFTER_KICKOFF_MS
       )
     }
   }
