@@ -82,14 +82,14 @@ function BottomNav({
       : null
 
   const paymentTargetMatchId =
-    isApprovedManager
-      ? latestPlayedMatchId
-      : playerPaymentMatchId
+    playerPaymentMatchId
 
   const paymentsPath =
-    teamId && paymentTargetMatchId
-      ? `/teams/${teamId}/matches/${paymentTargetMatchId}/payments`
-      : null
+    isApprovedManager && teamId
+      ? `/teams/${teamId}/match-subs`
+      : teamId && paymentTargetMatchId
+        ? `/teams/${teamId}/matches/${paymentTargetMatchId}/payments`
+        : null
 
   const paymentsLabel =
     isApprovedManager

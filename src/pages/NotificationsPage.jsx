@@ -140,6 +140,47 @@ const TYPE_META = {
     requiresAction: true,
   },
 
+  squad_selection_reminder: {
+    label: 'Matchday',
+    tone: 'amber',
+    icon: Users,
+    defaultTitle:
+      'Starting XI still needs picking',
+    requiresAction: true,
+  },
+
+  match_kickoff_reminder: {
+    label: 'Matchday',
+    tone: 'blue',
+    icon: CalendarClock,
+    defaultTitle:
+      'Kickoff in 1 hour',
+  },
+
+  match_started: {
+    label: 'Matchday',
+    tone: 'green',
+    icon: CalendarClock,
+    defaultTitle:
+      'Match started',
+  },
+
+  training_start_reminder: {
+    label: 'Training',
+    tone: 'blue',
+    icon: CalendarClock,
+    defaultTitle:
+      'Training in 1 hour',
+  },
+
+  training_started: {
+    label: 'Training',
+    tone: 'green',
+    icon: CalendarClock,
+    defaultTitle:
+      'Training has started',
+  },
+
   player_availability_updated: {
     label: 'Player response',
     tone: 'blue',
@@ -1732,6 +1773,10 @@ function NotificationsPage() {
       [
         'training_availability_reminder',
         'training_availability_updated',
+        'training_start_reminder',
+        'training_started',
+        'training_start_reminder',
+        'training_started',
       ].includes(type) &&
       notificationTeamId &&
       trainingId
@@ -1883,6 +1928,8 @@ function NotificationsPage() {
       [
         'squad_selected',
         'squad_updated',
+        'squad_selection_reminder',
+        'squad_selection_reminder',
       ].includes(type) &&
       notificationTeamId &&
       matchId
@@ -1924,6 +1971,10 @@ function NotificationsPage() {
       [
         'fixture_updated',
         'fixture_cancelled',
+        'match_kickoff_reminder',
+        'match_started',
+        'match_kickoff_reminder',
+        'match_started',
       ].includes(type) &&
       notificationTeamId &&
       matchId

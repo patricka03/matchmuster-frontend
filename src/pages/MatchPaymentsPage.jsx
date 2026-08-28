@@ -1179,18 +1179,17 @@ function MatchPaymentsPage() {
           {match && (
             <div className="dashboard-welcome payment-page-heading">
               <p className="dashboard-label">
-                Match finances
+                Match Subs
               </p>
 
               <h1>
-                Match payments
+                Match Subs
               </h1>
 
               <p>
                 {isManager
-                  ? 'Request, collect and track player fees'
-                  : 'View and pay your match fee'}{' '}
-                for the fixture against{' '}
+                  ? 'Payment status for'
+                  : 'Your match sub for'}{' '}
                 <strong>
                   {match.opponent}
                 </strong>
@@ -1381,21 +1380,12 @@ function MatchPaymentsPage() {
             >
               <div className="payment-request-copy">
                 <p className="dashboard-label">
-                  New payment request
+                  New Match Sub
                 </p>
 
                 <h2>
-                  Charge the selected
-                  squad
+                  Send Match Subs
                 </h2>
-
-                <p>
-                  A request will be
-                  created for every
-                  selected player who
-                  does not already have
-                  one.
-                </p>
 
                 {requestAmountPence >
                   0 && (
@@ -1475,7 +1465,7 @@ function MatchPaymentsPage() {
 
                   <h2>
                     {isManager
-                      ? 'Payment requests'
+                      ? 'Match Subs'
                       : 'Match fee'}
                   </h2>
                 </div>

@@ -27,6 +27,7 @@ import CancelMatchPage from './pages/CancelMatchPage'
 import MatchAvailabilitiesPage from './pages/MatchAvailabilitiesPage'
 import SquadSelectionPage from './pages/SquadSelectionPage'
 import MatchPaymentsPage from './pages/MatchPaymentsPage'
+import TeamMatchSubsPage from './pages/TeamMatchSubsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import PostsPage from './pages/PostsPage'
 import PostPage from './pages/PostPage'
@@ -210,6 +211,11 @@ function App() {
         <Route
           path="/teams/:teamId/matches/:matchId/squad"
           element={<SquadSelectionPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/match-subs"
+          element={<TeamMatchSubsPage />}
         />
 
         <Route

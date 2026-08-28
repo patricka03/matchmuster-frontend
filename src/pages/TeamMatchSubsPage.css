@@ -1,0 +1,92 @@
+.team-match-subs-page .dashboard-welcome {
+  margin-bottom: 22px;
+}
+
+.match-subs-fixture-list {
+  display: grid;
+  gap: 12px;
+}
+
+.match-subs-fixture-card {
+  width: 100%;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.match-subs-fixture-card.active {
+  border-color: rgba(255, 10, 120, 0.28);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+.match-subs-fixture-copy {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.match-subs-fixture-copy > div {
+  display: grid;
+  gap: 5px;
+}
+
+.match-subs-fixture-copy strong {
+  color: #0f172a;
+  font-size: 17px;
+}
+
+.match-subs-fixture-copy span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.match-subs-current {
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #0f172a !important;
+  font-size: 11px !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+}
+
+.match-subs-open {
+  font-weight: 800;
+}
+
+.match-subs-counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.match-subs-counts span {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.match-subs-counts strong {
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.match-subs-empty {
+  padding: 28px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #ffffff;
+  text-align: center;
+}

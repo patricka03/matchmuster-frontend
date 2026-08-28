@@ -60,6 +60,8 @@ function pushNotificationRoute(
     [
       'squad_selected',
       'squad_updated',
+      'squad_selection_reminder',
+      'squad_selection_reminder',
     ].includes(type) &&
     teamId &&
     matchId
@@ -121,6 +123,10 @@ function pushNotificationRoute(
       'fixture_updated',
       'fixture_cancelled',
       'player_availability_updated',
+      'match_kickoff_reminder',
+      'match_started',
+      'match_kickoff_reminder',
+      'match_started',
     ].includes(type) &&
     teamId &&
     matchId
@@ -134,6 +140,10 @@ function pushNotificationRoute(
     [
       'training_availability_reminder',
       'training_availability_updated',
+      'training_start_reminder',
+      'training_started',
+      'training_start_reminder',
+      'training_started',
     ].includes(type) &&
     teamId &&
     trainingId

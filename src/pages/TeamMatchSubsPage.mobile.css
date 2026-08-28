@@ -1,0 +1,13 @@
+@media (max-width: 640px) {
+  .match-subs-fixture-card {
+    padding: 15px;
+  }
+
+  .match-subs-counts {
+    gap: 6px;
+  }
+
+  .match-subs-counts span {
+    padding: 9px;
+  }
+}
