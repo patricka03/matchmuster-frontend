@@ -366,13 +366,6 @@ function MatchAvailabilityPage() {
     }
 
     if (
-      destination === 'available' &&
-      !existingSelection
-    ) {
-      return
-    }
-
-    if (
       existingSelection?.selection_type ===
       destination
     ) {
@@ -382,21 +375,30 @@ function MatchAvailabilityPage() {
     const baseUrl =
       `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`
 
+    // MATCHMUSTER_EXPLICIT_NOT_SELECTED_V1
     const returningToPool =
       destination ===
       'available'
 
+    const explicitlyNotSelected =
+      returningToPool &&
+      !existingSelection
+
     const method =
       returningToPool
-        ? 'DELETE'
+        ? existingSelection
+          ? 'DELETE'
+          : 'POST'
         : existingSelection
           ? 'PATCH'
           : 'POST'
 
     const url =
-      existingSelection
-        ? `${baseUrl}/${existingSelection.id}`
-        : baseUrl
+      explicitlyNotSelected
+        ? `${baseUrl}/not_selected`
+        : existingSelection
+          ? `${baseUrl}/${existingSelection.id}`
+          : baseUrl
 
     const position =
       existingSelection?.position ||
@@ -438,19 +440,24 @@ function MatchAvailabilityPage() {
             },
 
             body:
-              returningToPool
-                ? undefined
-                : JSON.stringify({
-                    squad_selection: {
-                      user_id:
-                        player.id,
+              explicitlyNotSelected
+                ? JSON.stringify({
+                    user_id:
+                      player.id,
+                  })
+                : returningToPool
+                  ? undefined
+                  : JSON.stringify({
+                      squad_selection: {
+                        user_id:
+                          player.id,
 
-                      selection_type:
-                        destination,
+                        selection_type:
+                          destination,
 
-                      position,
-                    },
-                  }),
+                        position,
+                      },
+                    }),
           },
         )
 
@@ -492,14 +499,16 @@ function MatchAvailabilityPage() {
       }
 
       if (returningToPool) {
-        setSquadSelections(
-          (currentSelections) =>
-            currentSelections.filter(
-              (selection) =>
-                selection.id !==
-                existingSelection.id,
-            ),
-        )
+        if (existingSelection) {
+          setSquadSelections(
+            (currentSelections) =>
+              currentSelections.filter(
+                (selection) =>
+                  selection.id !==
+                  existingSelection.id,
+              ),
+          )
+        }
       } else {
         const savedSelection =
           data.squad_selection ||
@@ -534,10 +543,12 @@ function MatchAvailabilityPage() {
           : destination ===
               'substitute'
             ? 'Substitutes'
-            : 'Available'
+            : 'Not selected'
 
       setSuccessMessage(
-        `${playerName(player)} moved to ${destinationLabel}.`,
+        destination === 'available'
+          ? `${playerName(player)} was marked as not selected and will be notified.`
+          : `${playerName(player)} moved to ${destinationLabel}.`,
       )
     } catch (error) {
       setErrorMessage(
@@ -635,9 +646,7 @@ function MatchAvailabilityPage() {
             )
           }
           disabled={
-            saving ||
-            currentDestination ===
-              'available'
+            saving
           }
         >
           Not selected
