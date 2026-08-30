@@ -1,0 +1,456 @@
+/* ==========================================================
+   MATCHMUSTER — REMAINING MOBILE UI AUDIT
+
+   IMPORTANT:
+   Every selector is scoped to .mm-minimal-page so completed
+   Welcome/Login/Signup/Reset/Dashboard/Notifications/Team/
+   Squad/Legal screens are not visually changed by this file.
+========================================================== */
+
+/* ========================================
+   PLUS PROMPT
+======================================== */
+
+.mm-plus-prompt {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 22px;
+  padding: 15px 16px;
+  border: 1px solid #e4e9f2;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+  color: #172033;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mm-plus-prompt-icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff0f7, #eef5ff);
+  color: #f0066f;
+}
+
+.mm-plus-prompt-copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.mm-plus-prompt-copy strong {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.mm-plus-prompt-copy small {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.mm-plus-prompt-action {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #f0066f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.mm-plus-prompt--compact {
+  margin-bottom: 16px;
+  padding-block: 13px;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .mm-plus-prompt:active {
+    transform: scale(0.985);
+  }
+}
+
+/* ========================================
+   REMAINING APP PAGES — MOBILE
+======================================== */
+
+@media (max-width: 900px) {
+  .mm-minimal-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mm-minimal-page .dashboard-content,
+  .mm-minimal-page .posts-container,
+  .mm-minimal-page .edit-profile-card,
+  .mm-minimal-page .auth-card,
+  .mm-minimal-page .support-topic-grid,
+  .mm-minimal-page .support-contact-panel,
+  .mm-minimal-page .support-company-panel {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Quiet page headers: keep the destination, lose the narration. */
+  .mm-minimal-page .dashboard-welcome > .dashboard-label,
+  .mm-minimal-page .dashboard-welcome > p:not([role]):not(.mm-keep-context),
+  .mm-minimal-page .matches-heading > div > .dashboard-label,
+  .mm-minimal-page .matches-heading > div > h1 + p,
+  .mm-minimal-page .matches-section-heading > .dashboard-label,
+  .mm-minimal-page .matches-section-heading > h2 + p,
+  .mm-minimal-page .posts-header .posts-label,
+  .mm-minimal-page .posts-header h1 + p,
+  .mm-minimal-page .team-awards-section-heading .dashboard-label,
+  .mm-minimal-page .team-awards-section-heading h2 + p,
+  .mm-minimal-page .payment-request-copy .dashboard-label,
+  .mm-minimal-page .payment-request-copy h2 + p,
+  .mm-minimal-page .auth-subtitle,
+  .mm-minimal-page .support-public-hero > p:last-child {
+    display: none;
+  }
+
+  .mm-minimal-page .dashboard-welcome,
+  .mm-minimal-page .matches-heading,
+  .mm-minimal-page .posts-header {
+    margin-bottom: 22px;
+  }
+
+  .mm-minimal-page .dashboard-welcome h1,
+  .mm-minimal-page .matches-heading h1,
+  .mm-minimal-page .posts-header h1,
+  .mm-minimal-page .edit-profile-heading h1,
+  .mm-minimal-page .support-public-hero h1 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: clamp(30px, 8vw, 40px);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+
+  .mm-minimal-page .matches-section-heading h2,
+  .mm-minimal-page .team-awards-section-heading h2 {
+    margin-bottom: 0;
+  }
+
+  /* Cards: softer, cleaner, less visual noise. */
+  .mm-minimal-page :is(
+    .match-card,
+    .fixture-details-card,
+    .availability-player-card,
+    .availability-group,
+    .availability-summary-card,
+    .empty-team-card,
+    .join-team-card,
+    .payment-collection-card,
+    .payment-request-form,
+    .payment-summary article,
+    .payment-card,
+    .post-card,
+    .posts-empty,
+    .post-detail-card,
+    .team-award-hero-card,
+    .team-awards-section,
+    .rating-player-card,
+    .ratings-state-card,
+    .ratings-window-card,
+    .match-result-card,
+    .match-player-stat-card,
+    .lineup-builder,
+    .squad-selection-summary article,
+    .profile-overview,
+    .profile-settings-section,
+    .help-card,
+    .support-box
+  ) {
+    border-radius: 20px;
+  }
+
+  /* Keep content from blowing out narrow iPhones. */
+  .mm-minimal-page :is(
+    h1,
+    h2,
+    h3,
+    p,
+    strong,
+    small,
+    label,
+    .match-details,
+    .payment-request-copy,
+    .team-awards-player-info,
+    .rating-player-name,
+    .profile-overview-details
+  ) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Form controls should never trigger iOS input zoom. */
+  .mm-minimal-page :is(
+    input:not([type='checkbox']):not([type='radio']):not([type='range']),
+    select,
+    textarea
+  ) {
+    box-sizing: border-box;
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  /* Apple-sized tap targets; Android gets 48dp below. */
+  .mm-minimal-page :is(
+    button,
+    a[class*='button'],
+    a[class*='link'],
+    select
+  ) {
+    min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html.platform-android .mm-minimal-page :is(
+    button,
+    a[class*='button'],
+    a[class*='link'],
+    select
+  ) {
+    min-height: 48px;
+  }
+
+  /* Compact the long empty-state paragraphs. */
+  .mm-minimal-page .empty-team-card p,
+  .mm-minimal-page .posts-empty p {
+    max-width: 28rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Lists should breathe without giant explanatory headers. */
+  .mm-minimal-page :is(
+    .matches-list,
+    .availability-groups,
+    .rating-player-list,
+    .match-player-stats-list,
+    .team-awards-leaderboard,
+    .team-stat-leaderboard,
+    .posts-list
+  ) {
+    gap: 14px;
+  }
+
+  /* Availability controls are easier to scan with short labels. */
+  .mm-minimal-page .availability-squad-buttons {
+    gap: 8px;
+  }
+
+  .mm-minimal-page .availability-squad-buttons button {
+    min-width: 0;
+  }
+
+  /* Payment summary remains data-led rather than copy-led. */
+  .mm-minimal-page .payment-summary {
+    gap: 10px;
+  }
+
+  /* Keep sticky/fixed action bars clear of the home indicator. */
+  .mm-minimal-page :is(
+    .ratings-submit-bar,
+    .match-form-actions,
+    .post-form-actions
+  ) {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  /* Public support still keeps its company/legal details readable. */
+  .mm-minimal-page.support-public-page {
+    padding-bottom: max(32px, env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 390px) {
+  .mm-plus-prompt {
+    align-items: flex-start;
+  }
+
+  .mm-plus-prompt-action {
+    padding-top: 4px;
+  }
+
+  .mm-minimal-page .dashboard-welcome h1,
+  .mm-minimal-page .matches-heading h1,
+  .mm-minimal-page .posts-header h1,
+  .mm-minimal-page .edit-profile-heading h1,
+  .mm-minimal-page .support-public-hero h1 {
+    font-size: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mm-plus-prompt {
+    transition: none;
+  }
+}
+
+/* MATCHMUSTER SCHEDULE / FIXTURE IOS FIX V2 */
+@media (max-width: 900px) {
+  .mm-minimal-page .match-form,
+  .mm-minimal-page .match-form .form-group,
+  .match-form,
+  .match-form .form-group {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .mm-minimal-page .match-form input[type='datetime-local'],
+  .match-form input[type='datetime-local'] {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .mm-minimal-page .match-form,
+  .match-form {
+    overflow: visible;
+  }
+
+  .mm-minimal-page .match-form mapbox-search-box,
+  .match-form mapbox-search-box {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    position: relative;
+    z-index: 40;
+  }
+
+  .mm-minimal-page .match-form .form-group:has(mapbox-search-box),
+  .match-form .form-group:has(mapbox-search-box) {
+    position: relative;
+    z-index: 50;
+    overflow: visible;
+  }
+}
+
+
+/* MATCHMUSTER FIXTURE FIELD TIGHTENING V3 */
+@media (max-width: 900px) {
+  .mm-minimal-page .match-form input[type='datetime-local'],
+  .match-form input[type='datetime-local'] {
+    display: block;
+    width: 100%;
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px;
+    padding: 0 14px !important;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #0f172a;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1.2;
+    text-align: left;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .mm-minimal-page .match-form input[type='datetime-local']::-webkit-date-and-time-value,
+  .match-form input[type='datetime-local']::-webkit-date-and-time-value {
+    min-height: 0;
+    margin: 0;
+    text-align: left;
+  }
+
+  .mm-minimal-page .match-form input[type='datetime-local']::-webkit-datetime-edit,
+  .match-form input[type='datetime-local']::-webkit-datetime-edit {
+    padding: 0;
+  }
+
+  .mm-minimal-page .match-form input[type='datetime-local']:focus,
+  .match-form input[type='datetime-local']:focus {
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(79, 156, 255, 0.16);
+    outline: none;
+  }
+}
+
+/* MATCHMUSTER AVAILABILITY CARD CONTAINMENT V4 */
+@media (max-width: 900px) {
+  .mm-minimal-page .availability-player-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .mm-minimal-page .availability-player,
+  .mm-minimal-page .availability-player-actions {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .mm-minimal-page .availability-player-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .mm-minimal-page .availability-status {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .mm-minimal-page .availability-squad-buttons {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  .mm-minimal-page .availability-squad-buttons button {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 52px;
+    padding: 9px 7px;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.12;
+    text-align: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .mm-minimal-page .availability-squad-buttons {
+    gap: 6px;
+  }
+
+  .mm-minimal-page .availability-squad-buttons button {
+    padding-inline: 5px;
+    font-size: 14px;
+  }
+}

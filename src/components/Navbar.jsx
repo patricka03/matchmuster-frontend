@@ -4,6 +4,7 @@ import { Bell, Settings } from 'lucide-react'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import API_URL from '../config/api'
 import BottomNav from './BottomNav'
+import NavbarMessagesButton from './NavbarMessagesButton'
 import {
   clearAuthToken,
   getAuthToken,
@@ -30,6 +31,11 @@ function readStoredUser() {
   } catch {
     return null
   }
+}
+
+function teamIsLocked(team) {
+  return team.multi_team_access
+    ?.locked === true
 }
 
 function Navbar({
@@ -107,6 +113,43 @@ function Navbar({
       }
     }
   }, [suppliedCurrentUser])
+
+  useEffect(() => {
+    function handleNotificationCount(
+      event,
+    ) {
+      const nextCount =
+        Number(
+          event.detail
+            ?.unreadCount,
+        )
+
+      if (
+        Number.isFinite(
+          nextCount,
+        )
+      ) {
+        setUnreadCount(
+          Math.max(
+            0,
+            nextCount,
+          ),
+        )
+      }
+    }
+
+    window.addEventListener(
+      'matchmuster:notifications-updated',
+      handleNotificationCount,
+    )
+
+    return () => {
+      window.removeEventListener(
+        'matchmuster:notifications-updated',
+        handleNotificationCount,
+      )
+    }
+  }, [])
 
   useEffect(() => {
     if (isPendingManager) {
@@ -239,6 +282,12 @@ function Navbar({
               ? teamsData
               : teamsData.teams || []
 
+          const selectableTeams =
+            loadedTeams.filter(
+              (team) =>
+                !teamIsLocked(team),
+            )
+
           const storedActiveTeamId =
             readStoredTeamId()
 
@@ -247,23 +296,27 @@ function Navbar({
             routeTeamId ||
             storedActiveTeamId ||
             resolvedTeamId ||
-            loadedTeams[0]?.id
+            selectableTeams[0]?.id
 
           const currentTeam =
-            loadedTeams.find(
+            selectableTeams.find(
               (team) =>
                 String(team.id) === String(preferredTeamId),
             ) ||
-            loadedTeams[0] ||
+            selectableTeams[0] ||
             null
 
           if (!cancelled) {
-            setTeams(loadedTeams)
+            setTeams(selectableTeams)
           }
 
           if (!cancelled && currentTeam) {
             const currentTeamName =
-              suppliedTeamName || currentTeam.name || ''
+              String(currentTeam.id) ===
+                String(suppliedTeamId) &&
+              suppliedTeamName
+                ? suppliedTeamName
+                : currentTeam.name || ''
 
             setResolvedTeamId(currentTeam.id)
             setResolvedTeamName(currentTeamName)
@@ -277,6 +330,29 @@ function Navbar({
               'activeTeamName',
               currentTeamName,
             )
+
+            if (
+              storedActiveTeamId &&
+              String(storedActiveTeamId) !==
+                String(currentTeam.id)
+            ) {
+              window.dispatchEvent(
+                new CustomEvent(
+                  'matchmuster:active-team-changed',
+                  {
+                    detail: {
+                      teamId: currentTeam.id,
+                    },
+                  },
+                ),
+              )
+            }
+          } else if (!cancelled) {
+            setResolvedTeamId(null)
+            setResolvedTeamName('')
+
+            localStorage.removeItem('activeTeamId')
+            localStorage.removeItem('activeTeamName')
           }
         }
       } catch {
@@ -719,6 +795,11 @@ function Navbar({
           </Link>
 
           <div className="app-topbar-actions">
+            <NavbarMessagesButton
+              teamId={resolvedTeamId}
+              enabled={canUseTeamNavigation}
+            />
+
             <Link
               className="app-topbar-action app-topbar-notifications"
               to="/notifications"
@@ -760,29 +841,30 @@ function Navbar({
           </div>
         </div>
 
-        {navbarError && (
-          <div
-            className="app-topbar-error"
-            role="alert"
-          >
-            {navbarError}
-
-            <button
-              type="button"
-              onClick={() =>
-                setNavbarError('')
-              }
-            >
-              Dismiss
-            </button>
-          </div>
-        )}
       </header>
 
       <div
         className="app-topbar-fixed-spacer"
         aria-hidden="true"
       />
+
+      {navbarError && (
+        <div
+          className="app-topbar-error"
+          role="alert"
+        >
+          {navbarError}
+
+          <button
+            type="button"
+            onClick={() =>
+              setNavbarError('')
+            }
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       <BottomNav
         teamId={resolvedTeamId}

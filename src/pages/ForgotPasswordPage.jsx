@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './ForgotPasswordPage.css'
 import './ForgotPasswordPage.mobile.css'
+import './ForgotPasswordPage.slick.css'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import BackButton from '../components/BackButton'
@@ -43,7 +44,7 @@ function ForgotPasswordPage() {
       }
 
       setSuccessMessage(
-        'Password reset instructions have been sent. Please check your email.',
+        'If an account exists for that email, a reset link has been sent.',
       )
     } catch (error) {
       setErrorMessage(
@@ -56,8 +57,8 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <main className="forgot-password-page">
-      <section className="forgot-password-card">
+    <main className="auth-page forgot-password-page forgot-password-auth-page">
+      <section className="auth-card forgot-password-card">
         <BackButton
           to="/login"
           label="Back to login"
@@ -73,9 +74,7 @@ function ForgotPasswordPage() {
         <h1>Forgot your password?</h1>
 
         <p className="forgot-password-description">
-          Enter the email address linked to your
-          MatchMuster account and we'll send you a link
-          to reset your password.
+          Enter your email and we’ll send you a reset link.
         </p>
 
         {successMessage && (
@@ -107,11 +106,14 @@ function ForgotPasswordPage() {
           <input
             id="email"
             type="email"
-            placeholder="you@example.com"
             value={email}
             onChange={(event) =>
               setEmail(event.target.value)
             }
+            inputMode="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            spellCheck="false"
             required
           />
 
@@ -120,17 +122,14 @@ function ForgotPasswordPage() {
             disabled={isSubmitting}
           >
             {isSubmitting
-              ? 'Sending instructions...'
-              : 'Send reset link'}
+              ? 'Sending...'
+              : 'Send Reset Link'}
           </button>
         </form>
 
-        <p className="forgot-password-footer">
-          Remembered your password?{' '}
-          <Link to="/login">
-            Log in
-          </Link>
-        </p>
+        <Link className="forgot-login-link" to="/login">
+          Log In
+        </Link>
       </section>
     </main>
   )

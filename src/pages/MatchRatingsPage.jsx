@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useState,
@@ -502,6 +503,31 @@ function MatchRatingsPage() {
       .toUpperCase()
   }
 
+  function ratingTone(
+    value,
+  ) {
+    const rating =
+      Number(value)
+
+    if (rating <= 3) {
+      return 'rating-tone-red'
+    }
+
+    if (rating <= 6) {
+      return 'rating-tone-amber'
+    }
+
+    if (rating <= 8) {
+      return 'rating-tone-green'
+    }
+
+    if (rating < 10) {
+      return 'rating-tone-green-strong'
+    }
+
+    return 'rating-tone-green-deep'
+  }
+
   function isMotm(playerId) {
     return (
       results?.man_of_the_match?.some(
@@ -557,7 +583,7 @@ function MatchRatingsPage() {
         teamId={teamId}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           <BackButton
             to={`/teams/${teamId}/matches/${matchId}`}
@@ -588,8 +614,8 @@ function MatchRatingsPage() {
                 Post-match ratings
               </p>
 
-              <h1>
-                Player ratings vs{' '}
+              <h1 className="mm-page-title">
+                Ratings vs{' '}
                 {
                   match.opponent
                 }
@@ -763,7 +789,7 @@ function MatchRatingsPage() {
                             </p>
                           </div>
 
-                          <strong className="rating-score">
+                          <strong className={`rating-score ${ratingTone(playerRating.rating)}`}>
                             {Number(
                               playerRating.rating,
                             ).toFixed(
@@ -822,7 +848,7 @@ function MatchRatingsPage() {
                             maxLength={
                               300
                             }
-                            placeholder="Anything you'd like to say about their performance?"
+                            placeholder="Performance note (optional)"
                             value={
                               playerRating.comment
                             }
@@ -954,7 +980,11 @@ function MatchRatingsPage() {
                                 )}
                               </strong>
 
-                              <span>
+                              <span
+                                className={ratingTone(
+                                  winner.average_rating,
+                                )}
+                              >
                                 {Number(
                                   winner.average_rating,
                                 ).toFixed(
@@ -1068,7 +1098,7 @@ function MatchRatingsPage() {
                               </span>
                             )}
 
-                            <strong className="rating-result-score">
+                            <strong className={`rating-result-score ${ratingTone(result.average_rating)}`}>
                               {Number(
                                 result.average_rating,
                               ).toFixed(

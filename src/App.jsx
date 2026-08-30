@@ -1,7 +1,17 @@
-import { Route, Routes } from 'react-router-dom'
+import SupportPage from './pages/SupportPage'
+import {
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom'
+
 import './App.css'
 import './App.mobile.css'
-import SupportPage from './pages/SupportPage'
+
+import AppUrlListener from './components/AppUrlListener'
+import PushNotificationManager from './components/PushNotificationManager'
+import NetworkStatusBanner from './components/NetworkStatusBanner'
+import NotificationPermissionPrompt from './components/NotificationPermissionPrompt'
 
 import WelcomePage from './pages/WelcomePage'
 import LoginPage from './pages/LoginPage'
@@ -10,7 +20,7 @@ import DashboardPage from './pages/DashboardPage'
 import EditProfilePage from './pages/EditProfilePage'
 import TeamPage from './pages/TeamPage'
 import SquadPage from './pages/SquadPage'
-import MatchesPage from './pages/MatchesPage'
+import SquadAnalyticsPage from './pages/SquadAnalyticsPage'
 import CreateMatchPage from './pages/CreateMatchPage'
 import MatchPage from './pages/MatchPage'
 import EditMatchPage from './pages/EditMatchPage'
@@ -18,6 +28,8 @@ import CancelMatchPage from './pages/CancelMatchPage'
 import MatchAvailabilitiesPage from './pages/MatchAvailabilitiesPage'
 import SquadSelectionPage from './pages/SquadSelectionPage'
 import MatchPaymentsPage from './pages/MatchPaymentsPage'
+import TeamMatchSubsPage from './pages/TeamMatchSubsPage'
+import MatchSubsAnalyticsPage from './pages/MatchSubsAnalyticsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import PostsPage from './pages/PostsPage'
 import PostPage from './pages/PostPage'
@@ -46,146 +58,296 @@ import TrainingPage from './pages/TrainingPage'
 import CreateTrainingPage from './pages/CreateTrainingPage'
 import EditTrainingPage from './pages/EditTrainingPage'
 import SchedulePage from './pages/SchedulePage'
+import SubscriptionPage from './pages/SubscriptionPage'
+import DeveloperLaunchClubsPage from './pages/DeveloperLaunchClubsPage'
+import FinancePage from './pages/FinancePage'
+import FinanceExpensesPage from './pages/FinanceExpensesPage'
 
+import TeamMessagesV2Page from './pages/TeamMessagesV2Page'
+
+/* Keep the shared visual system after every page stylesheet. */
+import './AppConsistency.css'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<WelcomePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+    <>
+      <AppUrlListener />
+      <PushNotificationManager />
+      <NetworkStatusBanner />
+      <NotificationPermissionPrompt />
+      <Routes>
+        <Route
+          path="/"
+          element={<WelcomePage />}
+        />
 
-      <Route path="/developer/login" element={<DeveloperLoginPage />} />
-      <Route path="/developer/dashboard" element={<DeveloperProtectedRoute> <DeveloperDashboardPage /> </DeveloperProtectedRoute>} />
+        <Route
+          path="/login"
+          element={<LoginPage />}
+        />
 
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/profile/edit" element={<EditProfilePage />} />
-      <Route path="/notifications" element={<NotificationsPage />} />
-      <Route path="/help" element={<HelpPage />} />
-      <Route path="/support" element={<SupportPage />} />
+        <Route
+          path="/signup"
+          element={<SignupPage />}
+        />
 
-      <Route path="/legal" element={<LegalHubPage />} />
-      <Route path="/legal/:document" element={<LegalPage />} />
+        <Route
+          path="/developer/login"
+          element={<DeveloperLoginPage />}
+        />
 
-      <Route path="/team" element={<TeamPage />} />
-      <Route path="/teams/join" element={<JoinPage />} />
-      <Route path="/teams/new" element={<CreateTeam />} />
-      <Route
-        path="/teams/:teamId/edit"
-        element={<EditTeamPage />}
-      />
-      <Route
-        path="/teams/:teamId/squad"
-        element={<SquadPage />}
-      />
+        <Route
+          path="/developer/dashboard"
+          element={
+            <DeveloperProtectedRoute>
+              <DeveloperDashboardPage />
+            </DeveloperProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/teams/:teamId/matches"
-        element={<MatchesPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/new"
-        element={<CreateMatchPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId"
-        element={<MatchPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/stats"
-        element={<MatchPlayerStatsPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/ratings"
-        element={<MatchRatingsPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/edit"
-        element={<EditMatchPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/cancel"
-        element={<CancelMatchPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/squad"
-        element={<SquadSelectionPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/payments"
-        element={<MatchPaymentsPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/availabilities"
-        element={<MatchAvailabilitiesPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/availabilities/new"
-        element={<SendAvailabilityPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/availabilities/edit"
-        element={<EditAvailabilityPage />}
-      />
-      <Route
-        path="/teams/:teamId/matches/:matchId/availabilities/confirm"
-        element={<ConfirmAvailabilityPage />}
-      />
+        <Route
+          path="/developer/launch-clubs"
+          element={
+            <DeveloperProtectedRoute>
+              <DeveloperLaunchClubsPage />
+            </DeveloperProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/teams/:teamId/posts"
-        element={<PostsPage />}
-      />
-      <Route
-        path="/teams/:teamId/posts/new"
-        element={<CreatePostPage />}
-      />
-      <Route
-        path="/teams/:teamId/posts/:postId"
-        element={<PostPage />}
-      />
-      <Route
-        path="/teams/:teamId/posts/:postId/edit"
-        element={<EditPostPage />}
-      />
-      <Route
-        path="/teams/:teamId/posts/:postId/delete"
-        element={<DeletePostPage />}
-      />
+        <Route
+          path="/dashboard"
+          element={<DashboardPage />}
+        />
 
-      <Route
-        path="/users/password/edit"
-        element={<ResetPasswordPage />}
-      />
-      <Route
-        path="/forgot-password"
-        element={<ForgotPasswordPage />}
-      />
-      <Route
-        path="/teams/:teamId/awards"
-        element={<TeamAwardsPage />}
-      />
-      <Route
-        path="/teams/:teamId/trainings"
-        element={<TrainingsPage />}
-      />
-      <Route
-        path="/teams/:teamId/trainings/:trainingId"
-        element={<TrainingPage />}
-      />
-      <Route
-        path="/teams/:teamId/trainings/new"
-        element={<CreateTrainingPage />}
-      />
-      <Route
-        path="/teams/:teamId/trainings/:trainingId/edit"
-        element={<EditTrainingPage />}
-      />
-      <Route
-        path="/teams/:teamId/schedule"
-        element={<SchedulePage />}
-      />
-    </Routes>
+        <Route
+          path="/profile/edit"
+          element={<EditProfilePage />}
+        />
+
+        <Route
+          path="/notifications"
+          element={<NotificationsPage />}
+        />
+
+        <Route
+          path="/help"
+          element={<HelpPage />}
+        />
+
+        <Route path="/support" element={<SupportPage />} />
+
+        <Route
+          path="/legal"
+          element={<LegalHubPage />}
+        />
+
+        <Route
+          path="/legal/:document"
+          element={<LegalPage />}
+        />
+
+        <Route
+          path="/team"
+          element={<TeamPage />}
+        />
+
+        <Route
+          path="/teams/join"
+          element={<JoinPage />}
+        />
+
+        <Route
+          path="/teams/new"
+          element={<CreateTeam />}
+        />
+
+        <Route
+          path="/teams/:teamId/edit"
+          element={<EditTeamPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/subscription"
+          element={<SubscriptionPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/messages"
+          element={<TeamMessagesV2Page />}
+        />
+
+        <Route
+          path="/teams/:teamId/messages/:conversationId"
+          element={<TeamMessagesV2Page />}
+        />
+
+        <Route
+          path="/teams/:teamId/finance"
+          element={<FinancePage />}
+        />
+
+        <Route
+          path="/teams/:teamId/finance/expenses"
+          element={<FinanceExpensesPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/squad"
+          element={<SquadPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/squad/analytics"
+          element={<SquadAnalyticsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches"
+          element={
+            <Navigate
+              to="../schedule"
+              relative="path"
+              replace
+            />
+          }
+        />
+
+        <Route
+          path="/teams/:teamId/matches/new"
+          element={<CreateMatchPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId"
+          element={<MatchPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/stats"
+          element={<MatchPlayerStatsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/ratings"
+          element={<MatchRatingsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/edit"
+          element={<EditMatchPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/cancel"
+          element={<CancelMatchPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/squad"
+          element={<SquadSelectionPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/match-subs"
+          element={<TeamMatchSubsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/match-subs/analytics"
+          element={<MatchSubsAnalyticsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/payments"
+          element={<MatchPaymentsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/availabilities"
+          element={<MatchAvailabilitiesPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/availabilities/new"
+          element={<SendAvailabilityPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/availabilities/edit"
+          element={<EditAvailabilityPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/matches/:matchId/availabilities/confirm"
+          element={<ConfirmAvailabilityPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/posts"
+          element={<PostsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/posts/new"
+          element={<CreatePostPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/posts/:postId"
+          element={<PostPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/posts/:postId/edit"
+          element={<EditPostPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/posts/:postId/delete"
+          element={<DeletePostPage />}
+        />
+
+        <Route
+          path="/users/password/edit"
+          element={<ResetPasswordPage />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPasswordPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/awards"
+          element={<TeamAwardsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/trainings"
+          element={<TrainingsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/trainings/:trainingId"
+          element={<TrainingPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/trainings/new"
+          element={<CreateTrainingPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/trainings/:trainingId/edit"
+          element={<EditTrainingPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/schedule"
+          element={<SchedulePage />}
+        />
+      </Routes>
+    </>
   )
 }
 

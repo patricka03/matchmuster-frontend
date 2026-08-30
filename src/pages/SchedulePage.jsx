@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useMemo,
@@ -6,7 +7,6 @@ import {
 
 import {
   CalendarDays,
-  ChevronRight,
   Clock,
   Dumbbell,
   MapPin,
@@ -18,15 +18,12 @@ import {
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
   clearAuthToken,
   getAuthToken,
 } from '../utils/authStorage'
-
-const COMPLETED_MATCH_DISPLAY_HOURS = 24
 
 function SchedulePage() {
   const navigate = useNavigate()
@@ -448,43 +445,8 @@ function SchedulePage() {
   function shouldDisplayRecentMatch(
     match,
   ) {
-    if (
-      !hasMatchStarted(
-        match,
-      )
-    ) {
-      return false
-    }
-
-    if (
-      !match.ratings_finalised_at
-    ) {
-      return true
-    }
-
-    const finalisedAt =
-      new Date(
-        match.ratings_finalised_at,
-      ).getTime()
-
-    if (
-      Number.isNaN(
-        finalisedAt,
-      )
-    ) {
-      return true
-    }
-
-    const removeFromScheduleAt =
-      finalisedAt +
-      COMPLETED_MATCH_DISPLAY_HOURS *
-        60 *
-        60 *
-        1000
-
-    return (
-      currentTime <
-      removeFromScheduleAt
+    return hasMatchStarted(
+      match,
     )
   }
 
@@ -605,27 +567,21 @@ function SchedulePage() {
         }
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
-          <BackButton
-            to="/dashboard"
-            label="Back to dashboard"
-          />
-
           <div className="matches-heading">
             <div>
               <p className="dashboard-label">
-                Schedule
+                Team calendar
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Schedule
               </h1>
 
               <p>
-                Upcoming fixtures and
-                training, with recent
-                match activity below.
+                Upcoming fixtures, training
+                sessions and recent results.
               </p>
             </div>
 
@@ -681,7 +637,7 @@ function SchedulePage() {
                   </p>
 
                   <h2>
-                    Upcoming schedule
+                    Upcoming
                   </h2>
 
                   <p>
@@ -813,13 +769,8 @@ function SchedulePage() {
                         >
                           {item.type ===
                           'match'
-                            ? 'View fixture'
-                            : 'View training'}
-
-                          <ChevronRight
-                            size={16}
-                            aria-hidden="true"
-                          />
+                            ? 'Open'
+                            : 'Open'}
                         </button>
                       </article>
                     ),
@@ -1003,11 +954,6 @@ function SchedulePage() {
                             finalised
                               ? 'View match & results'
                               : 'View match'}
-
-                            <ChevronRight
-                              size={16}
-                              aria-hidden="true"
-                            />
                           </button>
                         </article>
                       )

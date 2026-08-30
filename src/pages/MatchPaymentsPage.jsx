@@ -10,6 +10,9 @@ import {
   useParams,
 } from 'react-router-dom'
 
+import { Capacitor } from '@capacitor/core'
+import { Browser } from '@capacitor/browser'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 
@@ -44,6 +47,16 @@ function MatchPaymentsPage() {
   const [
     isManager,
     setIsManager,
+  ] = useState(false)
+
+  const [
+    currentTeam,
+    setCurrentTeam,
+  ] = useState(null)
+
+  const [
+    analyticsLocked,
+    setAnalyticsLocked,
   ] = useState(false)
 
   const [amount, setAmount] =
@@ -121,6 +134,113 @@ function MatchPaymentsPage() {
       },
       [redirectToLogin],
     )
+
+  // ========================================
+  // LOAD PAYMENT ACCOUNT CONTEXT
+  // ========================================
+
+  const loadPaymentAccountContext =
+    useCallback(async () => {
+      const token =
+        getAuthToken()
+
+      if (!token) {
+        await redirectToLogin()
+        return
+      }
+
+      const headers = {
+        Accept:
+          'application/json',
+
+        Authorization:
+          token,
+      }
+
+      try {
+        const [
+          userResponse,
+          teamResponse,
+        ] = await Promise.all([
+          fetch(
+            `${API_URL}/users/me`,
+            {
+              headers,
+            },
+          ),
+
+          fetch(
+            `${API_URL}/teams/${teamId}`,
+            {
+              headers,
+            },
+          ),
+        ])
+
+        if (
+          (await handleUnauthorised(
+            userResponse,
+          )) ||
+          (await handleUnauthorised(
+            teamResponse,
+          ))
+        ) {
+          return
+        }
+
+        const [
+          userData,
+          teamData,
+        ] = await Promise.all([
+          userResponse
+            .json()
+            .catch(() => ({})),
+
+          teamResponse
+            .json()
+            .catch(() => ({})),
+        ])
+
+        if (
+          !userResponse.ok ||
+          !teamResponse.ok
+        ) {
+          setIsManager(false)
+          return
+        }
+
+        const user =
+          userData.user ||
+          userData
+
+        const team =
+          teamData.team ||
+          teamData
+
+        setCurrentTeam(
+          team,
+        )
+
+        setIsManager(
+          user.account_type ===
+            'manager' &&
+          user.manager_verification_status ===
+            'approved' &&
+          team.membership_role ===
+            'manager',
+        )
+      } catch {
+        setIsManager(false)
+      }
+    }, [
+      handleUnauthorised,
+      redirectToLogin,
+      teamId,
+    ])
+
+  useEffect(() => {
+    loadPaymentAccountContext()
+  }, [loadPaymentAccountContext])
 
   // ========================================
   // LOAD PAYMENT DATA
@@ -236,12 +356,25 @@ function MatchPaymentsPage() {
             summaryData,
           )
 
-          setIsManager(
-            true,
+          setAnalyticsLocked(
+            false,
           )
         } else {
           setSummary(null)
-          setIsManager(false)
+
+          const summaryError =
+            await summaryResponse
+              .json()
+              .catch(
+                () => ({}),
+              )
+
+          setAnalyticsLocked(
+            summaryResponse.status ===
+              403 &&
+            summaryError.code ===
+              'plus_required',
+          )
         }
       } catch {
         setErrorMessage(
@@ -544,6 +677,13 @@ function MatchPaymentsPage() {
         0
 
       if (
+        createdCount === 0 &&
+        skippedCount === 0
+      ) {
+        setErrorMessage(
+          'Select your Matchday squad before sending match subs.',
+        )
+      } else if (
         createdCount ===
           0 &&
         skippedCount > 0
@@ -582,6 +722,23 @@ function MatchPaymentsPage() {
     payment,
     status,
   ) {
+    if (
+      status === 'paid'
+    ) {
+      const confirmed =
+        window.confirm(
+          `Record the ${formatMoney(
+            payment.amount_pence,
+          )} Match Sub for ${playerName(
+            payment,
+          )} as paid in cash?`,
+        )
+
+      if (!confirmed) {
+        return
+      }
+    }
+
     if (
       status === 'waived'
     ) {
@@ -672,7 +829,7 @@ function MatchPaymentsPage() {
         setSuccessMessage(
           `${playerName(
             payment,
-          )} was marked as paid manually.`,
+          )} was recorded as paid in cash.`,
         )
       } else if (
         status === 'waived'
@@ -1009,8 +1166,28 @@ function MatchPaymentsPage() {
         return
       }
 
-      window.location.href =
-        data.checkout_url
+      if (
+        Capacitor.getPlatform() ===
+        'ios'
+      ) {
+        const finishedListener =
+          await Browser.addListener(
+            'browserFinished',
+            async () => {
+              await finishedListener.remove()
+              await loadPaymentData()
+            },
+          )
+
+        await Browser.open({
+          url: data.checkout_url,
+          presentationStyle:
+            'fullscreen',
+        })
+      } else {
+        window.location.href =
+          data.checkout_url
+      }
     } catch {
       setErrorMessage(
         'Unable to connect to the server.',
@@ -1042,18 +1219,17 @@ function MatchPaymentsPage() {
           {match && (
             <div className="dashboard-welcome payment-page-heading">
               <p className="dashboard-label">
-                Match finances
+                Fixture payments
               </p>
 
-              <h1>
-                Match payments
+              <h1 className="mm-page-title">
+                Match Subs
               </h1>
 
               <p>
                 {isManager
-                  ? 'Request, collect and track player fees'
-                  : 'View and pay your match fee'}{' '}
-                for the fixture against{' '}
+                  ? 'Payment status for'
+                  : 'Your match sub for'}{' '}
                 <strong>
                   {match.opponent}
                 </strong>
@@ -1193,6 +1369,48 @@ function MatchPaymentsPage() {
               </section>
             )}
 
+          {isManager &&
+            analyticsLocked && (
+              <section className="payment-analytics-lock-card">
+                <div>
+                  <p className="dashboard-label">
+                    MatchMuster Plus
+                  </p>
+
+                  <h2>
+                    Payment overview
+                  </h2>
+
+                  <p>
+                    Unlock sent, paid,
+                    outstanding and
+                    collection totals.
+                  </p>
+                </div>
+
+                {currentTeam
+                  ?.multi_team_access
+                  ?.owned_by_current_manager ===
+                  true ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(
+                        '/team?plus=required',
+                      )
+                    }
+                  >
+                    View Plus
+                  </button>
+                ) : (
+                  <span className="payment-analytics-owner-note">
+                    Plus is managed by
+                    the team owner.
+                  </span>
+                )}
+              </section>
+            )}
+
           {isManager && (
             <form
               className="payment-request-form"
@@ -1202,21 +1420,12 @@ function MatchPaymentsPage() {
             >
               <div className="payment-request-copy">
                 <p className="dashboard-label">
-                  New payment request
+                  New Match Sub
                 </p>
 
                 <h2>
-                  Charge the selected
-                  squad
+                  Send Match Subs
                 </h2>
-
-                <p>
-                  A request will be
-                  created for every
-                  selected player who
-                  does not already have
-                  one.
-                </p>
 
                 {requestAmountPence >
                   0 && (
@@ -1260,7 +1469,7 @@ function MatchPaymentsPage() {
                           .value,
                       )
                     }
-                    placeholder="10.00"
+                    placeholder=""
                     disabled={
                       submitting
                     }
@@ -1277,7 +1486,7 @@ function MatchPaymentsPage() {
                 >
                   {submitting
                     ? 'Sending requests...'
-                    : 'Request payments'}
+                    : 'Send match subs'}
                 </button>
               </div>
             </form>
@@ -1297,7 +1506,7 @@ function MatchPaymentsPage() {
                   <h2>
                     {isManager
                       ? 'Payment requests'
-                      : 'Match fee'}
+                      : 'Payment details'}
                   </h2>
                 </div>
 
@@ -1478,6 +1687,15 @@ function MatchPaymentsPage() {
                             </strong>
                           </p>
 
+                          {payment.status ===
+                            'paid' &&
+                            !payment
+                              .stripe_payment_intent_id && (
+                              <small className="cash-payment-label">
+                                Paid in cash
+                              </small>
+                            )}
+
                           {payment.paid_at && (
                             <small>
                               Paid on{' '}
@@ -1532,6 +1750,7 @@ function MatchPaymentsPage() {
 
                                 <button
                                   className="mark-paid-button"
+                                  data-matchmuster-cash-paid
                                   type="button"
                                   onClick={() =>
                                     handleStatusChange(
@@ -1543,12 +1762,11 @@ function MatchPaymentsPage() {
                                     processing
                                   }
                                 >
-                                  Mark
+                                  Cash
                                   paid
-                                  manually
                                 </button>
 
-                                <button
+                            <button
                                   className="waive-payment-button"
                                   type="button"
                                   onClick={() =>

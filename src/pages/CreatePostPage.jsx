@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import {
   Link,
@@ -194,7 +195,7 @@ function CreatePostPage() {
       <>
         <Navbar teamId={teamId} />
 
-        <main className="create-post-page">
+        <main className="create-post-page mm-minimal-page">
           <p className="create-post-message">
             Loading...
           </p>
@@ -214,21 +215,14 @@ function CreatePostPage() {
         currentUser={currentUser}
       />
 
-      <main className="create-post-page">
+      <main className="create-post-page mm-minimal-page">
         <section className="create-post-container">
-          <Link
-            className="app-back-button"
-            to={`/teams/${teamId}/posts`}
-          >
-            Back to posts
-          </Link>
-
           <header className="create-post-header">
             <p className="create-post-label">
               Team communication
             </p>
 
-            <h1>Create a post</h1>
+            <h1 className="mm-page-title">Create a post</h1>
 
             <p>
               Share an announcement, tactical instruction or general

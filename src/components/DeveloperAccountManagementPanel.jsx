@@ -232,19 +232,32 @@ function DeveloperAccountManagementPanel() {
       <header className="developer-accounts-header">
         <div>
           <p>ACCOUNT CONTROL</p>
-          <h1>Account management</h1>
+          <h1 className="mm-page-title">Account management</h1>
           <span>
             Search, restrict, reactivate or delete MatchMuster accounts.
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={loadUsers}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Refreshing…' : 'Refresh'}
-        </button>
+        <div className="developer-accounts-header-actions">
+          <button
+            type="button"
+            onClick={() =>
+              navigate(
+                '/developer/launch-clubs',
+              )
+            }
+          >
+            Launch Clubs
+          </button>
+
+          <button
+            type="button"
+            onClick={loadUsers}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Refreshing…' : 'Refresh'}
+          </button>
+        </div>
       </header>
 
       {summary && (

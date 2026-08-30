@@ -50,6 +50,11 @@ function BottomNav({
   useEffect(() => {
     if (!moreOpen) return undefined
 
+    const previousBodyOverflow =
+      document.body.style.overflow
+
+    document.body.style.overflow = 'hidden'
+
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
         setMoreOpen(false)
@@ -59,6 +64,9 @@ function BottomNav({
     window.addEventListener('keydown', handleKeyDown)
 
     return () => {
+      document.body.style.overflow =
+        previousBodyOverflow
+
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [moreOpen])
@@ -74,14 +82,14 @@ function BottomNav({
       : null
 
   const paymentTargetMatchId =
-    isApprovedManager
-      ? latestPlayedMatchId
-      : playerPaymentMatchId
+    playerPaymentMatchId
 
   const paymentsPath =
-    teamId && paymentTargetMatchId
-      ? `/teams/${teamId}/matches/${paymentTargetMatchId}/payments`
-      : null
+    isApprovedManager && teamId
+      ? `/teams/${teamId}/match-subs`
+      : teamId && paymentTargetMatchId
+        ? `/teams/${teamId}/matches/${paymentTargetMatchId}/payments`
+        : null
 
   const paymentsLabel =
     isApprovedManager
@@ -247,7 +255,7 @@ function BottomNav({
         <div
           className="bottom-nav-sheet-backdrop"
           role="presentation"
-          onMouseDown={(event) => {
+          onClick={(event) => {
             if (event.target === event.currentTarget) {
               setMoreOpen(false)
             }

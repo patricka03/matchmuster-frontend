@@ -1,4 +1,5 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import BackButton from '../../components/BackButton'
 import { legalDocuments } from '../../data/legalDocuments'
 import './Legal.css'
 
@@ -12,11 +13,12 @@ function LegalPage() {
     return (
       <main className="legal-page">
         <div className="legal-container">
-          <h1>Document not found</h1>
+          <h1 className="mm-page-title">Document not found</h1>
 
-          <Link to="/legal" className="app-back-button">
-            Back to Legal & Privacy
-          </Link>
+          <BackButton
+            to="/legal"
+            label="Back to Legal & Privacy"
+          />
         </div>
       </main>
     )
@@ -25,12 +27,13 @@ function LegalPage() {
   return (
     <main className="legal-page">
       <div className="legal-container">
-        <Link to="/legal" className="app-back-button">
-          Legal & Privacy
-        </Link>
+        <BackButton
+          to="/legal"
+          label="Back to Legal & Privacy"
+        />
 
         <header className="legal-document-header">
-          <h1>{legalDocument.title}</h1>
+          <h1 className="mm-page-title">{legalDocument.title}</h1>
 
           <div className="legal-meta">
             <span>Version {legalDocument.version}</span>

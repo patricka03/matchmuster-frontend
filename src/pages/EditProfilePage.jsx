@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
@@ -1080,7 +1081,7 @@ function EditProfilePage() {
       <>
         <Navbar />
 
-        <main className="edit-profile-page">
+        <main className="edit-profile-page mm-minimal-page">
           <p className="profile-loading">
             Loading your profile...
           </p>
@@ -1099,26 +1100,15 @@ function EditProfilePage() {
         currentUser={currentUser}
       />
 
-      <main className="edit-profile-page">
+      <main className="edit-profile-page mm-minimal-page">
         <section className="edit-profile-card">
           <div className="edit-profile-heading">
             <div>
-              <h1>
-                Profile &amp; Settings
+              <h1 className="mm-page-title">
+                Profile
               </h1>
-
-              <p>
-                Manage your personal
-                MatchMuster account.
-              </p>
             </div>
 
-            <Link
-              className="app-back-button"
-              to="/dashboard"
-            >
-              Back to dashboard
-            </Link>
           </div>
 
           {errorMessage &&
@@ -1180,57 +1170,40 @@ function EditProfilePage() {
                   currentUser?.account_type,
                 )}
               </span>
-            </div>
-          </section>
 
-          {/* ========================================
-              PROFILE PICTURE
-          ======================================== */}
+              <div className="profile-picture-actions">
+                <label
+                  className="profile-file-label"
+                  htmlFor="profile-avatar"
+                >
+                  Choose photo
+                </label>
 
-          <section className="profile-picture-section">
-            <div>
-              <h2>
-                Profile picture
-              </h2>
+                <input
+                  id="profile-avatar"
+                  type="file"
+                  accept="image/*"
+                  onChange={
+                    handleAvatarChange
+                  }
+                />
 
-              <p>
-                Choose an image under
-                10 MB.
-              </p>
-            </div>
-
-            <div className="profile-picture-actions">
-              <label
-                className="profile-file-label"
-                htmlFor="profile-avatar"
-              >
-                Choose picture
-              </label>
-
-              <input
-                id="profile-avatar"
-                type="file"
-                accept="image/*"
-                onChange={
-                  handleAvatarChange
-                }
-              />
-
-              <button
-                type="button"
-                className="profile-primary-button"
-                onClick={
-                  handleAvatarUpload
-                }
-                disabled={
-                  !selectedAvatar ||
-                  isUploadingAvatar
-                }
-              >
-                {isUploadingAvatar
-                  ? 'Uploading...'
-                  : 'Upload'}
-              </button>
+                <button
+                  type="button"
+                  className="profile-primary-button"
+                  onClick={
+                    handleAvatarUpload
+                  }
+                  disabled={
+                    !selectedAvatar ||
+                    isUploadingAvatar
+                  }
+                >
+                  {isUploadingAvatar
+                    ? 'Uploading...'
+                    : 'Upload'}
+                </button>
+              </div>
             </div>
           </section>
 
@@ -1241,124 +1214,105 @@ function EditProfilePage() {
           <section className="profile-settings-section">
             <div className="profile-section-heading">
               <h2>
-                Account details
+                Account
               </h2>
-
-              <p>
-                Select an item to
-                update it.
-              </p>
             </div>
 
             <div className="profile-settings-list">
-              <div className="profile-setting-row">
+              <button
+                type="button"
+                className="profile-setting-row profile-setting-action"
+                onClick={() =>
+                  openModal(
+                    'details',
+                  )
+                }
+                aria-label="Edit personal details"
+              >
                 <div>
-                  <span className="profile-setting-label">
-                    Personal details
-                  </span>
-
                   <strong>
-                    {fullName() ||
-                      'Not provided'}
+                    Personal details
                   </strong>
 
                   <small>
+                    {fullName() ||
+                      'Not provided'}
+
+                    {' · '}
+
                     {currentUser?.email}
                   </small>
                 </div>
 
-                <button
-                  type="button"
-                  className="profile-edit-button"
-                  onClick={() =>
-                    openModal(
-                      'details',
-                    )
-                  }
-                >
-                  Edit
-                </button>
-              </div>
+                <span
+                  className="profile-setting-chevron"
+                  aria-hidden="true"
+                />
+              </button>
 
               {currentUser?.account_type ===
                 'player' && (
-                <div className="profile-setting-row">
-                  <div>
-                    <span className="profile-setting-label">
-                      Preferred position
-                    </span>
-
-                    <strong>
-                      {currentUser.preferred_position ||
-                        'Not selected'}
-                    </strong>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="profile-edit-button"
-                    onClick={() =>
-                      openModal(
-                        'position',
-                      )
-                    }
-                  >
-                    Edit
-                  </button>
-                </div>
-              )}
-
-              <div className="profile-setting-row">
-                <div>
-                  <span className="profile-setting-label">
-                    Password
-                  </span>
-
-                  <strong>
-                    ••••••••
-                  </strong>
-
-                  <small>
-                    Changing it will
-                    sign you out
-                    securely.
-                  </small>
-                </div>
-
                 <button
                   type="button"
-                  className="profile-edit-button"
+                  className="profile-setting-row profile-setting-action"
                   onClick={() =>
                     openModal(
-                      'password',
+                      'position',
                     )
                   }
+                  aria-label="Edit preferred position"
                 >
-                  Change
+                  <div>
+                    <strong>
+                      Preferred position
+                    </strong>
+
+                    <small>
+                      {currentUser.preferred_position ||
+                        'Not selected'}
+                    </small>
+                  </div>
+
+                  <span
+                    className="profile-setting-chevron"
+                    aria-hidden="true"
+                  />
                 </button>
-              </div>
+              )}
+
+              <button
+                type="button"
+                className="profile-setting-row profile-setting-action"
+                onClick={() =>
+                  openModal(
+                    'password',
+                  )
+                }
+                aria-label="Change password"
+              >
+                <div>
+                  <strong>
+                    Password
+                  </strong>
+                </div>
+
+                <span
+                  className="profile-setting-chevron"
+                  aria-hidden="true"
+                />
+              </button>
 
               <div className="profile-setting-row profile-setting-read-only">
                 <div>
-                  <span className="profile-setting-label">
-                    Account type
-                  </span>
-
                   <strong>
-                    {formatLabel(
-                      currentUser?.account_type,
-                    )}
+                    Account type
                   </strong>
-
-                  <small>
-                    This cannot be
-                    changed from profile
-                    settings.
-                  </small>
                 </div>
 
-                <span className="profile-read-only-badge">
-                  Read only
+                <span className="profile-setting-value">
+                  {formatLabel(
+                    currentUser?.account_type,
+                  )}
                 </span>
               </div>
 
@@ -1366,164 +1320,82 @@ function EditProfilePage() {
                 'manager' && (
                 <div className="profile-setting-row profile-setting-read-only">
                   <div>
-                    <span className="profile-setting-label">
-                      Manager
-                      verification
-                    </span>
-
                     <strong>
-                      {formatLabel(
-                        currentUser.manager_verification_status,
-                      )}
+                      Verification
                     </strong>
-
-                    <small>
-                      Verification is
-                      controlled by
-                      MatchMuster.
-                    </small>
                   </div>
 
-                  <span className="profile-read-only-badge">
-                    Read only
+                  <span className="profile-setting-value profile-setting-status">
+                    {formatLabel(
+                      currentUser.manager_verification_status,
+                    )}
                   </span>
                 </div>
               )}
             </div>
           </section>
 
-          {/* =====================================
-              SAFETY & BLOCKING
-          ===================================== */}
+          {/* ========================================
+              MORE SETTINGS
+          ======================================== */}
 
           <section className="profile-settings-section">
             <div className="profile-section-heading">
               <h2>
-                Safety &amp; blocking
+                More
               </h2>
-
-              <p>
-                Review the accounts you
-                have blocked and restore
-                access whenever you choose.
-              </p>
             </div>
 
             <div className="profile-settings-list">
-              <div className="profile-setting-row">
+              <button
+                type="button"
+                className="profile-setting-row profile-setting-action"
+                onClick={() =>
+                  openModal(
+                    'blocked-users',
+                  )
+                }
+                aria-label="Manage blocked accounts"
+              >
                 <div>
-                  <span className="profile-setting-label">
+                  <strong>
                     Blocked accounts
-                  </span>
-
-                  <strong>
-                    Manage blocked members
                   </strong>
-
-                  <small>
-                    Unblock someone to see
-                    their content and activity
-                    again.
-                  </small>
                 </div>
 
-                <button
-                  type="button"
-                  className="profile-edit-button"
-                  onClick={() =>
-                    openModal(
-                      'blocked-users',
-                    )
-                  }
-                >
-                  Manage
-                </button>
-              </div>
-            </div>
-          </section>
+                <span
+                  className="profile-setting-chevron"
+                  aria-hidden="true"
+                />
+              </button>
 
-          {/* =====================================
-              LEGAL & PRIVACY
-          ===================================== */}
-
-          <section className="profile-settings-section">
-            <div className="profile-section-heading">
-              <h2>
-                Legal &amp; privacy
-              </h2>
-
-              <p>
-                Review MatchMuster
-                policies and privacy
-                information.
-              </p>
-            </div>
-
-            <div className="profile-settings-list">
-              <div className="profile-setting-row">
+              <Link
+                className="profile-setting-row profile-setting-action profile-setting-link-row"
+                to="/legal"
+                aria-label="View legal and privacy information"
+              >
                 <div>
-                  <span className="profile-setting-label">
+                  <strong>
                     Legal &amp; privacy
-                  </span>
-
-                  <strong>
-                    Terms, privacy and
-                    community rules
                   </strong>
-
-                  <small>
-                    Review the policies
-                    that apply when using
-                    MatchMuster.
-                  </small>
                 </div>
 
-                <Link
-                  className="profile-edit-button profile-setting-link"
-                  to="/legal"
-                >
-                  View
-                </Link>
-              </div>
-            </div>
-          </section>
+                <span
+                  className="profile-setting-chevron"
+                  aria-hidden="true"
+                />
+              </Link>
 
-          {/* =====================================
-              SESSION
-          ===================================== */}
-
-          <section className="profile-settings-section">
-            <div className="profile-section-heading">
-              <h2>
-                Session
-              </h2>
-
-              <p>
-                Sign out of MatchMuster on
-                this device.
-              </p>
-            </div>
-
-            <div className="profile-settings-list">
-              <div className="profile-setting-row">
+              <div className="profile-setting-row profile-sign-out-row">
                 <div>
-                  <span className="profile-setting-label">
-                    Sign out
-                  </span>
-
                   <strong>
-                    End this session
+                    Sign out
                   </strong>
-
-                  <small>
-                    You can sign back in
-                    again at any time.
-                  </small>
                 </div>
 
                 <button
                   type="button"
-                  className="profile-edit-button"
+                  className="profile-edit-button profile-sign-out-button"
                   onClick={
                     handleSignOut
                   }
@@ -1551,11 +1423,8 @@ function EditProfilePage() {
                 </h2>
 
                 <p>
-                  Permanently close your
-                  MatchMuster account and
-                  remove your personal
-                  account information where
-                  applicable.
+                  Permanently delete your
+                  account.
                 </p>
               </div>
 
@@ -1568,7 +1437,7 @@ function EditProfilePage() {
                   )
                 }
               >
-                Delete account
+                Delete
               </button>
             </div>
           </section>

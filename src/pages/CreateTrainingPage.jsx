@@ -1,11 +1,12 @@
+import '../styles/RemainingPages.mobile.css'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SearchBox } from '@mapbox/search-js-react'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
+import { MATCHMUSTER_SEARCH_THEME } from '../utils/mapboxSearchTheme'
 import {
   clearAuthToken,
   getAuthToken,
@@ -151,6 +152,41 @@ function CreateTrainingPage() {
   // CREATE TRAINING
   // ========================================
 
+  // ========================================
+  // DATE / TIME PAYLOAD
+  // ========================================
+
+  function localDateTimeToIso(
+    value,
+  ) {
+    if (!value) return value
+
+    const localDate =
+      new Date(value)
+
+    return Number.isNaN(
+      localDate.getTime(),
+    )
+      ? value
+      : localDate.toISOString()
+  }
+
+  function buildTrainingPayload() {
+    return {
+      ...formData,
+
+      starts_at:
+        localDateTimeToIso(
+          formData.starts_at,
+        ),
+
+      meet_time:
+        localDateTimeToIso(
+          formData.meet_time,
+        ),
+    }
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -197,7 +233,7 @@ function CreateTrainingPage() {
             body:
               JSON.stringify({
                 training:
-                  formData,
+                  buildTrainingPayload(),
               }),
           },
         )
@@ -254,19 +290,15 @@ function CreateTrainingPage() {
     <>
       <Navbar teamId={teamId} />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
-          <BackButton
-            to={`/teams/${teamId}/trainings`}
-            label="Back to training"
-          />
 
           <div className="dashboard-welcome">
             <p className="dashboard-label">
               Training
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Create training
             </h1>
 
@@ -311,7 +343,7 @@ function CreateTrainingPage() {
                 onChange={
                   handleChange
                 }
-                placeholder="Tuesday Training"
+                placeholder=""
                 required
               />
             </div>
@@ -388,24 +420,13 @@ function CreateTrainingPage() {
                   onClear={
                     handleLocationClear
                   }
-                  placeholder="Search for a training ground, football centre, park or address"
+                  placeholder=""
                   options={{
                     country: 'GB',
                     language: 'en',
                     limit: 8,
                   }}
-                  theme={{
-                    icons: {
-                      search: `
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          xmlns="http://www.w3.org/2000/svg"
-                        ></svg>
-                      `,
-                    },
-                  }}
+                  theme={MATCHMUSTER_SEARCH_THEME}
                 />
               ) : (
                 <p
@@ -445,7 +466,7 @@ function CreateTrainingPage() {
 
             <div className="form-group">
               <label htmlFor="training-description">
-                Description
+                Notes
               </label>
 
               <textarea
@@ -457,7 +478,7 @@ function CreateTrainingPage() {
                 onChange={
                   handleChange
                 }
-                placeholder="Bring boots, shin pads and blue training top."
+                placeholder=""
                 rows="5"
               />
             </div>

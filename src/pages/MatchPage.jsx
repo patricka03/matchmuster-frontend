@@ -1,10 +1,11 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
+import RunningLatePanel from '../components/RunningLatePanel'
 import API_URL from '../config/api'
 
 import {
@@ -623,7 +624,7 @@ function MatchPage() {
         currentUser={currentUser}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           {errorMessage && (
             <p
@@ -637,24 +638,19 @@ function MatchPage() {
           {!errorMessage &&
             match && (
               <>
-                <BackButton
-                  to={`/teams/${teamId}/matches`}
-                  label="Back to fixtures"
-                />
-
                 <div className="dashboard-welcome">
                   <p className="dashboard-label">
                     Fixture details
                   </p>
 
-                  <h1>
+                  <h1 className="mm-page-title">
                     Match vs{' '}
                     {match.opponent}
                   </h1>
 
                   <p>
-                    View the full details
-                    for this fixture.
+                    Kick-off, venue and team
+                    information for this fixture.
                   </p>
                 </div>
 
@@ -665,7 +661,7 @@ function MatchPage() {
                     </span>
 
                     <h2>
-                      vs {match.opponent}
+                      Fixture information
                     </h2>
 
                     {/* ========================================
@@ -825,6 +821,13 @@ function MatchPage() {
                         {renderRatingAction()}
                       </div>
                     )}
+
+                    <RunningLatePanel
+                      teamId={teamId}
+                      matchId={matchId}
+                      match={match}
+                      currentUser={currentUser}
+                    />
                   </div>
 
                   {/* ========================================

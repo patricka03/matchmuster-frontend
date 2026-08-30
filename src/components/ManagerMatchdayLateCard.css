@@ -1,0 +1,15 @@
+.manager-late-card { margin-top: 20px; overflow: hidden; border: 1px solid var(--color-brand-pink-border); border-radius: 18px; background: #fff; box-shadow: 0 10px 30px rgba(15,23,42,.055); }
+.manager-late-card-heading { display: flex; gap: 12px; align-items: center; padding: 16px 18px; background: linear-gradient(135deg,#fff7fb,#f2f7ff); }
+.manager-late-card-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: var(--color-brand-pink-soft); color: var(--color-brand-pink); }
+.manager-late-card-heading > div { min-width: 0; flex: 1; }
+.manager-late-card-heading > div > span { color: var(--color-brand-pink); font-size: 11px; font-weight: 900; letter-spacing: .08em; }
+.manager-late-card-heading h2 { margin: 2px 0; font-size: 19px; }
+.manager-late-card-heading p { margin: 0; color: var(--color-text-muted); font-size: 13px; }
+.manager-late-card-count { min-width: 36px; height: 36px; display: grid; place-items: center; border-radius: 999px; background: var(--color-brand-pink); color: #fff; }
+.manager-late-card-clear { padding: 18px; color: var(--color-text-muted); }
+.manager-late-card-row { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 13px 18px; }
+.manager-late-card-row + .manager-late-card-row { border-top: 1px solid var(--color-border); }
+.manager-late-card-row > span { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.manager-late-card-row small { overflow: hidden; color: var(--color-text-muted); text-overflow: ellipsis; white-space: nowrap; }
+.manager-late-card-row > strong { color: var(--color-brand-pink); white-space: nowrap; }
+@media (max-width:560px) { .manager-late-card-row { align-items: flex-start; flex-direction: column; gap: 7px; } }

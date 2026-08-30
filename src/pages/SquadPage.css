@@ -66,3 +66,4 @@
     width: 100%;
   }
 }
+.squad-analytics-button{width:100%;min-height:58px;display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 18px;padding:0 18px;border:0;border-radius:15px;background:var(--color-primary);color:#fff;font:inherit;font-weight:850;cursor:pointer;box-shadow:0 10px 25px rgba(37,99,235,.18)}.squad-analytics-button small{padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.18);font-size:10px;letter-spacing:.08em}.squad-analytics-button svg{width:20px;height:20px}

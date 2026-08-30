@@ -77,6 +77,16 @@
   opacity: 0.42;
 }
 
+.bottom-nav-item:focus-visible,
+.bottom-nav-sheet-heading > button:focus-visible,
+.bottom-nav-sheet-links a:focus-visible,
+.bottom-nav-sheet-links > button:focus-visible,
+.bottom-nav-team-switcher-trigger:focus-visible,
+.bottom-nav-team-option:focus-visible {
+  outline: 3px solid rgba(79, 156, 255, 0.28);
+  outline-offset: 2px;
+}
+
 .bottom-nav-more-icon {
   position: relative;
   display: inline-flex;
@@ -236,7 +246,39 @@
 }
 
 .bottom-nav-sheet-links .bottom-nav-team-switcher-trigger {
+  width: 100%;
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 0 13px;
+
+  border: 0;
   border-radius: 0;
+
+  background: transparent;
+  color: #334155;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.bottom-nav-sheet-links
+  .bottom-nav-team-switcher-trigger:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #fff7fb,
+      #f5f9ff
+    );
+
+  color: #ff0a78;
 }
 
 .bottom-nav-team-switcher-trigger small {

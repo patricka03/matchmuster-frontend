@@ -197,7 +197,7 @@ function DeveloperModerationPanel() {
       <header className="developer-header">
         <div>
           <p>TRUST &amp; SAFETY</p>
-          <h1>Moderation reports</h1>
+          <h1 className="mm-page-title">Moderation reports</h1>
           <span>
             Review reports, remove harmful content and protect members.
           </span>

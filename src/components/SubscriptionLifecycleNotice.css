@@ -1,0 +1,76 @@
+.subscription-lifecycle-overlay {
+  position: fixed;
+  z-index: 2250;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 18px;
+  padding-bottom: calc(
+    18px +
+      env(
+        safe-area-inset-bottom,
+        0px
+      )
+  );
+  background: rgba(15, 39, 71, 0.32);
+  backdrop-filter: blur(5px);
+}
+
+.subscription-lifecycle-sheet {
+  width: min(100%, 440px);
+  padding: 22px;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 22px 70px rgba(15, 39, 71, 0.24);
+}
+
+.subscription-lifecycle-icon {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 13px;
+  border-radius: 16px;
+  background:
+    linear-gradient(
+      135deg,
+      #fff1f7,
+      #eff6ff
+    );
+  color: #be185d;
+}
+
+.subscription-lifecycle-sheet h2 {
+  margin: 0;
+  color: #0f2747;
+  font-size: 22px;
+}
+
+.subscription-lifecycle-sheet > p:not(.dashboard-label) {
+  margin: 8px 0 18px;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.subscription-lifecycle-sheet button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.subscription-lifecycle-primary {
+  border: 0;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.subscription-lifecycle-secondary {
+  margin-top: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+}

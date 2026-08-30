@@ -1,37 +1,39 @@
+import '../styles/RemainingPages.mobile.css'
 import { Link } from 'react-router-dom'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import './SupportPage.css'
+import './SupportPage.mobile.css'
 
 const supportTopics = [
   {
     title: 'Account & Sign In',
-    text: 'Help with logging in, password resets, account access and account details.',
+    text: 'Login, password resets and account access.',
   },
   {
     title: 'Teams & Membership',
-    text: 'Questions about creating a team, joining a team, approvals and team membership.',
+    text: 'Creating or joining teams, approvals and membership.',
   },
   {
     title: 'Fixtures & Training',
-    text: 'Help with fixtures, availability, matchday squads and training sessions.',
+    text: 'Fixtures, availability, squads and training sessions.',
   },
   {
-    title: 'Payments',
-    text: 'Questions about match-sub payment requests, payment status and team-related payments.',
+    title: 'Match Subs & Payments',
+    text: 'Payment requests, statuses and team match subs.',
   },
   {
-    title: 'Privacy & Account Deletion',
-    text: 'Questions about personal information, privacy rights, location features and deleting your account.',
+    title: 'Privacy & Account',
+    text: 'Privacy, location settings and account deletion.',
   },
   {
     title: 'General Support',
-    text: 'Anything else about using MatchMuster or getting started with the platform.',
+    text: 'Anything else about using MatchMuster.',
   },
 ]
 
 function SupportPage() {
   return (
-    <main className="support-public-page">
+    <main className="support-public-page mm-minimal-page">
 
       <header className="support-public-header">
 
@@ -50,7 +52,7 @@ function SupportPage() {
         </Link>
 
 
-        <nav>
+        <nav aria-label="Support navigation">
 
           <Link to="/">
             Home
@@ -60,7 +62,10 @@ function SupportPage() {
             Legal
           </Link>
 
-          <Link to="/login">
+          <Link
+            className="support-public-login"
+            to="/login"
+          >
             Log In
           </Link>
 
@@ -75,14 +80,12 @@ function SupportPage() {
           MATCHMUSTER SUPPORT
         </p>
 
-        <h1>
+        <h1 className="mm-page-title">
           How can we help?
         </h1>
 
         <p>
-          MatchMuster support is publicly available for customers,
-          users and anyone who needs information about our football
-          team-management service.
+          Help with your account, team, fixtures, match subs and privacy.
         </p>
 
       </section>
@@ -116,14 +119,12 @@ function SupportPage() {
           </p>
 
           <h2>
-            Email MatchMuster
+            Contact us
           </h2>
 
           <p>
-            For support or general enquiries, contact us below.
-            If your enquiry relates to an existing MatchMuster account,
-            please include the email address associated with your account
-            where appropriate.
+            Email our support team and include your account email
+            if it is relevant to your question.
           </p>
 
         </div>
@@ -131,10 +132,15 @@ function SupportPage() {
 
         <a
           className="support-email-button"
-          href="mailto:matchmuster.dev@gmail.com"
+          href="mailto:support@matchmuster.uk"
+          aria-label="Email MatchMuster support"
         >
-          matchmuster.dev@gmail.com
+          Email Support
         </a>
+
+        <p className="support-email-address">
+          support@matchmuster.uk
+        </p>
 
       </section>
 
@@ -142,7 +148,7 @@ function SupportPage() {
       <section className="support-company-panel">
 
         <h2>
-          Company information
+          Company details
         </h2>
 
         <p>

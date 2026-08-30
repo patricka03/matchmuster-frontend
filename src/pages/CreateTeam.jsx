@@ -26,6 +26,11 @@ function CreatTeam() {
   const [createdTeamId, setCreatedTeamId] =
     useState(null)
 
+  const [
+    hadOwnedTeamBeforeCreate,
+    setHadOwnedTeamBeforeCreate,
+  ] = useState(false)
+
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -52,27 +57,49 @@ function CreatTeam() {
       }
 
       try {
-        const response = await fetch(
-          `${API_URL}/users/me`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: token,
-            },
-          },
-        )
+        const headers = {
+          Accept: 'application/json',
+          Authorization: token,
+        }
 
-        if (response.status === 401) {
+        const [
+          response,
+          teamsResponse,
+        ] = await Promise.all([
+          fetch(
+            `${API_URL}/users/me`,
+            { headers },
+          ),
+          fetch(
+            `${API_URL}/teams`,
+            { headers },
+          ),
+        ])
+
+        if (
+          response.status === 401 ||
+          teamsResponse.status === 401
+        ) {
           await clearCreateTeamSession()
           return
         }
 
         const data = await response.json()
 
+        const teamsData =
+          await teamsResponse.json()
+
         if (!response.ok) {
           throw new Error(
             data.error ||
               'Unable to load your account.',
+          )
+        }
+
+        if (!teamsResponse.ok) {
+          throw new Error(
+            teamsData.error ||
+              'Unable to check your team plan.',
           )
         }
 
@@ -87,6 +114,77 @@ function CreatTeam() {
           navigate('/team', {
             replace: true,
           })
+
+          return
+        }
+
+        const loadedTeams =
+          Array.isArray(teamsData)
+            ? teamsData
+            : teamsData.teams || []
+
+        setHadOwnedTeamBeforeCreate(
+          loadedTeams.some(
+            (team) =>
+              team.multi_team_access
+                ?.owned_by_current_manager ===
+              true,
+          ),
+        )
+
+        const creationAccess =
+          loadedTeams
+            .map(
+              (team) =>
+                team.multi_team_access,
+            )
+            .find(
+              (access) =>
+                access
+                  ?.owned_by_current_manager ===
+                true,
+            ) ||
+          loadedTeams
+            .map(
+              (team) =>
+                team.multi_team_access,
+            )
+            .find(Boolean)
+
+        const ownershipMetadataAvailable =
+          loadedTeams.some(
+            (team) =>
+              typeof team
+                .multi_team_access
+                ?.owned_by_current_manager ===
+              'boolean',
+          )
+
+        const ownsTeam =
+          loadedTeams.some(
+            (team) =>
+              team.multi_team_access
+                ?.owned_by_current_manager ===
+              true,
+          ) ||
+          (!ownershipMetadataAvailable &&
+            loadedTeams.length > 0)
+
+        const canCreateTeam =
+          !ownsTeam ||
+          creationAccess
+            ?.can_create_additional_team ===
+            true
+
+        if (
+          !canCreateTeam
+        ) {
+          navigate(
+            '/team?plus=required',
+            {
+              replace: true,
+            },
+          )
 
           return
         }
@@ -304,6 +402,20 @@ function CreatTeam() {
             .catch(() => ({}))
 
         if (!response.ok) {
+          if (
+            data.code ===
+            'multi_team_plus_required'
+          ) {
+            navigate(
+              '/team?plus=required',
+              {
+                replace: true,
+              },
+            )
+
+            return
+          }
+
           let message =
             'Unable to create the team.'
 
@@ -348,6 +460,25 @@ function CreatTeam() {
         if (!uploaded) return
       }
 
+      if (
+        !hadOwnedTeamBeforeCreate &&
+        teamId
+      ) {
+        navigate(
+          `/teams/${teamId}/subscription`,
+          {
+            replace: true,
+
+            state: {
+              showPreviewIntro:
+                true,
+            },
+          },
+        )
+
+        return
+      }
+
       navigate('/team', {
         replace: true,
       })
@@ -387,7 +518,7 @@ function CreatTeam() {
               Team management
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Create a team
             </h1>
 

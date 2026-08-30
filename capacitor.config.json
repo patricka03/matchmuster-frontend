@@ -1,8 +1,26 @@
 {
-  "appId": "uk.matchmuster.app",
+  "appId": "uk.matchmuster.mobile",
   "appName": "MatchMuster",
   "webDir": "dist",
   "ios": {
-    "contentInset": "always"
+    "contentInset": "never"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "banner",
+        "list"
+      ]
+    },
+    "SocialLogin": {
+      "providers": {
+        "google": true,
+        "facebook": false,
+        "apple": true,
+        "twitter": false
+      }
+    }
   }
 }

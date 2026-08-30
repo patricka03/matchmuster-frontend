@@ -1,11 +1,9 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { Link, useNavigate, useParams, } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
+import BackButton from '../components/BackButton'
 import ReportModal from '../components/ReportModal'
 import './PostPage.css'
 import './PostPage.mobile.css'
@@ -466,7 +464,7 @@ function PostPage() {
       <>
         <Navbar teamId={teamId} />
 
-        <main className="post-page">
+        <main className="post-page mm-minimal-page">
           <p className="post-page-message">
             Loading post...
           </p>
@@ -515,15 +513,12 @@ function PostPage() {
         currentUser={currentUser}
       />
 
-      <main className="post-page">
+      <main className="post-page mm-minimal-page">
         <section className="post-page-container">
-          <Link
-            className="app-back-button"
+          <BackButton
             to={`/teams/${teamId}/posts`}
-          >
-            Back to posts
-          </Link>
-
+            label="Back to posts"
+          />
           {errorMessage && (
             <p
               className="post-page-error"
@@ -589,7 +584,7 @@ function PostPage() {
                   )}
                 </header>
 
-                <h1>
+                <h1 className="mm-page-title">
                   {post.title}
                 </h1>
 

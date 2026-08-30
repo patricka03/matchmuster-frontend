@@ -1,6 +1,10 @@
+import { ChevronLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-function BackButton({ to, label = 'Back' }) {
+function BackButton({
+  to,
+  label = 'Back',
+}) {
   const navigate = useNavigate()
 
   function handleBack() {
@@ -13,12 +17,17 @@ function BackButton({ to, label = 'Back' }) {
 
   return (
     <button
-      className="app-back-button"
+      className="native-back-button"
       type="button"
       onClick={handleBack}
       aria-label={label}
+      title={label}
     >
-      {label}
+      <ChevronLeft
+        size={28}
+        strokeWidth={2.25}
+        aria-hidden="true"
+      />
     </button>
   )
 }

@@ -1,3 +1,5 @@
+import ManagerPlusPrompt from '../components/ManagerPlusPrompt'
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -364,13 +366,6 @@ function MatchAvailabilityPage() {
     }
 
     if (
-      destination === 'available' &&
-      !existingSelection
-    ) {
-      return
-    }
-
-    if (
       existingSelection?.selection_type ===
       destination
     ) {
@@ -380,21 +375,30 @@ function MatchAvailabilityPage() {
     const baseUrl =
       `${API_URL}/teams/${teamId}/matches/${matchId}/squad_selections`
 
+    // MATCHMUSTER_EXPLICIT_NOT_SELECTED_V1
     const returningToPool =
       destination ===
       'available'
 
+    const explicitlyNotSelected =
+      returningToPool &&
+      !existingSelection
+
     const method =
       returningToPool
-        ? 'DELETE'
+        ? existingSelection
+          ? 'DELETE'
+          : 'POST'
         : existingSelection
           ? 'PATCH'
           : 'POST'
 
     const url =
-      existingSelection
-        ? `${baseUrl}/${existingSelection.id}`
-        : baseUrl
+      explicitlyNotSelected
+        ? `${baseUrl}/not_selected`
+        : existingSelection
+          ? `${baseUrl}/${existingSelection.id}`
+          : baseUrl
 
     const position =
       existingSelection?.position ||
@@ -436,19 +440,24 @@ function MatchAvailabilityPage() {
             },
 
             body:
-              returningToPool
-                ? undefined
-                : JSON.stringify({
-                    squad_selection: {
-                      user_id:
-                        player.id,
+              explicitlyNotSelected
+                ? JSON.stringify({
+                    user_id:
+                      player.id,
+                  })
+                : returningToPool
+                  ? undefined
+                  : JSON.stringify({
+                      squad_selection: {
+                        user_id:
+                          player.id,
 
-                      selection_type:
-                        destination,
+                        selection_type:
+                          destination,
 
-                      position,
-                    },
-                  }),
+                        position,
+                      },
+                    }),
           },
         )
 
@@ -490,14 +499,16 @@ function MatchAvailabilityPage() {
       }
 
       if (returningToPool) {
-        setSquadSelections(
-          (currentSelections) =>
-            currentSelections.filter(
-              (selection) =>
-                selection.id !==
-                existingSelection.id,
-            ),
-        )
+        if (existingSelection) {
+          setSquadSelections(
+            (currentSelections) =>
+              currentSelections.filter(
+                (selection) =>
+                  selection.id !==
+                  existingSelection.id,
+              ),
+          )
+        }
       } else {
         const savedSelection =
           data.squad_selection ||
@@ -532,10 +543,12 @@ function MatchAvailabilityPage() {
           : destination ===
               'substitute'
             ? 'Substitutes'
-            : 'Available players'
+            : 'Not selected'
 
       setSuccessMessage(
-        `${playerName(player)} moved to ${destinationLabel}.`,
+        destination === 'available'
+          ? `${playerName(player)} was marked as not selected and will be notified.`
+          : `${playerName(player)} moved to ${destinationLabel}.`,
       )
     } catch (error) {
       setErrorMessage(
@@ -633,12 +646,10 @@ function MatchAvailabilityPage() {
             )
           }
           disabled={
-            saving ||
-            currentDestination ===
-              'available'
+            saving
           }
         >
-          Available players
+          Not selected
         </button>
       </div>
     )
@@ -655,7 +666,7 @@ function MatchAvailabilityPage() {
   ) {
     const statusLabel =
       status === 'pending'
-        ? 'Awaiting response'
+        ? 'Pending'
         : status[0].toUpperCase() +
           status.slice(1)
 
@@ -748,7 +759,7 @@ function MatchAvailabilityPage() {
         currentUser={currentUser}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
           {errorMessage && (
             <p
@@ -778,10 +789,10 @@ function MatchAvailabilityPage() {
               Match availability
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               {match?.opponent
-                ? `Player availability vs ${match.opponent}`
-                : 'Player availability'}
+                ? `Availability vs ${match.opponent}`
+                : 'Availability'}
             </h1>
 
             <p>
@@ -791,6 +802,16 @@ function MatchAvailabilityPage() {
               available-player pool.
             </p>
           </div>
+
+          {summary.awaiting_response > 0 && (
+            <ManagerPlusPrompt
+              teamId={teamId}
+              currentUser={currentUser}
+              compact
+              title="Auto-remind the waiting players"
+              description={`${summary.awaiting_response} still to reply. Plus can chase missing responses for you.`}
+            />
+          )}
 
           <section
             className="availability-summary"
@@ -818,7 +839,7 @@ function MatchAvailabilityPage() {
 
             <article className="availability-summary-card pending">
               <span>
-                Awaiting response
+                Pending
               </span>
 
               <strong>
@@ -831,19 +852,19 @@ function MatchAvailabilityPage() {
 
           <div className="availability-groups">
             {renderPlayerGroup(
-              'Available players',
+              'Available',
               'available',
               playersByStatus.available,
             )}
 
             {renderPlayerGroup(
-              'Unavailable players',
+              'Unavailable',
               'unavailable',
               playersByStatus.unavailable,
             )}
 
             {renderPlayerGroup(
-              'Awaiting response',
+              'Pending',
               'pending',
               playersByStatus.pending,
             )}

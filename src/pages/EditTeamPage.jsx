@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useRef,
@@ -571,24 +572,14 @@ function EditTeamPage() {
         }
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
-          <button
-            className="back-button"
-            type="button"
-            onClick={() =>
-              navigate('/team')
-            }
-          >
-            Back to my teams
-          </button>
-
           <div className="dashboard-welcome">
             <p className="dashboard-label">
               Team management
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Edit Team
             </h1>
 

@@ -1,0 +1,2 @@
+.navbar-messages-button { position: relative; }
+.navbar-messages-badge { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; display: grid; place-items: center; padding: 0 4px; border: 2px solid #fff; border-radius: 999px; background: var(--color-brand-pink); color: #fff; font-size: 9px; font-weight: 900; line-height: 1; }

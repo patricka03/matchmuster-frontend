@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import {
   useEffect,
   useState,
@@ -10,7 +11,6 @@ import {
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
@@ -29,7 +29,7 @@ function ConfirmAvailabilityPage() {
   const [
     selectedStatus,
     setSelectedStatus,
-  ] = useState('')
+  ] = useState('pending')
 
   const [loading, setLoading] =
     useState(true)
@@ -204,9 +204,16 @@ function ConfirmAvailabilityPage() {
   ) {
     event.preventDefault()
 
-    if (!selectedStatus) {
+    if (
+      ![
+        'available',
+        'unavailable',
+      ].includes(
+        selectedStatus,
+      )
+    ) {
       setErrorMessage(
-        'Please select available or unavailable.',
+        'Choose Available or Unavailable before saving.',
       )
 
       return
@@ -380,19 +387,14 @@ function ConfirmAvailabilityPage() {
         teamId={teamId}
       />
 
-      <main className="edit-availability-page">
+      <main className="edit-availability-page mm-minimal-page">
         <section className="edit-availability-container">
-          <BackButton
-            to={`/teams/${teamId}/matches/${matchId}`}
-            label="Back to match"
-          />
-
           <div className="edit-availability-heading">
             <p className="dashboard-label">
               Player availability
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               {existingAvailability
                 ? 'Update availability'
                 : 'Confirm availability'}
@@ -463,6 +465,46 @@ function ConfirmAvailabilityPage() {
                 <legend>
                   Are you available?
                 </legend>
+
+                {!existingAvailability && (
+                  <label
+                    className={`availability-option availability-option-pending ${
+                      selectedStatus ===
+                      'pending'
+                        ? 'availability-option-selected'
+                        : ''
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="availability"
+                      value="pending"
+                      checked={
+                        selectedStatus ===
+                        'pending'
+                      }
+                      onChange={() =>
+                        setSelectedStatus(
+                          'pending',
+                        )
+                      }
+                    />
+
+                    <span className="availability-option-icon">
+                      •
+                    </span>
+
+                    <span>
+                      <strong>
+                        Pending
+                      </strong>
+
+                      <small>
+                        No response sent.
+                      </small>
+                    </span>
+                  </label>
+                )}
 
                 <label
                   className={`availability-option ${
@@ -562,7 +604,12 @@ function ConfirmAvailabilityPage() {
                   type="submit"
                   disabled={
                     submitting ||
-                    !selectedStatus
+                    ![
+                      'available',
+                      'unavailable',
+                    ].includes(
+                      selectedStatus,
+                    )
                   }
                 >
                   {submitting

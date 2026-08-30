@@ -399,3 +399,329 @@ html.platform-android .navbar-link {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* MATCHMUSTER FRONTEND ALIGNMENT PASS */
+
+/*
+ * One mobile form-control geometry across MatchMuster.
+ * This fixes Safari/WKWebView intrinsic widths, especially
+ * datetime-local, without redesigning completed screens.
+ */
+@media (max-width: 950px) {
+  form input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  form select,
+  form textarea,
+  form mapbox-search-box,
+  form [role='combobox'] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  form input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  form select,
+  form mapbox-search-box,
+  form [role='combobox'] {
+    min-height: 48px;
+  }
+
+  input[type='date'],
+  input[type='time'],
+  input[type='datetime-local'] {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .match-form,
+  .match-form .form-group,
+  .join-team-form,
+  .join-team-form label {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  mapbox-search-box {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 40;
+  }
+
+  .match-form .form-group:has(mapbox-search-box) {
+    position: relative;
+    z-index: 50;
+    overflow: visible;
+  }
+
+  .match-form-actions > button,
+  .match-form-actions > a,
+  .fixture-management-actions > button,
+  .fixture-management-actions > a,
+  .membership-actions > button,
+  .availability-squad-buttons > button,
+  .team-card-actions > button,
+  .team-card-actions > a {
+    min-height: 48px;
+    box-sizing: border-box;
+  }
+
+  .availability-squad-buttons > button,
+  .membership-actions > button {
+    min-width: 0;
+  }
+
+  /*
+   * Buttons sharing the same action row share the available
+   * width too, so one label does not create a random larger
+   * control than its neighbour.
+   */
+  .membership-actions > button,
+  .availability-squad-buttons > button {
+    flex: 1 1 0;
+  }
+
+  .match-form-actions > button,
+  .match-form-actions > a,
+  .fixture-management-actions > button,
+  .fixture-management-actions > a,
+  .team-card-actions > button,
+  .team-card-actions > a {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/*
+ * If an action already has a text label, decorative right
+ * arrows/chevrons are hidden. Icon-only navigation is not
+ * affected.
+ */
+button .lucide-chevron-right,
+button .lucide-arrow-right,
+a[class*='button'] .lucide-chevron-right,
+a[class*='button'] .lucide-arrow-right,
+[role='button'] .lucide-chevron-right,
+[role='button'] .lucide-arrow-right {
+  display: none !important;
+}
+
+/* MATCHMUSTER AUTHENTICATED CONTROL ALIGNMENT V2 */
+
+@media (max-width: 950px) {
+  /*
+   * Consistent authenticated-app form geometry.
+   * Auth/welcome pages are deliberately outside this scope.
+   */
+  .dashboard-page input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']),
+  .dashboard-page select,
+  .edit-availability-page input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']),
+  .edit-availability-page select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: 50px;
+    min-height: 50px;
+    box-sizing: border-box;
+  }
+
+  .dashboard-page textarea,
+  .edit-availability-page textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .dashboard-page input[type='date'],
+  .dashboard-page input[type='time'],
+  .dashboard-page input[type='datetime-local'] {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: 50px;
+    box-sizing: border-box;
+  }
+
+  .dashboard-page mapbox-search-box {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 50px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 40;
+  }
+
+  .match-form,
+  .match-form .form-group,
+  .squad-player-fields,
+  .squad-player-fields .form-group,
+  .payment-request-controls,
+  .payment-amount-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .payment-amount-input,
+  .payment-amount-input input {
+    min-height: 50px;
+  }
+
+  .availability-squad-buttons {
+    display: grid;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    width: 100%;
+    gap: 8px;
+  }
+
+  .availability-squad-buttons button {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding-right: 8px;
+    padding-left: 8px;
+    line-height: 1.2;
+  }
+
+  .match-form-actions > button,
+  .match-form-actions > a,
+  .fixture-management-actions > button,
+  .fixture-management-actions > a {
+    min-height: 48px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 430px) {
+  .availability-squad-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * Text-labelled actions do not need decorative right arrows.
+ * Dashboard Squad is the one deliberate exception requested.
+ */
+button .lucide-chevron-right,
+button .lucide-arrow-right,
+a[class*='button'] .lucide-chevron-right,
+a[class*='button'] .lucide-arrow-right,
+[role='button'] .lucide-chevron-right,
+[role='button'] .lucide-arrow-right {
+  display: none !important;
+}
+
+.home-dashboard-squad-arrow {
+  display: block !important;
+}
+
+/* ========================================
+   MATCHMUSTER_MOBILE_USABILITY_POLISH_20260830
+======================================== */
+
+@media (max-width: 760px) {
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Keep the chat composer above the fixed bottom navigation. */
+  .mm-messages-page:has(textarea[placeholder="Message..."]) {
+    height:
+      calc(
+        100dvh -
+        64px -
+        env(safe-area-inset-top, 0px)
+      );
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom:
+      calc(
+        88px +
+        env(safe-area-inset-bottom, 0px)
+      );
+    box-sizing: border-box;
+  }
+
+  .mm-messages-page:has(textarea[placeholder="Message..."])
+    .mm-message-thread-shell {
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+  }
+
+  .mm-thread-messages {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mm-message-composer {
+    position: relative;
+    z-index: 20;
+    min-width: 0;
+  }
+
+  /* One left-aligned page-heading system throughout the signed-in app. */
+  .dashboard-welcome,
+  .matches-heading,
+  .payment-page-heading,
+  .finance-heading,
+  .mm-messages-title-row,
+  .page-heading {
+    text-align: left;
+  }
+
+  .dashboard-welcome {
+    align-items: flex-start;
+  }
+
+  .dashboard-welcome > p:last-child {
+    max-width: 620px;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .dashboard-welcome h1,
+  .matches-heading h1,
+  .payment-page-heading h1,
+  .finance-heading h1,
+  .mm-messages-title-row h1,
+  .page-heading h1 {
+    text-align: left;
+  }
+
+  button[data-matchmuster-cash-paid] {
+    border: 1px solid #86efac;
+    background: #f0fdf4;
+    color: #15803d;
+    font-weight: 800;
+  }
+
+  button[data-matchmuster-cash-paid]:disabled {
+    opacity: 0.55;
+  }
+}

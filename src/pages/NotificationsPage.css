@@ -1576,3 +1576,117 @@ body.updates-modal-open {
     width: 100%;
   }
 }
+
+/* ---------- Streamlined activity inbox ---------- */
+
+.updates-container {
+  max-width: 860px;
+}
+
+.updates-heading {
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.updates-heading h1 {
+  font-size: clamp(30px, 4vw, 38px);
+  letter-spacing: -0.8px;
+}
+
+.updates-description {
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.updates-heading-actions {
+  flex-wrap: nowrap;
+}
+
+.updates-filters {
+  width: 100%;
+  margin-bottom: 20px;
+  box-shadow: none;
+}
+
+.updates-filters button {
+  flex: 1 0 auto;
+  justify-content: center;
+}
+
+.notification-groups {
+  gap: 22px;
+}
+
+.notification-group-title {
+  margin-bottom: 9px;
+}
+
+.updates-list {
+  gap: 9px;
+}
+
+.update-card {
+  grid-template-columns: 42px minmax(0, 1fr) 18px;
+  gap: 13px;
+  min-height: 82px;
+  padding: 14px 16px;
+  border-left-width: 3px;
+  border-radius: 13px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+}
+
+.notification-avatar,
+.notification-avatar-photo img {
+  width: 42px;
+  height: 42px;
+}
+
+.update-card-kicker {
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.update-unread-label {
+  display: block;
+  width: 7px;
+  min-width: 7px;
+  height: 7px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--color-brand-pink);
+}
+
+.update-card-heading h3 {
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.update-message {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-line-clamp: 2;
+}
+
+.update-card-footer {
+  justify-content: flex-start;
+  margin-top: 5px;
+}
+
+.update-card-chevron {
+  align-self: center;
+}
+
+.updates-status,
+.updates-empty {
+  min-height: 240px;
+  padding: 36px 22px;
+}
+
+.update-modal {
+  max-width: 680px;
+}

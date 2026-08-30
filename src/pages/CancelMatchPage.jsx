@@ -1,8 +1,8 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
@@ -148,7 +148,7 @@ function CancelMatchPage() {
       }
 
       navigate(
-        `/teams/${teamId}/matches`,
+        `/teams/${teamId}/schedule`,
         {
           replace: true,
         },
@@ -174,19 +174,14 @@ function CancelMatchPage() {
     <>
       <Navbar />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
-          <BackButton
-            to={`/teams/${teamId}/matches/${matchId}`}
-            label="Back to match"
-          />
-
           <div className="dashboard-welcome">
             <p className="dashboard-label">
               Fixture management
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Cancel fixture
             </h1>
 

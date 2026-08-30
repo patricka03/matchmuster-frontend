@@ -1,0 +1,39 @@
+@media (max-width: 700px) {
+  .subscription-hero {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .subscription-status-mark {
+    flex-basis: 50px;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+  }
+
+  .subscription-comparison,
+  .subscription-plan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subscription-comparison article,
+  .subscription-plans,
+  .subscription-access-card {
+    padding: 17px;
+  }
+
+  .subscription-store-actions {
+    flex-direction: column;
+  }
+
+  .subscription-secondary-button,
+  .subscription-plan-card button,
+  .subscription-access-card button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .subscription-legal-row {
+    flex-wrap: wrap;
+  }
+}

@@ -1,7 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
+import BackButton from '../components/BackButton'
+import SocialAuthButtons from '../components/SocialAuthButtons'
+import {
+  ClipboardList,
+  UserRound,
+  X,
+} from 'lucide-react'
+import { legalDocuments } from '../data/legalDocuments'
+import './SignupPage.css'
 
 function SignupPage() {
   const navigate = useNavigate()
@@ -20,11 +29,46 @@ function SignupPage() {
 
   const [errorMessage, setErrorMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [openLegalDocument, setOpenLegalDocument] =
+    useState(null)
   const [showPassword, setShowPassword] = useState(false)
   const [
     showPasswordConfirmation,
     setShowPasswordConfirmation,
   ] = useState(false)
+
+  const activeLegalDocument =
+    openLegalDocument
+      ? legalDocuments[openLegalDocument]
+      : null
+
+  useEffect(() => {
+    if (!activeLegalDocument) return undefined
+
+    const previousOverflow =
+      document.body.style.overflow
+
+    document.body.style.overflow = 'hidden'
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setOpenLegalDocument(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [activeLegalDocument])
+
+  function showLegalDocument(event, documentKey) {
+    event.preventDefault()
+    event.stopPropagation()
+    setOpenLegalDocument(documentKey)
+  }
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -49,21 +93,21 @@ function SignupPage() {
 
     if (!formData.account_type) {
       setErrorMessage(
-        'Please choose whether you are a player or manager.',
+        'Choose Manager or Player.',
       )
       return
     }
 
     if (!ageConfirmed) {
       setErrorMessage(
-        'You must confirm that you are 18 years of age or older.',
+        'Confirm that you are 18 or older.',
       )
       return
     }
 
     if (!legalAccepted) {
       setErrorMessage(
-        'You must agree to the Terms of Service before creating an account.',
+        'Accept the Terms of Service and acknowledge the Privacy Policy.',
       )
       return
     }
@@ -152,15 +196,12 @@ function SignupPage() {
   }
 
   return (
-    <main className="auth-page">
+    <main className="auth-page signup-page">
       <section className="auth-card">
-        <Link
-          className="app-back-button"
+        <BackButton
           to="/"
-        >
-          Back
-        </Link>
-
+          label="Back to welcome"
+        />
         <img
           className="matchmuster-page-logo"
           src={matchMusterLogo}
@@ -169,10 +210,6 @@ function SignupPage() {
         />
 
         <h1>Create your account</h1>
-
-        <p className="auth-intro">
-          Choose how you'll use MatchMuster.
-        </p>
 
         <div className="account-type-section">
           <button
@@ -185,17 +222,22 @@ function SignupPage() {
             onClick={() =>
               handleAccountType('manager')
             }
+            aria-pressed={
+              formData.account_type === 'manager'
+            }
           >
-            <span className="account-type-icon">
-              🧑‍💼
+            <span
+              className="account-type-icon"
+              aria-hidden="true"
+            >
+              <ClipboardList size={24} />
             </span>
 
             <span className="account-type-content">
               <strong>Manager</strong>
 
               <small>
-                Organise fixtures, manage players
-                and run your team.
+                Plan fixtures and run your team.
               </small>
             </span>
 
@@ -217,17 +259,22 @@ function SignupPage() {
             onClick={() =>
               handleAccountType('player')
             }
+            aria-pressed={
+              formData.account_type === 'player'
+            }
           >
-            <span className="account-type-icon">
-              ⚽
+            <span
+              className="account-type-icon"
+              aria-hidden="true"
+            >
+              <UserRound size={24} />
             </span>
 
             <span className="account-type-content">
               <strong>Player</strong>
 
               <small>
-                Join your team, manage availability
-                and stay match-ready.
+                Join your squad and share availability.
               </small>
             </span>
 
@@ -240,13 +287,19 @@ function SignupPage() {
           </button>
         </div>
 
-        {errorMessage && (
-          <p
-            className="auth-error"
-            role="alert"
-          >
-            {errorMessage}
-          </p>
+        {formData.account_type ===
+          'manager' && (
+          <div className="signup-plus-preview-note">
+            <strong>
+              30-day MatchMuster Plus Preview
+            </strong>
+
+            <span>
+              Starts when you create
+              your first team. No
+              payment required.
+            </span>
+          </div>
         )}
 
         <form
@@ -263,7 +316,8 @@ function SignupPage() {
                 id="first-name"
                 name="first_name"
                 type="text"
-                placeholder="First name"
+                autoComplete="given-name"
+                autoCapitalize="words"
                 value={formData.first_name}
                 onChange={handleChange}
                 required
@@ -279,7 +333,8 @@ function SignupPage() {
                 id="last-name"
                 name="last_name"
                 type="text"
-                placeholder="Last name"
+                autoComplete="family-name"
+                autoCapitalize="words"
                 value={formData.last_name}
                 onChange={handleChange}
                 required
@@ -296,7 +351,10 @@ function SignupPage() {
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
+              spellCheck="false"
               value={formData.email}
               onChange={handleChange}
               required
@@ -317,7 +375,7 @@ function SignupPage() {
                     ? 'text'
                     : 'password'
                 }
-                placeholder="Create a password"
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -326,6 +384,11 @@ function SignupPage() {
               <button
                 type="button"
                 className="password-toggle"
+                aria-label={
+                  showPassword
+                    ? 'Hide password'
+                    : 'Show password'
+                }
                 onClick={() =>
                   setShowPassword(
                     (current) => !current,
@@ -353,7 +416,7 @@ function SignupPage() {
                     ? 'text'
                     : 'password'
                 }
-                placeholder="Enter your password again"
+                autoComplete="new-password"
                 value={
                   formData.password_confirmation
                 }
@@ -364,6 +427,11 @@ function SignupPage() {
               <button
                 type="button"
                 className="password-toggle"
+                aria-label={
+                  showPasswordConfirmation
+                    ? 'Hide password confirmation'
+                    : 'Show password confirmation'
+                }
                 onClick={() =>
                   setShowPasswordConfirmation(
                     (current) => !current,
@@ -395,14 +463,8 @@ function SignupPage() {
 
               <span>
                 <strong>
-                  I confirm that I am 18 years
-                  of age or older.
+                  I confirm I am 18 or older.
                 </strong>
-
-                <small>
-                  MatchMuster V1 is available
-                  only to adults aged 18+.
-                </small>
               </span>
             </label>
 
@@ -420,41 +482,54 @@ function SignupPage() {
               <span>
                 <strong>
                   I agree to the{' '}
-                  <Link
-                    to="/legal/terms"
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
+                    className="signup-legal-inline-button"
+                    onClick={(event) =>
+                      showLegalDocument(event, 'terms')
+                    }
                   >
                     Terms of Service
-                  </Link>{' '}
+                  </button>{' '}
                   and acknowledge the{' '}
-                  <Link
-                    to="/legal/privacy"
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
+                    className="signup-legal-inline-button"
+                    onClick={(event) =>
+                      showLegalDocument(event, 'privacy')
+                    }
                   >
                     Privacy Policy
-                  </Link>
+                  </button>
                   .
                 </strong>
-
-                <small>
-                  These explain the rules for
-                  using MatchMuster and how your
-                  personal information is handled.
-                </small>
               </span>
             </label>
           </section>
 
+          <SocialAuthButtons
+            mode="signup"
+            accountType={formData.account_type}
+            firstName={formData.first_name}
+            lastName={formData.last_name}
+            ageConfirmed={ageConfirmed}
+            termsAccepted={legalAccepted}
+            onError={setErrorMessage}
+          />
+
+          {errorMessage && (
+            <p
+              className="auth-error signup-submit-error"
+              role="alert"
+            >
+              {errorMessage}
+            </p>
+          )}
+
           <button
             className="create-account-button"
             type="submit"
-            disabled={
-              isSubmitting ||
-              !ageConfirmed ||
-              !legalAccepted
-            }
+            disabled={isSubmitting}
           >
             {isSubmitting
               ? 'Creating account...'
@@ -462,13 +537,96 @@ function SignupPage() {
           </button>
         </form>
 
-        <p className="auth-footer">
-          Already have an account?{' '}
-          <Link to="/login">
-            Log In
-          </Link>
-        </p>
+        <Link
+          className="signup-login-link"
+          to="/login"
+        >
+          Log In
+        </Link>
       </section>
+
+      {activeLegalDocument && (
+        <div
+          className="signup-legal-sheet-backdrop"
+          onClick={() =>
+            setOpenLegalDocument(null)
+          }
+          role="presentation"
+        >
+          <section
+            className="signup-legal-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="signup-legal-sheet-title"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <header className="signup-legal-sheet-header">
+              <div>
+                <span>LEGAL</span>
+
+                <h2 id="signup-legal-sheet-title">
+                  {activeLegalDocument.title}
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                className="signup-legal-sheet-close"
+                onClick={() =>
+                  setOpenLegalDocument(null)
+                }
+                aria-label="Close legal document"
+              >
+                <X
+                  size={24}
+                  aria-hidden="true"
+                />
+              </button>
+            </header>
+
+            <div className="signup-legal-sheet-content">
+              <p className="signup-legal-sheet-meta">
+                Version {activeLegalDocument.version}
+                {' · '}
+                Effective {activeLegalDocument.effectiveDate}
+              </p>
+
+              {activeLegalDocument.sections.map(
+                (section) => (
+                  <section
+                    className="signup-legal-sheet-section"
+                    key={section.title}
+                  >
+                    <h3>{section.title}</h3>
+
+                    {section.paragraphs?.map(
+                      (paragraph, index) => (
+                        <p key={index}>
+                          {paragraph}
+                        </p>
+                      ),
+                    )}
+
+                    {section.items && (
+                      <ul>
+                        {section.items.map(
+                          (item, index) => (
+                            <li key={index}>
+                              {item}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    )}
+                  </section>
+                ),
+              )}
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   )
 }

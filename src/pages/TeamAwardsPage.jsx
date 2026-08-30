@@ -1,21 +1,13 @@
-import {
-  useEffect,
-  useState,
-} from 'react'
+import ManagerPlusPrompt from '../components/ManagerPlusPrompt'
+import '../styles/RemainingPages.mobile.css'
+import { useEffect, useState, } from 'react'
 
-import {
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { useNavigate, useParams, } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
-import {
-  clearAuthToken,
-  getAuthToken,
-} from '../utils/authStorage'
+import { clearAuthToken, getAuthToken, } from '../utils/authStorage'
 
 import '../styles/TeamAwardsPage.css'
 import '../styles/TeamAwardsPage.mobile.css'
@@ -490,13 +482,8 @@ function TeamAwardsPage() {
         }
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
-          <BackButton
-            to={`/teams/${teamId}`}
-            label="Back to team"
-          />
-
           {errorMessage && (
             <p
               className="team-error"
@@ -514,9 +501,8 @@ function TeamAwardsPage() {
                     Team achievements
                   </p>
 
-                  <h1>
-                    Team Awards &amp;
-                    Stats
+                  <h1 className="mm-page-title">
+                    Awards &amp; Stats
                   </h1>
 
                   <p>
@@ -526,6 +512,13 @@ function TeamAwardsPage() {
                     statistics.
                   </p>
                 </div>
+
+                <ManagerPlusPrompt
+                  teamId={teamId}
+                  currentUser={currentUser}
+                  title="More from every season"
+                  description="Player of the Month, Player of the Season and deeper team insights with Plus."
+                />
 
                 <section className="team-awards-hero-grid">
                   <article className="team-award-hero-card">
@@ -566,7 +559,7 @@ function TeamAwardsPage() {
                     </p>
 
                     <h2>
-                      Season Player
+                      Player of the Season
                     </h2>
 
                     {renderAwardLeaders(

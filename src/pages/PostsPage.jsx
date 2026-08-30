@@ -1,3 +1,4 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import {
   Link,
@@ -213,7 +214,7 @@ function PostsPage() {
         currentUser={currentUser}
       />
 
-      <main className="posts-page">
+      <main className="posts-page mm-minimal-page">
         <section className="posts-container">
           <header className="posts-header">
             <div>
@@ -221,8 +222,8 @@ function PostsPage() {
                 Team communication
               </p>
 
-              <h1>
-                Team Posts
+              <h1 className="mm-page-title">
+                Posts
               </h1>
 
               <p>
@@ -236,7 +237,7 @@ function PostsPage() {
                 className="create-post-link"
                 to={`/teams/${teamId}/posts/new`}
               >
-                Create post
+                New post
               </Link>
             )}
           </header>

@@ -456,6 +456,19 @@ function DeveloperDashboardPage() {
             </button>
 
             <button
+              className="developer-founder-nav"
+              onClick={() =>
+                navigate('/developer/launch-clubs')
+              }
+            >
+              Founder clubs
+
+              <span className="developer-founder-chip">
+                Manage
+              </span>
+            </button>
+
+            <button
               className={
                 activeSection === 'updates' ? 'active' : ''
               }
@@ -493,7 +506,7 @@ function DeveloperDashboardPage() {
             <header className="developer-header">
               <div>
                 <p>PRIVATE CONTROL CENTRE</p>
-                <h1>Developer dashboard</h1>
+                <h1 className="mm-page-title">Developer dashboard</h1>
                 <span>Monitor the MatchMuster platform.</span>
               </div>
 
@@ -567,7 +580,7 @@ function DeveloperDashboardPage() {
             <header className="developer-header">
               <div>
                 <p>MANAGER APPLICATIONS</p>
-                <h1>Manager reviews</h1>
+                <h1 className="mm-page-title">Manager reviews</h1>
                 <span>
                   Review pending MatchMuster manager accounts.
                 </span>
@@ -663,7 +676,7 @@ function DeveloperDashboardPage() {
             <header className="developer-header">
               <div>
                 <p>PLATFORM COMMUNICATION</p>
-                <h1>App updates</h1>
+                <h1 className="mm-page-title">App updates</h1>
                 <span>
                   Send an in-app announcement to every approved manager.
                 </span>
@@ -757,7 +770,7 @@ function DeveloperDashboardPage() {
             <header className="developer-header">
               <div>
                 <p>PLATFORM MONITORING</p>
-                <h1>Platform activity</h1>
+                <h1 className="mm-page-title">Platform activity</h1>
                 <span>
                   View the latest activity across MatchMuster.
                 </span>

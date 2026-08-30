@@ -587,3 +587,140 @@
     padding: 17px;
   }
 }
+
+/* MATCHMUSTER DEVELOPER CONTROL CENTRE POLISH V2 */
+.developer-dashboard {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 10, 120, 0.08), transparent 28%),
+    radial-gradient(circle at 92% 4%, rgba(79, 156, 255, 0.12), transparent 30%),
+    #f8fbff;
+}
+
+.developer-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 100vh;
+  box-shadow: 18px 0 45px rgba(15, 23, 42, 0.08);
+}
+
+.developer-navigation button {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.developer-navigation button:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateX(2px);
+}
+
+.developer-navigation button.active {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.developer-founder-chip {
+  display: inline-flex;
+  min-width: 52px;
+  min-height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.developer-content {
+  min-width: 0;
+  padding:
+    clamp(28px, 4vw, 52px)
+    clamp(22px, 4vw, 58px)
+    64px;
+}
+
+.developer-header {
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.developer-header h1 {
+  font-size: clamp(30px, 3.2vw, 40px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.developer-stat-grid article,
+.developer-manager-card,
+.developer-app-update-card,
+.developer-activity-list {
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.055);
+}
+
+.developer-stat-grid article {
+  min-height: 132px;
+  padding: 22px;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.developer-stat-grid article:hover {
+  transform: translateY(-2px);
+  border-color: #dbe4f0;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.075);
+}
+
+.developer-manager-actions button,
+.developer-refresh-button,
+.developer-app-update-footer button,
+.developer-logout {
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.developer-approve-button {
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
+
+.developer-dashboard-error,
+.developer-dashboard-success,
+.developer-app-update-success {
+  border-radius: 14px;
+}
+
+@media (max-width: 900px) {
+  .developer-sidebar {
+    position: static;
+    height: auto;
+    min-height: auto;
+  }
+
+  .developer-content {
+    padding: 26px 20px 46px;
+  }
+}
+
+@media (max-width: 560px) {
+  .developer-navigation button {
+    min-height: 46px;
+  }
+
+  .developer-manager-actions {
+    gap: 8px;
+  }
+}

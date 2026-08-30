@@ -1,12 +1,8 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
-
-import Navbar from '../components/Navbar'
+import { Link, useNavigate, useParams, } from 'react-router-dom'
 import BackButton from '../components/BackButton'
+import Navbar from '../components/Navbar'
 import API_URL from '../config/api'
 
 import {
@@ -263,7 +259,7 @@ function EditAvailabilityPage() {
       <>
         <Navbar teamId={teamId} />
 
-        <main className="edit-availability-page">
+        <main className="edit-availability-page mm-minimal-page">
           <p className="edit-availability-message">
             Loading your
             availability...
@@ -281,19 +277,14 @@ function EditAvailabilityPage() {
     <>
       <Navbar teamId={teamId} />
 
-      <main className="edit-availability-page">
+      <main className="edit-availability-page mm-minimal-page">
         <section className="edit-availability-container">
-          <BackButton
-            to={`/teams/${teamId}/matches/${matchId}`}
-            label="Back to match"
-          />
-
           <div className="edit-availability-heading">
             <p className="dashboard-label">
               Player availability
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Edit availability
             </h1>
 
@@ -438,12 +429,10 @@ function EditAvailabilityPage() {
           )}
 
           {!availability && (
-            <Link
-              className="edit-availability-back"
+            <BackButton
               to={`/teams/${teamId}/matches/${matchId}`}
-            >
-              Back to fixture
-            </Link>
+              label="Back to fixture"
+            />
           )}
         </section>
       </main>

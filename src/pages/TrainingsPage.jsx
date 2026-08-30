@@ -1,10 +1,10 @@
+import '../styles/RemainingPages.mobile.css'
 import { useEffect, useState } from 'react'
 import {
   CalendarDays,
   ChevronRight,
   Clock,
   MapPin,
-  Plus,
 } from 'lucide-react'
 import {
   useNavigate,
@@ -12,7 +12,6 @@ import {
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
@@ -250,21 +249,16 @@ function TrainingsPage() {
         currentUser={currentUser}
       />
 
-      <main className="dashboard-page">
+      <main className="dashboard-page mm-minimal-page">
         <section className="dashboard-content">
-          <BackButton
-            to="/dashboard"
-            label="Back to dashboard"
-          />
-
           <div className="matches-heading">
             <div>
               <p className="dashboard-label">
-                Training
+                Team sessions
               </p>
 
-              <h1>
-                Training sessions
+              <h1 className="mm-page-title">
+                Training
               </h1>
 
               <p>
@@ -283,12 +277,7 @@ function TrainingsPage() {
                   )
                 }
               >
-                <Plus
-                  size={18}
-                  aria-hidden="true"
-                />
-
-                Create training
+                New training
               </button>
             )}
           </div>
@@ -395,7 +384,7 @@ function TrainingsPage() {
                           )
                         }
                       >
-                        View training
+                        Open
 
                         <ChevronRight
                           size={16}

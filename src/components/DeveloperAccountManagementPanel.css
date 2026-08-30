@@ -334,3 +334,26 @@
     justify-content: flex-start;
   }
 }
+
+/* MATCHMUSTER LAUNCH CLUB ENTRY */
+
+.developer-accounts-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.developer-accounts-header-actions button {
+  min-height: 42px;
+}
+
+@media (max-width: 700px) {
+  .developer-accounts-header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .developer-accounts-header-actions button {
+    width: 100%;
+    min-height: 48px;
+  }
+}

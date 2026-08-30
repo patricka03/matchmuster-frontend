@@ -1,0 +1,93 @@
+.login-page .auth-card {
+  overflow: visible;
+}
+
+.login-page .matchmuster-page-logo {
+  margin-bottom: 14px;
+}
+
+.login-page .auth-card h1 {
+  margin-bottom: 28px;
+}
+
+.login-page .password-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.login-page .forgot-password-link {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.login-page .forgot-password-link:hover {
+  text-decoration: underline;
+}
+
+.login-secondary-actions {
+  margin-top: 20px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.login-help-link,
+.login-create-account-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.login-help-link {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.login-create-account-link {
+  color: #1d4ed8;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.login-help-link:hover,
+.login-create-account-link:hover {
+  text-decoration: none;
+}
+
+.login-help-link:focus-visible,
+.login-create-account-link:focus-visible,
+.login-page .forgot-password-link:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.24);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .login-page .auth-card {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+@media (max-width: 950px) and (max-height: 700px) {
+  html.platform-ios .login-page,
+  html.platform-android .login-page {
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .login-page .auth-card {
+    margin: 0 auto;
+  }
+}

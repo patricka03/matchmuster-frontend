@@ -56,13 +56,22 @@
   );
 
   padding-right:
-    max(8px, env(safe-area-inset-right, 0px));
+    max(
+      8px,
+      env(safe-area-inset-right, 0px)
+    );
 
   padding-bottom:
-    max(7px, env(safe-area-inset-bottom, 0px));
+    max(
+      7px,
+      env(safe-area-inset-bottom, 0px)
+    );
 
   padding-left:
-    max(8px, env(safe-area-inset-left, 0px));
+    max(
+      8px,
+      env(safe-area-inset-left, 0px)
+    );
 }
 
 /* ========================================
@@ -101,6 +110,26 @@ html.platform-android .bottom-nav-item {
   .bottom-nav-item:active:not(.disabled) {
     background: #fff7fb;
     transform: scale(0.97);
+  }
+
+  /*
+   * Switch-team trigger is nested inside
+   * .bottom-nav-team-switcher, so it needs
+   * its own touch behaviour.
+   */
+  .bottom-nav-team-switcher-trigger:hover {
+    background: transparent;
+  }
+
+  .bottom-nav-team-switcher-trigger:active {
+    background:
+      linear-gradient(
+        135deg,
+        #fff7fb,
+        #f5f9ff
+      );
+
+    transform: scale(0.985);
   }
 
   .bottom-nav-team-option:hover {
@@ -150,18 +179,28 @@ html.platform-android .bottom-nav-item {
   z-index: 1200 !important;
 
   padding-top:
-    max(20px, env(safe-area-inset-top, 0px));
+    max(
+      20px,
+      env(safe-area-inset-top, 0px)
+    );
 
   padding-right:
-    max(12px, env(safe-area-inset-right, 0px));
+    max(
+      12px,
+      env(safe-area-inset-right, 0px)
+    );
 
   padding-bottom:
     calc(
-      84px + env(safe-area-inset-bottom, 0px)
+      84px +
+      env(safe-area-inset-bottom, 0px)
     );
 
   padding-left:
-    max(12px, env(safe-area-inset-left, 0px));
+    max(
+      12px,
+      env(safe-area-inset-left, 0px)
+    );
 
   overscroll-behavior: contain;
 }
@@ -201,6 +240,7 @@ html.platform-android .bottom-nav-sheet {
 .bottom-nav-sheet-heading > button,
 .bottom-nav-sheet-links a,
 .bottom-nav-sheet-links > button,
+.bottom-nav-team-switcher-trigger,
 .bottom-nav-team-option {
   min-height: 44px;
 
@@ -215,6 +255,8 @@ html.platform-android
 html.platform-android
   .bottom-nav-sheet-links > button,
 html.platform-android
+  .bottom-nav-team-switcher-trigger,
+html.platform-android
   .bottom-nav-team-option {
   min-height: 48px;
 }
@@ -224,8 +266,13 @@ html.platform-android
 ======================================== */
 
 .bottom-nav-team-switcher,
+.bottom-nav-team-switcher-trigger,
 .bottom-nav-team-option {
   box-sizing: border-box;
+}
+
+.bottom-nav-team-switcher-trigger {
+  min-width: 0;
 }
 
 .bottom-nav-team-option {
@@ -235,9 +282,20 @@ html.platform-android
 .bottom-nav-team-option > span,
 .bottom-nav-team-switcher-trigger > span {
   min-width: 0;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/*
+ * Keep the team count on one line
+ * and anchored to the right.
+ */
+.bottom-nav-team-switcher-trigger > small {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* ========================================
@@ -250,9 +308,11 @@ html.platform-android
  */
 .dashboard-page,
 .home-dashboard-page {
-  padding-bottom: calc(
-    116px + env(safe-area-inset-bottom, 0px)
-  );
+  padding-bottom:
+    calc(
+      116px +
+      env(safe-area-inset-bottom, 0px)
+    );
 }
 
 /* ========================================
@@ -262,10 +322,16 @@ html.platform-android
 @media (max-width: 390px) {
   .bottom-nav-inner {
     padding-right:
-      max(5px, env(safe-area-inset-right, 0px));
+      max(
+        5px,
+        env(safe-area-inset-right, 0px)
+      );
 
     padding-left:
-      max(5px, env(safe-area-inset-left, 0px));
+      max(
+        5px,
+        env(safe-area-inset-left, 0px)
+      );
   }
 
   .bottom-nav-item {
@@ -290,6 +356,20 @@ html.platform-android
   .bottom-nav-sheet-heading h2 {
     font-size: 21px;
   }
+
+  /*
+   * Keep Switch Team aligned with the other
+   * More-menu rows on narrow phones.
+   */
+  .bottom-nav-team-switcher-trigger {
+    gap: 12px;
+    padding-right: 13px;
+    padding-left: 13px;
+  }
+
+  .bottom-nav-team-switcher-trigger > small {
+    font-size: 10px;
+  }
 }
 
 /* ========================================
@@ -298,20 +378,31 @@ html.platform-android
 
 @media (orientation: landscape) and (max-height: 600px) {
   .bottom-nav-inner {
-    min-height: calc(
-      60px + env(safe-area-inset-bottom, 0px)
-    );
+    min-height:
+      calc(
+        60px +
+        env(safe-area-inset-bottom, 0px)
+      );
   }
 
+  /*
+   * Never reduce interactive tab targets below
+   * the 44pt iOS minimum in landscape.
+   */
   .bottom-nav-item {
-    min-height: 40px;
+    min-height: 44px;
     gap: 2px;
+  }
+
+  html.platform-android .bottom-nav-item {
+    min-height: 48px;
   }
 
   .bottom-nav-sheet-backdrop {
     padding-bottom:
       calc(
-        70px + env(safe-area-inset-bottom, 0px)
+        70px +
+        env(safe-area-inset-bottom, 0px)
       );
   }
 
@@ -326,9 +417,15 @@ html.platform-android
 
 @media (prefers-reduced-motion: reduce) {
   .bottom-nav-item,
+  .bottom-nav-team-switcher-trigger,
   .bottom-nav-team-option,
   .bottom-nav-sheet-links a,
   .bottom-nav-sheet-links > button {
     transition: none;
+  }
+
+  .bottom-nav-team-switcher-trigger:active,
+  .bottom-nav-team-option:active {
+    transform: none;
   }
 }

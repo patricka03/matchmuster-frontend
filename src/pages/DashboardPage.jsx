@@ -11,6 +11,10 @@ import {
 } from 'lucide-react'
 
 import Navbar from '../components/Navbar'
+import TeamPlanBadge from '../components/TeamPlanBadge'
+import SubscriptionLifecycleNotice from '../components/SubscriptionLifecycleNotice'
+import ManagerMatchdayLateCard from '../components/ManagerMatchdayLateCard'
+import ManagerFinanceSummaryCard from '../components/ManagerFinanceSummaryCard'
 import API_URL from '../config/api'
 
 import {
@@ -1067,10 +1071,15 @@ function DashboardPage() {
   // ========================================
 
   function openNextFixture() {
-    if (
-      !teamId ||
-      !nextMatch
-    ) {
+    if (!teamId) {
+      return
+    }
+
+    if (!nextMatch) {
+      navigate(
+        `/teams/${teamId}/schedule`,
+      )
+
       return
     }
 
@@ -1108,7 +1117,7 @@ function DashboardPage() {
     }
 
     navigate(
-      `/teams/${teamId}/matches`,
+      `/teams/${teamId}/schedule`,
     )
   }
 
@@ -1161,6 +1170,38 @@ function DashboardPage() {
 
       <main className="home-dashboard-page">
         <section className="home-dashboard-content">
+          {teamId &&
+            isApprovedManager && (
+              <div className="home-dashboard-plan-row">
+                <TeamPlanBadge
+                  team={team}
+                />
+
+                {team
+                  ?.multi_team_access
+                  ?.owned_by_current_manager ===
+                  true && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(
+                        `/teams/${teamId}/subscription`,
+                      )
+                    }
+                  >
+                    Plan
+                  </button>
+                )}
+              </div>
+            )}
+
+          <SubscriptionLifecycleNotice
+            team={team}
+            isApprovedManager={
+              isApprovedManager
+            }
+          />
+
           {paymentSuccess && (
             <div
               className="home-dashboard-success"
@@ -1181,7 +1222,7 @@ function DashboardPage() {
                 ⚽
               </span>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Manager approval pending
               </h1>
 
@@ -1205,7 +1246,7 @@ function DashboardPage() {
                   ⚽
                 </span>
 
-                <h1>
+                <h1 className="mm-page-title">
                   Create or join a team
                 </h1>
 
@@ -1253,7 +1294,7 @@ function DashboardPage() {
                   👥
                 </span>
 
-                <h1>
+                <h1 className="mm-page-title">
                   Join your team
                 </h1>
 
@@ -1288,7 +1329,7 @@ function DashboardPage() {
                 ⏳
               </span>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Team approval pending
               </h1>
 
@@ -1313,8 +1354,10 @@ function DashboardPage() {
                 onClick={
                   openNextFixture
                 }
-                disabled={
-                  !nextMatch
+                aria-label={
+                  nextMatch
+                    ? `View next fixture against ${nextMatch.opponent}`
+                    : 'View team schedule'
                 }
               >
                 <span className="home-dashboard-fixture-label">
@@ -1386,9 +1429,20 @@ function DashboardPage() {
                     )}
                   </>
                 ) : (
-                  <span className="home-dashboard-no-fixture">
-                    No upcoming fixture has
-                    been added yet.
+                  <span className="home-dashboard-fixture-empty">
+                    <span className="home-dashboard-no-fixture">
+                      No upcoming fixture has
+                      been added yet.
+                    </span>
+
+                    <span className="home-dashboard-fixture-schedule">
+                      View schedule
+
+                      <ArrowRight
+                        size={21}
+                        aria-hidden="true"
+                      />
+                    </span>
                   </span>
                 )}
               </button>
@@ -1450,12 +1504,18 @@ function DashboardPage() {
                         </strong>
 
                         <span>
-                          Awaiting
+                          Pending
                         </span>
                       </article>
                     </div>
                   </section>
                 )}
+
+              {isApprovedManager && (
+                <ManagerMatchdayLateCard
+                  teamId={teamId}
+                />
+              )}
 
               {/* ========================================
                   DASHBOARD ACTION CARDS
@@ -1487,10 +1547,16 @@ function DashboardPage() {
                       ? 'Manage your team'
                       : 'View your team'}
                   </small>
+
+                  <ArrowRight
+                    className="home-dashboard-squad-arrow"
+                    size={19}
+                    aria-hidden="true"
+                  />
                 </button>
 
                 <button
-                  className="home-dashboard-action-card"
+                  className="home-dashboard-action-card home-dashboard-action-card--blue"
                   type="button"
                   onClick={
                     openPayments
@@ -1515,7 +1581,7 @@ function DashboardPage() {
                 </button>
 
                 <button
-                  className="home-dashboard-action-card"
+                  className="home-dashboard-action-card home-dashboard-action-card--blue"
                   type="button"
                   onClick={() =>
                     navigate(
@@ -1564,6 +1630,13 @@ function DashboardPage() {
                   </small>
                 </button>
               </section>
+
+              {isApprovedManager && (
+                <ManagerFinanceSummaryCard
+                  teamId={teamId}
+                  team={team}
+                />
+              )}
 
               {/* ========================================
                   NEXT TRAINING — PLAYER + MANAGER
@@ -1693,7 +1766,7 @@ function DashboardPage() {
                         </strong>
 
                         <span>
-                          Awaiting
+                          Pending
                         </span>
                       </article>
                     </div>

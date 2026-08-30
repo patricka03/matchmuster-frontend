@@ -1,16 +1,11 @@
 import { useState } from 'react'
-import {
-  Link,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom'
-
+import { Link, useLocation, useNavigate, } from 'react-router-dom'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
-
-import {
-  setAuthToken,
-} from '../utils/authStorage'
+import { setAuthToken, } from '../utils/authStorage'
+import BackButton from '../components/BackButton'
+import SocialAuthButtons from '../components/SocialAuthButtons'
+import './LoginPage.css'
 
 function LoginPage() {
   const location = useLocation()
@@ -115,15 +110,12 @@ function LoginPage() {
   }
 
   return (
-    <main className="auth-page">
+    <main className="auth-page login-page">
       <section className="auth-card">
-        <Link
-          className="app-back-button"
+        <BackButton
           to="/"
-        >
-          Back
-        </Link>
-
+          label="Back to welcome"
+        />
         <img
           className="matchmuster-page-logo"
           src={matchMusterLogo}
@@ -132,10 +124,6 @@ function LoginPage() {
         />
 
         <h1>Welcome back</h1>
-
-        <p>
-          Sign in to your MatchMuster account.
-        </p>
 
         {successMessage && (
           <p
@@ -168,7 +156,10 @@ function LoginPage() {
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
+              spellCheck="false"
               value={formData.email}
               onChange={handleChange}
               required
@@ -178,7 +169,7 @@ function LoginPage() {
           <div className="form-group">
             <div className="password-label-row">
               <label htmlFor="password">
-                Password{' '}
+                Password
               </label>
 
               <Link
@@ -198,7 +189,7 @@ function LoginPage() {
                     ? 'text'
                     : 'password'
                 }
-                placeholder="Enter your password"
+                autoComplete="current-password"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -231,23 +222,26 @@ function LoginPage() {
           </button>
         </form>
 
-        <div className="account-recovery">
-          <span>
-            Forgot which email you used?{' '}
-          </span>
+        <SocialAuthButtons
+          mode="login"
+          onError={setErrorMessage}
+        />
 
-          <Link to="/help">
+        <div className="login-secondary-actions">
+          <Link
+            className="login-help-link"
+            to="/help"
+          >
             Need help signing in?
           </Link>
-        </div>
 
-        <p className="auth-footer">
-          Don’t have an account?{' '}
-
-          <Link to="/signup">
+          <Link
+            className="login-create-account-link"
+            to="/signup"
+          >
             Create Account
           </Link>
-        </p>
+        </div>
       </section>
     </main>
   )
