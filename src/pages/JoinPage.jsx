@@ -340,7 +340,7 @@ function JoinPage() {
               Team membership
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Join a team
             </h1>
 

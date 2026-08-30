@@ -1,0 +1,82 @@
+.social-auth {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.social-auth-divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 14px;
+  color: #66758f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.social-auth-divider::before,
+.social-auth-divider::after {
+  content: '';
+  height: 1px;
+  background: #dce4ef;
+}
+
+.social-auth-button {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 14px;
+  border: 1px solid #d7e0eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 18px;
+  font: inherit;
+  font-weight: 800;
+}
+
+.social-auth-button:disabled {
+  opacity: 0.62;
+}
+
+.social-auth-apple {
+  color: #fff;
+  background: #0b1424;
+  border-color: #0b1424;
+}
+
+.social-auth-provider-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.social-auth-google {
+  color: #152239;
+  background: #fff;
+}
+
+.social-auth-google-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 900;
+  background:
+    conic-gradient(
+      from -45deg,
+      #4285f4 0 25%,
+      #34a853 25% 50%,
+      #fbbc05 50% 75%,
+      #ea4335 75% 100%
+    );
+}
+
+@media (max-width: 640px) {
+  .social-auth-button {
+    min-height: 58px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+}

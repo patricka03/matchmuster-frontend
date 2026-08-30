@@ -365,7 +365,7 @@ function SendAvailabilityPage() {
                 Availability reminder
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Send availability
                 reminder?
               </h1>

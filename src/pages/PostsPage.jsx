@@ -222,7 +222,7 @@ function PostsPage() {
                 Team communication
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Posts
               </h1>
 

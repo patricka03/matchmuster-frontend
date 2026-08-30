@@ -1104,7 +1104,7 @@ function EditProfilePage() {
         <section className="edit-profile-card">
           <div className="edit-profile-heading">
             <div>
-              <h1>
+              <h1 className="mm-page-title">
                 Profile
               </h1>
             </div>

@@ -614,7 +614,7 @@ function MatchRatingsPage() {
                 Post-match ratings
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Ratings vs{' '}
                 {
                   match.opponent

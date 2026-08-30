@@ -1,0 +1,339 @@
+/* ==========================================================
+   MATCHMUSTER APP-WIDE VISUAL SYSTEM
+
+   This file is intentionally imported last. It gives every
+   signed-in feature one heading rhythm, left edge, control
+   sizing and responsive page behaviour without changing the
+   distinct Welcome and authentication experience.
+========================================================== */
+
+:root {
+  --mm-content-width: 1100px;
+  --mm-page-gutter: clamp(14px, 4vw, 24px);
+  --mm-heading-gap: 6px;
+  --mm-section-gap: 24px;
+  --mm-control-height: 48px;
+  --mm-card-radius: 18px;
+  --mm-app-background: linear-gradient(135deg, #fff8fc 0%, #f5f9ff 100%);
+}
+
+/* Consistent signed-in page surface and horizontal rhythm. */
+.dashboard-page,
+.posts-page,
+.create-post-page,
+.updates-page,
+.messages-page,
+.mm-messages-page,
+.finance-page,
+.edit-profile-page,
+.edit-availability-page,
+.team-awards-page,
+.match-ratings-page,
+.match-player-stats-page,
+.training-page,
+.subscription-page,
+.legal-page-authenticated,
+.help-page-authenticated {
+  background: var(--mm-app-background);
+}
+
+.dashboard-content,
+.posts-container,
+.create-post-container,
+.updates-container,
+.messages-shell,
+.finance-shell,
+.edit-availability-container {
+  width: min(100%, var(--mm-content-width));
+  margin-right: auto;
+  margin-left: auto;
+  box-sizing: border-box;
+}
+
+/* Every primary in-app heading follows this same alignment and scale. */
+.dashboard-welcome,
+.matches-heading > div:first-child,
+.matches-heading > .dashboard-welcome,
+.payment-page-heading,
+.finance-heading > div:first-child,
+.posts-header > div:first-child,
+.create-post-header,
+.updates-heading > div:first-child,
+.messages-heading > div:first-child,
+.mm-messages-title-row > div:first-child,
+.edit-availability-heading,
+.edit-profile-heading > div:first-child,
+.subscription-hero > div:first-child,
+.developer-header > div:first-child,
+.developer-launch-header > div:first-child,
+.legal-header,
+.legal-document-header,
+.support-public-hero {
+  min-width: 0;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.send-availability-card,
+.delete-post-card,
+.subscription-access-card {
+  text-align: left;
+}
+
+.send-availability-card h1,
+.delete-post-card h1,
+.subscription-access-card h1,
+.help-page-authenticated .auth-card > h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(30px, 4vw, 38px);
+  font-weight: 850;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-align: left;
+}
+
+.send-availability-icon,
+.delete-post-icon {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.send-availability-description,
+.delete-post-warning,
+.subscription-access-card > p {
+  margin-right: 0;
+  margin-left: 0;
+  text-align: left;
+}
+
+.send-availability-actions,
+.delete-post-actions {
+  justify-content: flex-start;
+}
+
+.dashboard-welcome {
+  margin-bottom: var(--mm-section-gap);
+}
+
+.dashboard-welcome,
+.payment-page-heading {
+  width: 100%;
+}
+
+.dashboard-welcome h1,
+.matches-heading h1,
+.payment-page-heading h1,
+.finance-heading h1,
+.posts-header h1,
+.create-post-header h1,
+.updates-heading h1,
+.messages-heading h1,
+.mm-messages-title-row h1,
+.edit-availability-heading h1,
+.edit-profile-heading h1,
+.subscription-hero h1,
+.developer-header h1,
+.developer-launch-header h1,
+.legal-header h1,
+.legal-document-header h1,
+.support-public-hero h1 {
+  max-width: 100%;
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(30px, 4vw, 38px);
+  font-weight: 850;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-label,
+.posts-label,
+.create-post-label,
+.support-eyebrow,
+.mm-messages-title-row > div:first-child > span,
+.finance-heading > div:first-child > span,
+.developer-header > div:first-child > p,
+.developer-launch-header > div:first-child > p {
+  display: block;
+  margin: 0 0 7px;
+  color: var(--color-brand-pink);
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dashboard-welcome > p:last-child,
+.matches-heading > div:first-child > p:last-child,
+.payment-page-heading > p:last-child,
+.finance-heading > div:first-child > p:last-child,
+.posts-header > div:first-child > p:last-child,
+.create-post-header > p:last-child,
+.updates-description,
+.messages-heading > div:first-child > p:last-child,
+.mm-messages-title-row > div:first-child > p:last-child,
+.edit-availability-heading > p:last-child,
+.subscription-hero > div:first-child > p:last-child,
+.legal-header > p:last-child,
+.support-public-hero > p:last-child {
+  max-width: 640px;
+  margin: 9px 0 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* Forms use one box model so native date controls cannot escape a column. */
+main form input:not([type='checkbox']):not([type='radio']),
+main form select,
+main form textarea {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+main form input:not([type='checkbox']):not([type='radio']),
+main form select {
+  min-height: var(--mm-control-height);
+}
+
+/* Authenticated help and legal pages join the left-aligned app system. */
+.help-page-authenticated .auth-card {
+  text-align: left;
+}
+
+.help-page-authenticated .matchmuster-page-logo,
+.legal-page-authenticated .legal-page-logo {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.help-page-authenticated .auth-subtitle,
+.help-page-authenticated .auth-footer {
+  margin-right: 0;
+  margin-left: 0;
+  text-align: left;
+}
+
+.legal-page-authenticated .legal-header {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --mm-page-gutter: 14px;
+    --mm-section-gap: 20px;
+  }
+
+  .dashboard-content,
+  .posts-container,
+  .create-post-container,
+  .updates-container,
+  .messages-shell,
+  .finance-shell,
+  .edit-availability-container {
+    padding-right: var(--mm-page-gutter);
+    padding-left: var(--mm-page-gutter);
+  }
+
+  .dashboard-welcome h1,
+  .matches-heading h1,
+  .payment-page-heading h1,
+  .finance-heading h1,
+  .posts-header h1,
+  .create-post-header h1,
+  .updates-heading h1,
+  .messages-heading h1,
+  .mm-messages-title-row h1,
+  .edit-availability-heading h1,
+  .edit-profile-heading h1,
+  .subscription-hero h1,
+  .legal-header h1,
+  .legal-document-header h1,
+  .support-public-hero h1 {
+    font-size: 29px;
+    line-height: 1.1;
+  }
+
+  .matches-heading,
+  .finance-heading,
+  .posts-header,
+  .updates-heading,
+  .messages-heading,
+  .mm-messages-title-row,
+  .subscription-hero {
+    align-items: stretch;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .dashboard-welcome h1,
+  .matches-heading h1,
+  .payment-page-heading h1,
+  .finance-heading h1,
+  .posts-header h1,
+  .create-post-header h1,
+  .updates-heading h1,
+  .messages-heading h1,
+  .mm-messages-title-row h1,
+  .edit-availability-heading h1,
+  .edit-profile-heading h1,
+  .subscription-hero h1,
+  .legal-header h1,
+  .legal-document-header h1,
+  .support-public-hero h1 {
+    font-size: 27px;
+  }
+}
+
+/* Explicit app-wide title contract: route-specific styles cannot re-centre it. */
+.mm-page-title {
+  display: block !important;
+  align-self: stretch !important;
+  justify-self: stretch !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  text-align: left !important;
+}
+
+/* Pending Match Subs actions: two balanced rows on phones, one row when space allows. */
+button[data-matchmuster-cash-paid] {
+  display: inline-flex !important;
+}
+
+@media (max-width: 760px) {
+  .match-payment-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .match-payment-actions button {
+    grid-column: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 46px !important;
+    margin: 0 !important;
+    padding: 8px 7px !important;
+    line-height: 1.2;
+    white-space: normal;
+  }
+}
+
+@media (min-width: 761px) {
+  .match-payment-actions {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, auto)) !important;
+  }
+}

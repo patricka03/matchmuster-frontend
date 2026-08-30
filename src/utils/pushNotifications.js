@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core'
 import { PushNotifications } from '@capacitor/push-notifications'
+import { FCM } from '@capacitor-community/fcm'
 
 import API_URL from '../config/api'
 
@@ -159,9 +160,27 @@ export async function initialisePushNotificationListeners({
          * Send it directly to the authenticated
          * Rails API instead.
          */
-        void registerPushDevice(
-          token.value,
-        ).catch(
+        void (async () => {
+          const platform =
+            Capacitor.getPlatform()
+
+          const pushToken =
+            platform === 'ios'
+              ? (
+                  await FCM.getToken()
+                ).token
+              : token.value
+
+          if (!pushToken) {
+            throw new Error(
+              'No push token was returned by the device.',
+            )
+          }
+
+          await registerPushDevice(
+            pushToken,
+          )
+        })().catch(
           (error) => {
             console.error(
               'Unable to register MatchMuster push device with Rails:',

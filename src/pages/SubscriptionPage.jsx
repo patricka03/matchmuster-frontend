@@ -44,6 +44,8 @@ const FEATURE_KEYS = [
   'automatic_availability_reminders',
   'manager_centre',
   'payment_analytics',
+  'squad_analytics',
+  'club_finance',
   'recurring_training',
   'multi_team_manager_centre',
 ]
@@ -329,12 +331,13 @@ function SubscriptionPage() {
           products,
           product,
         ) => {
-          if (
-            product
-              ?.productIdentifier
-          ) {
+          const identifier =
+            product?.identifier ||
+            product?.productIdentifier
+
+          if (identifier) {
             products[
-              product.productIdentifier
+              identifier
             ] = product
           }
 
@@ -782,7 +785,7 @@ function SubscriptionPage() {
                 Subscription
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Owner managed
               </h1>
 
@@ -809,7 +812,7 @@ function SubscriptionPage() {
                     }
                   </p>
 
-                  <h1>
+                  <h1 className="mm-page-title">
                     {
                       currentStatus.title
                     }
@@ -1035,7 +1038,19 @@ function SubscriptionPage() {
                                 Boolean(
                                   purchasingPeriod,
                                 ) ||
-                                restoring
+                                restoring ||
+                                (
+                                  subscription
+                                    ?.provider ===
+                                    'apple' &&
+                                  subscription
+                                    ?.plus_active &&
+                                  subscription
+                                    ?.provider_product_id ===
+                                    productIdFor(
+                                      period,
+                                    )
+                                )
                               }
                               onClick={() =>
                                 handlePurchase(

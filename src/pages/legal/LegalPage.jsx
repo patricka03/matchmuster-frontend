@@ -13,7 +13,7 @@ function LegalPage() {
     return (
       <main className="legal-page">
         <div className="legal-container">
-          <h1>Document not found</h1>
+          <h1 className="mm-page-title">Document not found</h1>
 
           <BackButton
             to="/legal"
@@ -33,7 +33,7 @@ function LegalPage() {
         />
 
         <header className="legal-document-header">
-          <h1>{legalDocument.title}</h1>
+          <h1 className="mm-page-title">{legalDocument.title}</h1>
 
           <div className="legal-meta">
             <span>Version {legalDocument.version}</span>

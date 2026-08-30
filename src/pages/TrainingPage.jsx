@@ -784,9 +784,13 @@ function TrainingPage() {
                   Training
                 </p>
 
-                <h1>
+                <h1 className="mm-page-title">
                   {training.title}
                 </h1>
+
+                <p>
+                  Session details and player availability.
+                </p>
               </div>
 
               {/* ========================================
@@ -800,7 +804,7 @@ function TrainingPage() {
                   </span>
 
                   <h2>
-                    {training.title}
+                    Session information
                   </h2>
                 </div>
 

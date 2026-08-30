@@ -175,7 +175,7 @@ function DeveloperLaunchClubsPage() {
   ) {
     const confirmed =
       window.confirm(
-        `Make ${team.name} a permanent Launch Club?`,
+        `Make ${team.name} a permanent Founder Club?`,
       )
 
     if (!confirmed) {
@@ -235,7 +235,7 @@ function DeveloperLaunchClubsPage() {
       if (!response.ok) {
         throw new Error(
           data.error ||
-            'Unable to grant Launch Club status.',
+            'Unable to grant Founder Club status.',
         )
       }
 
@@ -256,7 +256,7 @@ function DeveloperLaunchClubsPage() {
       )
 
       setSuccessMessage(
-        `${team.name} is now a Launch Club.`,
+        `${team.name} is now a Founder Club.`,
       )
     } catch (error) {
       setErrorMessage(
@@ -292,8 +292,8 @@ function DeveloperLaunchClubsPage() {
             PRIVATE CONTROL CENTRE
           </p>
 
-          <h1>
-            Launch Clubs
+          <h1 className="mm-page-title">
+            Founder Clubs
           </h1>
 
           <span>
@@ -317,7 +317,7 @@ function DeveloperLaunchClubsPage() {
 
       <section className="developer-launch-target">
         <span>
-          Launch Clubs
+          Founder Clubs
         </span>
 
         <strong>
@@ -402,7 +402,7 @@ function DeveloperLaunchClubsPage() {
                       }
                     >
                       {team.launch_club
-                        ? 'Launch Club'
+                        ? 'Founder Club'
                         : team.subscription
                             ?.plus_active
                           ? 'Plus'
@@ -441,7 +441,7 @@ function DeveloperLaunchClubsPage() {
 
                   {team.launch_club_since && (
                     <small>
-                      Launch Club since{' '}
+                      Founder Club since{' '}
                       {formatDate(
                         team.launch_club_since,
                       )}
@@ -467,8 +467,8 @@ function DeveloperLaunchClubsPage() {
                     team.id
                       ? 'Granting...'
                       : team.launch_club
-                        ? 'Launch Club'
-                        : 'Make Launch Club'}
+                        ? 'Founder Club'
+                        : 'Make Founder Club'}
                   </button>
                 </div>
               </article>

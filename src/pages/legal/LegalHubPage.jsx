@@ -143,7 +143,7 @@ function LegalHubPage() {
               alt="MatchMuster"
             />
 
-            <h1>
+            <h1 className="mm-page-title">
               Legal &amp; Privacy
             </h1>
 

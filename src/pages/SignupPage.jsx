@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import BackButton from '../components/BackButton'
+import SocialAuthButtons from '../components/SocialAuthButtons'
 import {
   ClipboardList,
   UserRound,
@@ -505,6 +506,16 @@ function SignupPage() {
               </span>
             </label>
           </section>
+
+          <SocialAuthButtons
+            mode="signup"
+            accountType={formData.account_type}
+            firstName={formData.first_name}
+            lastName={formData.last_name}
+            ageConfirmed={ageConfirmed}
+            termsAccepted={legalAccepted}
+            onError={setErrorMessage}
+          />
 
           {errorMessage && (
             <p

@@ -284,7 +284,7 @@ function EditAvailabilityPage() {
               Player availability
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Edit availability
             </h1>
 

@@ -20,6 +20,7 @@ import DashboardPage from './pages/DashboardPage'
 import EditProfilePage from './pages/EditProfilePage'
 import TeamPage from './pages/TeamPage'
 import SquadPage from './pages/SquadPage'
+import SquadAnalyticsPage from './pages/SquadAnalyticsPage'
 import CreateMatchPage from './pages/CreateMatchPage'
 import MatchPage from './pages/MatchPage'
 import EditMatchPage from './pages/EditMatchPage'
@@ -28,6 +29,7 @@ import MatchAvailabilitiesPage from './pages/MatchAvailabilitiesPage'
 import SquadSelectionPage from './pages/SquadSelectionPage'
 import MatchPaymentsPage from './pages/MatchPaymentsPage'
 import TeamMatchSubsPage from './pages/TeamMatchSubsPage'
+import MatchSubsAnalyticsPage from './pages/MatchSubsAnalyticsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import PostsPage from './pages/PostsPage'
 import PostPage from './pages/PostPage'
@@ -58,6 +60,13 @@ import EditTrainingPage from './pages/EditTrainingPage'
 import SchedulePage from './pages/SchedulePage'
 import SubscriptionPage from './pages/SubscriptionPage'
 import DeveloperLaunchClubsPage from './pages/DeveloperLaunchClubsPage'
+import FinancePage from './pages/FinancePage'
+import FinanceExpensesPage from './pages/FinanceExpensesPage'
+
+import TeamMessagesV2Page from './pages/TeamMessagesV2Page'
+
+/* Keep the shared visual system after every page stylesheet. */
+import './AppConsistency.css'
 
 function App() {
   return (
@@ -163,8 +172,33 @@ function App() {
         />
 
         <Route
+          path="/teams/:teamId/messages"
+          element={<TeamMessagesV2Page />}
+        />
+
+        <Route
+          path="/teams/:teamId/messages/:conversationId"
+          element={<TeamMessagesV2Page />}
+        />
+
+        <Route
+          path="/teams/:teamId/finance"
+          element={<FinancePage />}
+        />
+
+        <Route
+          path="/teams/:teamId/finance/expenses"
+          element={<FinanceExpensesPage />}
+        />
+
+        <Route
           path="/teams/:teamId/squad"
           element={<SquadPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/squad/analytics"
+          element={<SquadAnalyticsPage />}
         />
 
         <Route
@@ -216,6 +250,11 @@ function App() {
         <Route
           path="/teams/:teamId/match-subs"
           element={<TeamMatchSubsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/match-subs/analytics"
+          element={<MatchSubsAnalyticsPage />}
         />
 
         <Route

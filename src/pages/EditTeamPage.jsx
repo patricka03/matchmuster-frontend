@@ -579,7 +579,7 @@ function EditTeamPage() {
               Team management
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Edit Team
             </h1>
 

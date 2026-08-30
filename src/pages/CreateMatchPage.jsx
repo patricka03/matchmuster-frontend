@@ -259,7 +259,7 @@ function CreateMatchPage() {
               Fixture management
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Create fixture
             </h1>
 

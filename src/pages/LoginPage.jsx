@@ -4,6 +4,7 @@ import API_URL from '../config/api'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import { setAuthToken, } from '../utils/authStorage'
 import BackButton from '../components/BackButton'
+import SocialAuthButtons from '../components/SocialAuthButtons'
 import './LoginPage.css'
 
 function LoginPage() {
@@ -220,6 +221,11 @@ function LoginPage() {
               : 'Log In'}
           </button>
         </form>
+
+        <SocialAuthButtons
+          mode="login"
+          onError={setErrorMessage}
+        />
 
         <div className="login-secondary-actions">
           <Link

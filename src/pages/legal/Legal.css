@@ -500,6 +500,17 @@
   }
 }
 
+/* Capacitor can briefly report a zero safe-area inset on first paint. */
+@media (max-width: 760px) {
+  html.platform-ios .legal-page {
+    padding-top:
+      calc(
+        max(env(safe-area-inset-top, 0px), 54px) +
+        22px
+      );
+  }
+}
+
 
 .legal-back-button {
   display: inline-flex;
@@ -533,4 +544,40 @@
       116px +
       env(safe-area-inset-bottom, 0px)
     );
+}
+
+/* ========================================
+   MATCHMUSTER_LEGAL_SAFE_AREA_20260830
+======================================== */
+
+@media (max-width: 760px) {
+  .legal-page {
+    min-height: 100dvh;
+    padding-top:
+      calc(
+        env(safe-area-inset-top, 0px) +
+        28px
+      );
+  }
+
+  .legal-container {
+    min-width: 0;
+  }
+
+  .legal-document-header,
+  .legal-content,
+  .legal-section {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .legal-page {
+    padding-top:
+      calc(
+        env(safe-area-inset-top, 0px) +
+        22px
+      );
+  }
 }

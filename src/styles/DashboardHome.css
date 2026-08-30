@@ -266,6 +266,19 @@
   color: #ff0a78;
 }
 
+.home-dashboard-action-card--blue {
+  border-color: #dbeafe;
+}
+
+.home-dashboard-action-card--blue:hover {
+  border-color: #93c5fd;
+}
+
+.home-dashboard-action-card--blue .home-dashboard-card-icon {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
 .home-dashboard-action-card strong {
   margin-top: 2px;
   font-size: 17px;

@@ -22,6 +22,7 @@ import {
   CircleAlert,
   CreditCard,
   FileText,
+  MessageCircle,
   Megaphone,
   RefreshCw,
   ShieldCheck,
@@ -379,6 +380,22 @@ const TYPE_META = {
     icon: Trophy,
     defaultTitle:
       'Player ratings result',
+  },
+
+  match_late_update: {
+    label: 'Matchday arrival',
+    tone: 'amber',
+    icon: CalendarClock,
+    defaultTitle:
+      'Running late update',
+  },
+
+  direct_message: {
+    label: 'Message',
+    tone: 'blue',
+    icon: MessageCircle,
+    defaultTitle:
+      'New message',
   },
 
   manager_status_updated: {
@@ -1710,6 +1727,16 @@ function NotificationsPage() {
     )
   }
 
+  function getConversationId(
+    notification,
+  ) {
+    return (
+      notification?.conversation_id ||
+      notification?.conversation?.id ||
+      null
+    )
+  }
+
   function getPostId(
     notification,
   ) {
@@ -1768,6 +1795,35 @@ function NotificationsPage() {
       getTrainingId(
         notification,
       )
+
+    const conversationId =
+      getConversationId(
+        notification,
+      )
+
+    if (
+      type === 'direct_message' &&
+      notificationTeamId &&
+      conversationId
+    ) {
+      return {
+        label: 'Open message',
+        path: `/teams/${notificationTeamId}/messages/${conversationId}`,
+        icon: MessageCircle,
+      }
+    }
+
+    if (
+      type === 'match_late_update' &&
+      notificationTeamId &&
+      matchId
+    ) {
+      return {
+        label: 'View match',
+        path: `/teams/${notificationTeamId}/matches/${matchId}`,
+        icon: CalendarClock,
+      }
+    }
 
     if (
       [
@@ -2285,7 +2341,7 @@ function NotificationsPage() {
         <section className="updates-container">
           <header className="updates-heading">
             <div>
-              <h1>
+              <h1 className="mm-page-title">
                 Notifications
               </h1>
 

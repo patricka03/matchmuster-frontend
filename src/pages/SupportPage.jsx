@@ -80,7 +80,7 @@ function SupportPage() {
           MATCHMUSTER SUPPORT
         </p>
 
-        <h1>
+        <h1 className="mm-page-title">
           How can we help?
         </h1>
 

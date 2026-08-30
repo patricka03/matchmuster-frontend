@@ -298,7 +298,7 @@ function CreateTrainingPage() {
               Training
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Create training
             </h1>
 

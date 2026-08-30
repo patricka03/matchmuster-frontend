@@ -1,0 +1,51 @@
+/* Mobile form controls must share the same containing width on iOS. */
+.finance-form-grid input,
+.finance-form-grid select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  /* iOS zooms focused form controls whose text is smaller than 16px. */
+  font-size: 16px;
+}
+
+.finance-date-control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.finance-date-control input[type='date'] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 680px) {
+  .finance-form-grid label,
+  .finance-description-field {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .finance-form-grid input[type='date'] {
+    width: 100% !important;
+    inline-size: 100% !important;
+    min-inline-size: 0 !important;
+    max-inline-size: 100% !important;
+  }
+
+  .finance-form-grid input[type='date']::-webkit-date-and-time-value {
+    min-width: 0;
+    margin: 0;
+  }
+}

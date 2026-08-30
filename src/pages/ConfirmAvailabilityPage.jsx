@@ -394,7 +394,7 @@ function ConfirmAvailabilityPage() {
               Player availability
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               {existingAvailability
                 ? 'Update availability'
                 : 'Confirm availability'}

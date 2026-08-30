@@ -222,7 +222,7 @@ function CreatePostPage() {
               Team communication
             </p>
 
-            <h1>Create a post</h1>
+            <h1 className="mm-page-title">Create a post</h1>
 
             <p>
               Share an announcement, tactical instruction or general

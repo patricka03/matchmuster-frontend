@@ -181,7 +181,7 @@ function CancelMatchPage() {
               Fixture management
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Cancel fixture
             </h1>
 

@@ -789,7 +789,7 @@ function MatchAvailabilityPage() {
               Match availability
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               {match?.opponent
                 ? `Availability vs ${match.opponent}`
                 : 'Availability'}

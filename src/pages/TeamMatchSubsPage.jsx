@@ -5,13 +5,14 @@ import {
   useState,
 } from 'react'
 
+import { BarChart3 } from 'lucide-react'
+
 import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
-import BackButton from '../components/BackButton'
 import API_URL from '../config/api'
 
 import {
@@ -363,14 +364,12 @@ function TeamMatchSubsPage() {
 
       <main className="dashboard-page team-match-subs-page">
         <section className="dashboard-content">
-          <BackButton />
-
-          <header className="dashboard-welcome">
+          <header className="dashboard-welcome team-match-subs-heading">
             <p className="dashboard-label">
-              Manager
+              Manager • Plus
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Match Subs
             </h1>
 
@@ -378,6 +377,20 @@ function TeamMatchSubsPage() {
               Payment status by fixture.
             </p>
           </header>
+
+          <button
+            className="match-subs-analytics-button"
+            type="button"
+            onClick={() =>
+              navigate(
+                `/teams/${teamId}/match-subs/analytics`,
+              )
+            }
+          >
+            <BarChart3 aria-hidden="true" />
+            <span>Show payment analytics</span>
+            <small>PLUS</small>
+          </button>
 
           {errorMessage && (
             <p

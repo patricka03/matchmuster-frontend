@@ -208,3 +208,147 @@
   background: #ffffff;
   color: #64748b;
 }
+
+/* MATCHMUSTER FOUNDER CLUBS POLISH V2 */
+.developer-launch-page {
+  min-height: 100vh;
+  padding:
+    clamp(24px, 4vw, 48px)
+    clamp(18px, 4vw, 48px)
+    64px;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(255, 10, 120, 0.09), transparent 27%),
+    radial-gradient(circle at 90% 5%, rgba(79, 156, 255, 0.13), transparent 30%),
+    #f8fbff;
+  color: #172033;
+}
+
+.developer-launch-header,
+.developer-launch-target,
+.developer-launch-search,
+.developer-launch-list,
+.developer-launch-error,
+.developer-launch-success,
+.developer-launch-empty {
+  max-width: 1180px;
+}
+
+.developer-launch-header {
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.developer-launch-header h1 {
+  font-size: clamp(32px, 4vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.developer-launch-header button,
+.developer-launch-search button,
+.developer-launch-actions button {
+  min-height: 44px;
+  border-radius: 12px;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.developer-launch-header button:hover,
+.developer-launch-search button:hover,
+.developer-launch-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.14);
+}
+
+.developer-launch-target,
+.developer-launch-search,
+.developer-launch-card,
+.developer-launch-error,
+.developer-launch-success,
+.developer-launch-empty {
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.045);
+}
+
+.developer-launch-target {
+  padding: 18px 20px;
+}
+
+.developer-launch-search {
+  padding: 18px;
+}
+
+.developer-launch-search input {
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 12px;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.developer-launch-search input:focus {
+  border-color: #4f9cff;
+  box-shadow: 0 0 0 3px rgba(79, 156, 255, 0.16);
+}
+
+.developer-launch-card {
+  padding: 20px 22px;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.developer-launch-card:hover {
+  transform: translateY(-2px);
+  border-color: #dbe4f0;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.07);
+}
+
+.launch-status--active {
+  border: 1px solid #fbcfe8;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
+  color: #be185d;
+}
+
+.developer-launch-actions button {
+  min-width: 172px;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.16);
+}
+
+.developer-launch-actions button:disabled {
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .developer-launch-header,
+  .developer-launch-card,
+  .developer-launch-target {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .developer-launch-header button,
+  .developer-launch-actions,
+  .developer-launch-actions button {
+    width: 100%;
+  }
+
+  .developer-launch-search {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .developer-launch-target small {
+    margin-left: 0;
+  }
+
+  .developer-launch-name-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}

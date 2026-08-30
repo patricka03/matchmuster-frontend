@@ -1996,13 +1996,11 @@ function SquadSelectionPage() {
               <p className="dashboard-label">
                 {canManageSquad
                   ? 'Squad management'
-                  : 'Matchday squad'}
+                  : 'Fixture selection'}
               </p>
 
-              <h1>
-                {canManageSquad
-                  ? 'Matchday Squad'
-                  : 'Matchday Squad'}
+              <h1 className="mm-page-title">
+                Matchday Squad
               </h1>
 
               <p className="mm-keep-context">

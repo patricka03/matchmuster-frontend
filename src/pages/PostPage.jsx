@@ -584,7 +584,7 @@ function PostPage() {
                   )}
                 </header>
 
-                <h1>
+                <h1 className="mm-page-title">
                   {post.title}
                 </h1>
 

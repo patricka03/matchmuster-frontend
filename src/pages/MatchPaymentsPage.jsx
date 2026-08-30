@@ -10,6 +10,9 @@ import {
   useParams,
 } from 'react-router-dom'
 
+import { Capacitor } from '@capacitor/core'
+import { Browser } from '@capacitor/browser'
+
 import Navbar from '../components/Navbar'
 import BackButton from '../components/BackButton'
 
@@ -720,6 +723,23 @@ function MatchPaymentsPage() {
     status,
   ) {
     if (
+      status === 'paid'
+    ) {
+      const confirmed =
+        window.confirm(
+          `Record the ${formatMoney(
+            payment.amount_pence,
+          )} Match Sub for ${playerName(
+            payment,
+          )} as paid in cash?`,
+        )
+
+      if (!confirmed) {
+        return
+      }
+    }
+
+    if (
       status === 'waived'
     ) {
       const confirmed =
@@ -809,7 +829,7 @@ function MatchPaymentsPage() {
         setSuccessMessage(
           `${playerName(
             payment,
-          )} was marked as paid manually.`,
+          )} was recorded as paid in cash.`,
         )
       } else if (
         status === 'waived'
@@ -1146,8 +1166,28 @@ function MatchPaymentsPage() {
         return
       }
 
-      window.location.href =
-        data.checkout_url
+      if (
+        Capacitor.getPlatform() ===
+        'ios'
+      ) {
+        const finishedListener =
+          await Browser.addListener(
+            'browserFinished',
+            async () => {
+              await finishedListener.remove()
+              await loadPaymentData()
+            },
+          )
+
+        await Browser.open({
+          url: data.checkout_url,
+          presentationStyle:
+            'fullscreen',
+        })
+      } else {
+        window.location.href =
+          data.checkout_url
+      }
     } catch {
       setErrorMessage(
         'Unable to connect to the server.',
@@ -1179,10 +1219,10 @@ function MatchPaymentsPage() {
           {match && (
             <div className="dashboard-welcome payment-page-heading">
               <p className="dashboard-label">
-                Match Subs
+                Fixture payments
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Match Subs
               </h1>
 
@@ -1465,8 +1505,8 @@ function MatchPaymentsPage() {
 
                   <h2>
                     {isManager
-                      ? 'Match Subs'
-                      : 'Match fee'}
+                      ? 'Payment requests'
+                      : 'Payment details'}
                   </h2>
                 </div>
 
@@ -1647,6 +1687,15 @@ function MatchPaymentsPage() {
                             </strong>
                           </p>
 
+                          {payment.status ===
+                            'paid' &&
+                            !payment
+                              .stripe_payment_intent_id && (
+                              <small className="cash-payment-label">
+                                Paid in cash
+                              </small>
+                            )}
+
                           {payment.paid_at && (
                             <small>
                               Paid on{' '}
@@ -1701,6 +1750,7 @@ function MatchPaymentsPage() {
 
                                 <button
                                   className="mark-paid-button"
+                                  data-matchmuster-cash-paid
                                   type="button"
                                   onClick={() =>
                                     handleStatusChange(
@@ -1712,12 +1762,11 @@ function MatchPaymentsPage() {
                                     processing
                                   }
                                 >
-                                  Mark
+                                  Cash
                                   paid
-                                  manually
                                 </button>
 
-                                <button
+                            <button
                                   className="waive-payment-button"
                                   type="button"
                                   onClick={() =>

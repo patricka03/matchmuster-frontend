@@ -4,6 +4,7 @@ import { Bell, Settings } from 'lucide-react'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import API_URL from '../config/api'
 import BottomNav from './BottomNav'
+import NavbarMessagesButton from './NavbarMessagesButton'
 import {
   clearAuthToken,
   getAuthToken,
@@ -794,6 +795,11 @@ function Navbar({
           </Link>
 
           <div className="app-topbar-actions">
+            <NavbarMessagesButton
+              teamId={resolvedTeamId}
+              enabled={canUseTeamNavigation}
+            />
+
             <Link
               className="app-topbar-action app-topbar-notifications"
               to="/notifications"

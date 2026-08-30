@@ -9,7 +9,11 @@ import {
   useParams,
 } from 'react-router-dom'
 
+import { BarChart3 } from 'lucide-react'
+
 import Navbar from '../components/Navbar'
+import SquadMemberTools from '../components/SquadMemberTools'
+import useMatchdayLateStatuses from '../hooks/useMatchdayLateStatuses'
 import './SquadPage.css'
 import './SquadPage.mobile.css'
 import API_URL from '../config/api'
@@ -262,6 +266,10 @@ function SquadPage() {
     membershipAction,
     setMembershipAction,
   ] = useState(null)
+
+  const {
+    statusesByUser: lateStatusesByUser,
+  } = useMatchdayLateStatuses(teamId)
 
   // ========================================
   // SESSION
@@ -788,10 +796,30 @@ function SquadPage() {
       <main className="dashboard-page squad-page">
         <section className="dashboard-content squad-content">
           <div className="dashboard-welcome squad-heading">
-            <h1>
+            <p className="dashboard-label">
+              Team members
+            </p>
+
+            <h1 className="mm-page-title">
               Squad
             </h1>
+
+            <p>
+              Players and managers registered to this team.
+            </p>
           </div>
+
+          {isApprovedManager && (
+            <button
+              className="squad-analytics-button"
+              type="button"
+              onClick={() => navigate(`/teams/${teamId}/squad/analytics`)}
+            >
+              <BarChart3 aria-hidden="true" />
+              <span>Show squad analytics</span>
+              <small>PLUS</small>
+            </button>
+          )}
 
           {errorMessage && (
             <p
@@ -954,6 +982,25 @@ function SquadPage() {
                               }
                             />
 
+                            <SquadMemberTools
+                              teamId={teamId}
+                              userId={
+                                getMembershipUserId(
+                                  membership,
+                                )
+                              }
+                              currentUserId={currentUser?.id}
+                              lateStatus={
+                                lateStatusesByUser.get(
+                                  String(
+                                    getMembershipUserId(
+                                      membership,
+                                    ),
+                                  ),
+                                )
+                              }
+                            />
+
                             {isApprovedManager && (
                               <button
                                 className="remove-button"
@@ -1019,6 +1066,25 @@ function SquadPage() {
                               membership
                             }
                             managerBadge
+                          />
+
+                          <SquadMemberTools
+                            teamId={teamId}
+                            userId={
+                              getMembershipUserId(
+                                membership,
+                              )
+                            }
+                            currentUserId={currentUser?.id}
+                            lateStatus={
+                              lateStatusesByUser.get(
+                                String(
+                                  getMembershipUserId(
+                                    membership,
+                                  ),
+                                ),
+                              )
+                            }
                           />
                         </article>
                       ),

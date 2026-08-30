@@ -13,6 +13,8 @@ import {
 import Navbar from '../components/Navbar'
 import TeamPlanBadge from '../components/TeamPlanBadge'
 import SubscriptionLifecycleNotice from '../components/SubscriptionLifecycleNotice'
+import ManagerMatchdayLateCard from '../components/ManagerMatchdayLateCard'
+import ManagerFinanceSummaryCard from '../components/ManagerFinanceSummaryCard'
 import API_URL from '../config/api'
 
 import {
@@ -1220,7 +1222,7 @@ function DashboardPage() {
                 ⚽
               </span>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Manager approval pending
               </h1>
 
@@ -1244,7 +1246,7 @@ function DashboardPage() {
                   ⚽
                 </span>
 
-                <h1>
+                <h1 className="mm-page-title">
                   Create or join a team
                 </h1>
 
@@ -1292,7 +1294,7 @@ function DashboardPage() {
                   👥
                 </span>
 
-                <h1>
+                <h1 className="mm-page-title">
                   Join your team
                 </h1>
 
@@ -1327,7 +1329,7 @@ function DashboardPage() {
                 ⏳
               </span>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Team approval pending
               </h1>
 
@@ -1509,6 +1511,12 @@ function DashboardPage() {
                   </section>
                 )}
 
+              {isApprovedManager && (
+                <ManagerMatchdayLateCard
+                  teamId={teamId}
+                />
+              )}
+
               {/* ========================================
                   DASHBOARD ACTION CARDS
               ======================================== */}
@@ -1548,7 +1556,7 @@ function DashboardPage() {
                 </button>
 
                 <button
-                  className="home-dashboard-action-card"
+                  className="home-dashboard-action-card home-dashboard-action-card--blue"
                   type="button"
                   onClick={
                     openPayments
@@ -1573,7 +1581,7 @@ function DashboardPage() {
                 </button>
 
                 <button
-                  className="home-dashboard-action-card"
+                  className="home-dashboard-action-card home-dashboard-action-card--blue"
                   type="button"
                   onClick={() =>
                     navigate(
@@ -1622,6 +1630,13 @@ function DashboardPage() {
                   </small>
                 </button>
               </section>
+
+              {isApprovedManager && (
+                <ManagerFinanceSummaryCard
+                  teamId={teamId}
+                  team={team}
+                />
+              )}
 
               {/* ========================================
                   NEXT TRAINING — PLAYER + MANAGER

@@ -501,7 +501,7 @@ function TeamAwardsPage() {
                     Team achievements
                   </p>
 
-                  <h1>
+                  <h1 className="mm-page-title">
                     Awards &amp; Stats
                   </h1>
 

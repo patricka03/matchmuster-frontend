@@ -43,7 +43,7 @@ function HelpPage() {
             aria-hidden="true"
           />
 
-          <h1>
+          <h1 className={isAuthenticated ? 'mm-page-title' : undefined}>
             {isAuthenticated
               ? 'Help & support'
               : 'Need help signing in?'}

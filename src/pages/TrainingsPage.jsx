@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Clock,
   MapPin,
-  Plus,
 } from 'lucide-react'
 import {
   useNavigate,
@@ -255,10 +254,10 @@ function TrainingsPage() {
           <div className="matches-heading">
             <div>
               <p className="dashboard-label">
-                Training
+                Team sessions
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Training
               </h1>
 

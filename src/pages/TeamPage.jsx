@@ -543,17 +543,15 @@ function TeamPage() {
               Team details
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               {isApprovedManager
                 ? 'My Teams'
                 : 'My Team'}
             </h1>
 
-            <p>
-              {isApprovedManager
-                ? 'Manage your teams.'
-                : 'View your team.'}
-            </p>
+            {!isApprovedManager && (
+              <p>See your team details and membership.</p>
+            )}
           </div>
 
           {errorMessage && (

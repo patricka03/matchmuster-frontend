@@ -485,7 +485,7 @@ function MatchPlayerStatsPage() {
                 Match statistics
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Stats vs{' '}
                 {match.opponent}
               </h1>

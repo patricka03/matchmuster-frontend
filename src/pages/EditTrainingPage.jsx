@@ -429,7 +429,7 @@ function EditTrainingPage() {
               Training
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Edit training
             </h1>
 

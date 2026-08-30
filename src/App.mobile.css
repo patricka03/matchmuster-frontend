@@ -631,3 +631,97 @@ a[class*='button'] .lucide-arrow-right,
 .home-dashboard-squad-arrow {
   display: block !important;
 }
+
+/* ========================================
+   MATCHMUSTER_MOBILE_USABILITY_POLISH_20260830
+======================================== */
+
+@media (max-width: 760px) {
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Keep the chat composer above the fixed bottom navigation. */
+  .mm-messages-page:has(textarea[placeholder="Message..."]) {
+    height:
+      calc(
+        100dvh -
+        64px -
+        env(safe-area-inset-top, 0px)
+      );
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom:
+      calc(
+        88px +
+        env(safe-area-inset-bottom, 0px)
+      );
+    box-sizing: border-box;
+  }
+
+  .mm-messages-page:has(textarea[placeholder="Message..."])
+    .mm-message-thread-shell {
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+  }
+
+  .mm-thread-messages {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mm-message-composer {
+    position: relative;
+    z-index: 20;
+    min-width: 0;
+  }
+
+  /* One left-aligned page-heading system throughout the signed-in app. */
+  .dashboard-welcome,
+  .matches-heading,
+  .payment-page-heading,
+  .finance-heading,
+  .mm-messages-title-row,
+  .page-heading {
+    text-align: left;
+  }
+
+  .dashboard-welcome {
+    align-items: flex-start;
+  }
+
+  .dashboard-welcome > p:last-child {
+    max-width: 620px;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .dashboard-welcome h1,
+  .matches-heading h1,
+  .payment-page-heading h1,
+  .finance-heading h1,
+  .mm-messages-title-row h1,
+  .page-heading h1 {
+    text-align: left;
+  }
+
+  button[data-matchmuster-cash-paid] {
+    border: 1px solid #86efac;
+    background: #f0fdf4;
+    color: #15803d;
+    font-weight: 800;
+  }
+
+  button[data-matchmuster-cash-paid]:disabled {
+    opacity: 0.55;
+  }
+}

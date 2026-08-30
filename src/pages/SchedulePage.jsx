@@ -572,17 +572,16 @@ function SchedulePage() {
           <div className="matches-heading">
             <div>
               <p className="dashboard-label">
-                Schedule
+                Team calendar
               </p>
 
-              <h1>
+              <h1 className="mm-page-title">
                 Schedule
               </h1>
 
               <p>
-                Upcoming fixtures and
-                training, with recent
-                match activity below.
+                Upcoming fixtures, training
+                sessions and recent results.
               </p>
             </div>
 

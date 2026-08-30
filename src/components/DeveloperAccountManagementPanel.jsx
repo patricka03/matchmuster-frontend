@@ -232,7 +232,7 @@ function DeveloperAccountManagementPanel() {
       <header className="developer-accounts-header">
         <div>
           <p>ACCOUNT CONTROL</p>
-          <h1>Account management</h1>
+          <h1 className="mm-page-title">Account management</h1>
           <span>
             Search, restrict, reactivate or delete MatchMuster accounts.
           </span>

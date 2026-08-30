@@ -518,7 +518,7 @@ function CreatTeam() {
               Team management
             </p>
 
-            <h1>
+            <h1 className="mm-page-title">
               Create a team
             </h1>
 

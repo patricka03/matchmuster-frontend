@@ -13,9 +13,14 @@ export const MATCHMUSTER_SEARCH_THEME = {
   },
 
   cssText: `
+    .SearchIcon {
+      display: none;
+    }
+
     .Input {
       min-height: 50px;
       box-sizing: border-box;
+      padding-left: 14px;
     }
   `,
 }
