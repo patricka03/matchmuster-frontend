@@ -121,129 +121,15 @@ function formatTime(value) {
 }
 
 function TeamMessagesV2Page() {
-
-  // MATCHMUSTER_KEYBOARD_AWARE_CHAT_V1
-  useEffect(() => {
-    const viewport =
-      window.visualViewport
-
-    if (!viewport) {
-      return undefined
-    }
-
-    const root =
-      document.documentElement
-    const body =
-      document.body
-
-    function syncChatViewport() {
-      const composer =
-        document.querySelector(
-          '.mm-keyboard-aware-composer',
-        )
-
-      const composerHeight =
-        composer
-          ?.getBoundingClientRect()
-          .height || 72
-
-      const keyboardHeight =
-        Math.max(
-          0,
-          window.innerHeight -
-            viewport.height -
-            viewport.offsetTop,
-        )
-
-      root.style.setProperty(
-        '--mm-chat-viewport-top',
-        `${Math.round(viewport.offsetTop)}px`,
-      )
-
-      root.style.setProperty(
-        '--mm-chat-viewport-height',
-        `${Math.round(viewport.height)}px`,
-      )
-
-      root.style.setProperty(
-        '--mm-chat-composer-height',
-        `${Math.round(composerHeight)}px`,
-      )
-
-      const keyboardOpen =
-        keyboardHeight > 120
-
-      body.classList.toggle(
-        'mm-chat-keyboard-open',
-        keyboardOpen,
-      )
-
-      if (keyboardOpen) {
-        window.requestAnimationFrame(
-          () => {
-            const active =
-              document.activeElement
-
-            if (
-              active?.matches(
-                'input, textarea',
-              )
-            ) {
-              active.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth',
-              })
-            }
-          },
-        )
-      }
-    }
-
-    syncChatViewport()
-
-    viewport.addEventListener(
-      'resize',
-      syncChatViewport,
-    )
-
-    viewport.addEventListener(
-      'scroll',
-      syncChatViewport,
-    )
-
-    window.addEventListener(
-      'orientationchange',
-      syncChatViewport,
-    )
-
-    return () => {
-      viewport.removeEventListener(
-        'resize',
-        syncChatViewport,
-      )
-
-      viewport.removeEventListener(
-        'scroll',
-        syncChatViewport,
-      )
-
-      window.removeEventListener(
-        'orientationchange',
-        syncChatViewport,
-      )
-
-      body.classList.remove(
-        'mm-chat-keyboard-open',
-      )
-    }
-  }, [])
-
   const navigate = useNavigate()
   const {
     teamId,
     conversationId,
   } = useParams()
-  const [searchParams] = useSearchParams()
+  const [
+    searchParams,
+    setSearchParams,
+  ] = useSearchParams()
 
   const [currentUser, setCurrentUser] =
     useState(null)
@@ -285,8 +171,121 @@ function TeamMessagesV2Page() {
     useState(false)
 
   const messagesEndRef = useRef(null)
+  const messagesThreadRef = useRef(null)
   const messageInputRef = useRef(null)
   const directRecipientHandled = useRef(false)
+
+  useEffect(() => {
+    if (!conversationId) {
+      return undefined
+    }
+
+    const root = document.documentElement
+    const body = document.body
+    const viewport = window.visualViewport
+
+    root.classList.add('mm-conversation-active')
+    body.classList.add('mm-conversation-active')
+
+    function keepLatestMessageVisible() {
+      const thread = messagesThreadRef.current
+
+      if (!thread) return
+
+      thread.scrollTop = thread.scrollHeight
+    }
+
+    function syncChatViewport() {
+      const viewportTop =
+        viewport?.offsetTop || 0
+      const viewportHeight =
+        viewport?.height ||
+        window.innerHeight
+      const keyboardHeight = Math.max(
+        0,
+        window.innerHeight -
+          viewportHeight -
+          viewportTop,
+      )
+      const keyboardOpen =
+        keyboardHeight > 120
+
+      root.style.setProperty(
+        '--mm-chat-viewport-top',
+        `${Math.round(viewportTop)}px`,
+      )
+      root.style.setProperty(
+        '--mm-chat-viewport-height',
+        `${Math.round(viewportHeight)}px`,
+      )
+
+      root.classList.toggle(
+        'mm-chat-keyboard-open',
+        keyboardOpen,
+      )
+      body.classList.toggle(
+        'mm-chat-keyboard-open',
+        keyboardOpen,
+      )
+
+      window.requestAnimationFrame(
+        keepLatestMessageVisible,
+      )
+    }
+
+    syncChatViewport()
+
+    viewport?.addEventListener(
+      'resize',
+      syncChatViewport,
+    )
+    viewport?.addEventListener(
+      'scroll',
+      syncChatViewport,
+    )
+    window.addEventListener(
+      'resize',
+      syncChatViewport,
+    )
+    window.addEventListener(
+      'orientationchange',
+      syncChatViewport,
+    )
+
+    return () => {
+      viewport?.removeEventListener(
+        'resize',
+        syncChatViewport,
+      )
+      viewport?.removeEventListener(
+        'scroll',
+        syncChatViewport,
+      )
+      window.removeEventListener(
+        'resize',
+        syncChatViewport,
+      )
+      window.removeEventListener(
+        'orientationchange',
+        syncChatViewport,
+      )
+
+      root.classList.remove(
+        'mm-conversation-active',
+        'mm-chat-keyboard-open',
+      )
+      body.classList.remove(
+        'mm-conversation-active',
+        'mm-chat-keyboard-open',
+      )
+      root.style.removeProperty(
+        '--mm-chat-viewport-top',
+      )
+      root.style.removeProperty(
+        '--mm-chat-viewport-height',
+      )
+    }
+  }, [conversationId])
 
   useEffect(() => {
     const input = messageInputRef.current
@@ -368,9 +367,17 @@ function TeamMessagesV2Page() {
           const text =
             await response.text()
 
-          data = text
-            ? JSON.parse(text)
-            : {}
+          if (text) {
+            try {
+              data = JSON.parse(text)
+            } catch {
+              data = {
+                error:
+                  response.statusText ||
+                  'The server returned an unreadable response.',
+              }
+            }
+          }
         }
 
         if (!response.ok) {
@@ -495,9 +502,13 @@ function TeamMessagesV2Page() {
   useEffect(() => {
     if (!conversationId) return
 
-    messagesEndRef.current?.scrollIntoView({
+    const thread = messagesThreadRef.current
+
+    if (!thread) return
+
+    thread.scrollTo({
+      top: thread.scrollHeight,
       behavior: 'smooth',
-      block: 'end',
     })
   }, [messages, conversationId])
 
@@ -558,7 +569,8 @@ function TeamMessagesV2Page() {
   useEffect(() => {
     if (
       conversationId ||
-      directRecipientHandled.current
+      directRecipientHandled.current ||
+      !currentUser?.id
     ) {
       return
     }
@@ -569,10 +581,33 @@ function TeamMessagesV2Page() {
     if (!recipientId) return
 
     directRecipientHandled.current = true
-    createConversation(recipientId)
+
+    setSearchParams({}, {
+      replace: true,
+    })
+
+    if (
+      Number(recipientId) ===
+      Number(currentUser.id)
+    ) {
+      return
+    }
+
+    const startTimer = window.setTimeout(
+      () => {
+        void createConversation(recipientId)
+      },
+      0,
+    )
+
+    return () => {
+      window.clearTimeout(startTimer)
+    }
   }, [
     searchParams,
+    setSearchParams,
     conversationId,
+    currentUser?.id,
     createConversation,
   ])
 
@@ -589,54 +624,19 @@ function TeamMessagesV2Page() {
       setRecipientError('')
 
       try {
-        const data =
-          await apiFetch(
-            `/teams/${teamId}/team_memberships`,
-          )
+        const data = await apiFetch(
+          `/teams/${teamId}/conversations/recipients`,
+        )
 
-        const memberships =
-          Array.isArray(data)
-            ? data
-            : Array.isArray(data?.team_memberships)
-              ? data.team_memberships
-              : []
-
-        const recipients =
-          memberships
-            .filter(
-              (membership) =>
-                membership?.status === 'approved' &&
-                membership?.user,
-            )
-            .map((membership) => {
-              const member = membership.user
-
-              const fullName =
-                [
-                  member.first_name,
-                  member.last_name,
-                ]
-                  .filter(Boolean)
-                  .join(' ')
-                  .trim()
-
-              return {
-                ...member,
-                name:
-                  fullName ||
-                  member.email?.split('@')?.[0] ||
-                  'Team member',
-                full_name: fullName,
-                role: membership.role,
-                preferred_position:
-                  membership.preferred_position,
-              }
-            })
-            .filter(
+        const recipients = Array.isArray(
+          data?.recipients,
+        )
+          ? data.recipients.filter(
               (recipient) =>
                 Number(recipient.id) !==
                 Number(currentUser?.id),
             )
+          : []
 
         if (!cancelled) {
           setRecipientResults(recipients)
@@ -919,7 +919,9 @@ function TeamMessagesV2Page() {
         currentUser={currentUser}
       />
 
-      <main className="mm-messages-page">
+      <main
+        className={`mm-messages-page ${conversationId ? 'mm-conversation-page' : ''}`}
+      >
         {errorMessage && (
           <div
             className="mm-messages-error"
@@ -1083,7 +1085,10 @@ function TeamMessagesV2Page() {
               </div>
             </header>
 
-            <div className="mm-thread-messages">
+            <div
+              className="mm-thread-messages"
+              ref={messagesThreadRef}
+            >
               {messages.length === 0 ? (
                 <div className="mm-thread-empty">
                   <MessageCircle size={28} />
