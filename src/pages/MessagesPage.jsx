@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { MessageCircle, Plus, Search, X } from 'lucide-react'
+import { MessageCircle, Search, X } from 'lucide-react'
 import {
   useNavigate,
   useParams,
@@ -248,7 +248,7 @@ function MessagesPage() {
               type="button"
               onClick={() => setShowNew(true)}
             >
-              <Plus size={19} aria-hidden="true" />
+              
               New message
             </button>
           </header>

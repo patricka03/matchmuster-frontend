@@ -337,3 +337,159 @@ button[data-matchmuster-cash-paid] {
     grid-template-columns: repeat(4, minmax(0, auto)) !important;
   }
 }
+
+/*
+ * App-wide form-control contract.
+ *
+ * Keep single-line controls comfortably sized and vertically centred on
+ * native iOS/Android screens. Multiline fields stay top-aligned so longer
+ * notes remain natural to enter and review.
+ */
+:is(
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='hidden']):not([type='color']):not([type='button']):not([type='submit']):not([type='reset']),
+  select
+) {
+  width: 100%;
+  min-height: 56px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 16px !important;
+  line-height: normal;
+}
+
+input:is(
+  [type='date'],
+  [type='datetime-local'],
+  [type='month'],
+  [type='time'],
+  [type='week']
+) {
+  height: 56px !important;
+  min-height: 56px !important;
+  max-height: 56px !important;
+}
+
+input:is(
+  [type='date'],
+  [type='datetime-local'],
+  [type='month'],
+  [type='time'],
+  [type='week']
+)::-webkit-date-and-time-value {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+
+/* ==========================================================
+   MATCHMUSTER DATE / TIME FIELD CONSISTENCY
+   Every native date/time control must behave like the other
+   fields in the form, including Capacitor iOS.
+========================================================== */
+
+input[type='date'],
+input[type='datetime-local'],
+input[type='time'],
+input[type='month'],
+input[type='week'] {
+  display: block !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+
+  inline-size: 100% !important;
+  min-inline-size: 0 !important;
+  max-inline-size: 100% !important;
+
+  box-sizing: border-box !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  font-family: inherit !important;
+  font-weight: 800 !important;
+
+  text-align: center !important;
+  text-align-last: center !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+/*
+ * The parent grid item must also be allowed to shrink.
+ * This prevents native date controls from forcing their
+ * column wider than text/select controls.
+ */
+label:has(> input[type='date']),
+label:has(> input[type='datetime-local']),
+label:has(> input[type='time']),
+label:has(> input[type='month']),
+label:has(> input[type='week']) {
+  display: grid;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* iOS / WebKit visible value */
+input[type='date']::-webkit-date-and-time-value,
+input[type='datetime-local']::-webkit-date-and-time-value,
+input[type='time']::-webkit-date-and-time-value,
+input[type='month']::-webkit-date-and-time-value,
+input[type='week']::-webkit-date-and-time-value {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+
+  font-family: inherit !important;
+  font-weight: 800 !important;
+
+  text-align: center !important;
+}
+
+/* Centre the editable date pieces themselves */
+input[type='date']::-webkit-datetime-edit,
+input[type='datetime-local']::-webkit-datetime-edit,
+input[type='time']::-webkit-datetime-edit,
+input[type='month']::-webkit-datetime-edit,
+input[type='week']::-webkit-datetime-edit {
+  width: 100% !important;
+  padding: 0 !important;
+
+  font-weight: 800 !important;
+  text-align: center !important;
+}
+
+input[type='date']::-webkit-datetime-edit-fields-wrapper,
+input[type='datetime-local']::-webkit-datetime-edit-fields-wrapper,
+input[type='time']::-webkit-datetime-edit-fields-wrapper,
+input[type='month']::-webkit-datetime-edit-fields-wrapper,
+input[type='week']::-webkit-datetime-edit-fields-wrapper {
+  display: flex !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+
+  font-weight: 800 !important;
+}
+
+/*
+ * Keep all individual date/time segments bold.
+ */
+input[type='date']::-webkit-datetime-edit-day-field,
+input[type='date']::-webkit-datetime-edit-month-field,
+input[type='date']::-webkit-datetime-edit-year-field,
+input[type='datetime-local']::-webkit-datetime-edit-day-field,
+input[type='datetime-local']::-webkit-datetime-edit-month-field,
+input[type='datetime-local']::-webkit-datetime-edit-year-field,
+input[type='datetime-local']::-webkit-datetime-edit-hour-field,
+input[type='datetime-local']::-webkit-datetime-edit-minute-field,
+input[type='time']::-webkit-datetime-edit-hour-field,
+input[type='time']::-webkit-datetime-edit-minute-field {
+  font-weight: 800 !important;
+}
+

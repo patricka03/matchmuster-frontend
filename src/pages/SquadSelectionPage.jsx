@@ -433,6 +433,11 @@ function preferredPosition(player) {
   )
 }
 
+function suspensionWarning(player) {
+  const record = recordFor(player)
+  return player.active_suspension || record.active_suspension || null
+}
+
 function basePosition(position) {
   return (
     positionFamilies[position] ||
@@ -2342,6 +2347,9 @@ function SquadSelectionPage() {
                                                 key={playerId(player)}
                                               >
                                                 {playerName(player)}
+                                                {suspensionWarning(player)
+                                                  ? ` · Suspended (${suspensionWarning(player).matches_remaining})`
+                                                  : ''}
                                               </option>
                                             ))}
                                         </select>
@@ -2639,6 +2647,13 @@ function SquadSelectionPage() {
                                         )}`
                                       : 'No preferred position set'}
                                   </p>
+
+                                  {suspensionWarning(player) && (
+                                    <p className="squad-suspension-warning">
+                                      Suspended · {suspensionWarning(player).matches_remaining}{' '}
+                                      {suspensionWarning(player).matches_remaining === 1 ? 'match' : 'matches'} remaining
+                                    </p>
+                                  )}
                                 </div>
                               </div>
 

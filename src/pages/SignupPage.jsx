@@ -507,16 +507,6 @@ function SignupPage() {
             </label>
           </section>
 
-          <SocialAuthButtons
-            mode="signup"
-            accountType={formData.account_type}
-            firstName={formData.first_name}
-            lastName={formData.last_name}
-            ageConfirmed={ageConfirmed}
-            termsAccepted={legalAccepted}
-            onError={setErrorMessage}
-          />
-
           {errorMessage && (
             <p
               className="auth-error signup-submit-error"
@@ -535,6 +525,16 @@ function SignupPage() {
               ? 'Creating account...'
               : 'Create Account'}
           </button>
+
+          <SocialAuthButtons
+            mode="signup"
+            accountType={formData.account_type}
+            firstName={formData.first_name}
+            lastName={formData.last_name}
+            ageConfirmed={ageConfirmed}
+            termsAccepted={legalAccepted}
+            onError={setErrorMessage}
+          />
         </form>
 
         <Link

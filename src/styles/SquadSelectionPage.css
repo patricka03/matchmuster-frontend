@@ -551,3 +551,9 @@
   outline: 2px solid #facc15;
   outline-offset: 2px;
 }
+.squad-suspension-warning {
+  margin-top: 5px !important;
+  color: #b91c1c !important;
+  font-size: 0.78rem;
+  font-weight: 800;
+}

@@ -29,6 +29,7 @@ function applyPlatformClass() {
   )
 }
 
+
 async function startMatchMuster() {
   /*
    * Make the current Capacitor platform
@@ -41,7 +42,6 @@ async function startMatchMuster() {
    * Web     -> html.platform-web
    */
   applyPlatformClass()
-
   try {
     await initialiseAuthStorage()
   } catch (error) {

@@ -16,7 +16,6 @@ import {
   Edit3,
   MessageCircle,
   MoreVertical,
-  Plus,
   Search,
   Send,
   Trash2,
@@ -949,7 +948,7 @@ function TeamMessagesV2Page() {
                   setShowNewMessage(true)
                 }
               >
-                <Plus size={20} />
+                
                 New message
               </button>
             </header>

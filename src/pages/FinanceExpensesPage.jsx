@@ -69,7 +69,7 @@ function FinanceExpensesPage() {
         const [userResponse, teamsResponse, financeResponse] = await Promise.all([
           fetch(`${API_URL}/users/me`, { headers }),
           fetch(`${API_URL}/teams`, { headers }),
-          fetch(`${API_URL}/teams/${teamId}/finance`, { headers }),
+          fetch(`${API_URL}/teams/${teamId}/finance/analytics`, { headers }),
         ])
 
         if ([userResponse, teamsResponse, financeResponse].some((response) => response.status === 401)) {
@@ -203,7 +203,7 @@ function FinanceExpensesPage() {
         <Navbar teamId={teamId} currentUser={currentUser} />
         <main className="finance-expenses-page">
           <section className="finance-expenses-shell">
-            <BackButton to={`/teams/${teamId}/finance`} label="Back to club finances" />
+            <BackButton to={`/teams/${teamId}/finance/analytics`} label="Back to finance analytics" />
             <section className="finance-expenses-lock">
               <LockKeyhole size={28} aria-hidden="true" />
               <span>MATCHMUSTER PLUS</span>
@@ -226,7 +226,7 @@ function FinanceExpensesPage() {
       <Navbar teamId={teamId} currentUser={currentUser} />
       <main className="finance-expenses-page">
         <section className="finance-expenses-shell">
-          <BackButton to={`/teams/${teamId}/finance`} label="Back to club finances" />
+          <BackButton to={`/teams/${teamId}/finance/analytics`} label="Back to finance analytics" />
 
           <header className="finance-expenses-heading">
             <div>

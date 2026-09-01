@@ -28,8 +28,9 @@ import CancelMatchPage from './pages/CancelMatchPage'
 import MatchAvailabilitiesPage from './pages/MatchAvailabilitiesPage'
 import SquadSelectionPage from './pages/SquadSelectionPage'
 import MatchPaymentsPage from './pages/MatchPaymentsPage'
-import TeamMatchSubsPage from './pages/TeamMatchSubsPage'
 import MatchSubsAnalyticsPage from './pages/MatchSubsAnalyticsPage'
+import TeamPaymentsPage from './pages/TeamPaymentsPage'
+import TeamMatchSubsPage from './pages/TeamMatchSubsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import PostsPage from './pages/PostsPage'
 import PostPage from './pages/PostPage'
@@ -187,6 +188,11 @@ function App() {
         />
 
         <Route
+          path="/teams/:teamId/finance/analytics"
+          element={<FinancePage analytics />}
+        />
+
+        <Route
           path="/teams/:teamId/finance/expenses"
           element={<FinanceExpensesPage />}
         />
@@ -254,6 +260,16 @@ function App() {
 
         <Route
           path="/teams/:teamId/match-subs/analytics"
+          element={<MatchSubsAnalyticsPage paymentScope="match_sub" />}
+        />
+
+        <Route
+          path="/teams/:teamId/payments"
+          element={<TeamPaymentsPage />}
+        />
+
+        <Route
+          path="/teams/:teamId/payments/analytics"
           element={<MatchSubsAnalyticsPage />}
         />
 

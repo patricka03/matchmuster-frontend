@@ -24,6 +24,18 @@ import {
 import './bottomNav.css'
 import './bottomNav.mobile.css'
 
+function DisabledItem({ icon, label }) {
+  return (
+    <span
+      className="bottom-nav-item disabled"
+      aria-disabled="true"
+    >
+      {icon}
+      <small>{label}</small>
+    </span>
+  )
+}
+
 function BottomNav({
   teamId,
   teams,
@@ -43,6 +55,8 @@ function BottomNav({
   const [teamSwitcherOpen, setTeamSwitcherOpen] = useState(false)
 
   useEffect(() => {
+    // Close overlays whenever navigation changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMoreOpen(false)
     setTeamSwitcherOpen(false)
   }, [location.pathname])
@@ -82,19 +96,19 @@ function BottomNav({
       : null
 
   const paymentTargetMatchId =
-    playerPaymentMatchId
+    playerPaymentMatchId || latestPlayedMatchId
 
   const paymentsPath =
     isApprovedManager && teamId
       ? `/teams/${teamId}/match-subs`
-      : teamId && paymentTargetMatchId
+      : isApprovedPlayer && teamId && paymentTargetMatchId
         ? `/teams/${teamId}/matches/${paymentTargetMatchId}/payments`
         : null
 
   const paymentsLabel =
     isApprovedManager
       ? 'Match Subs'
-      : 'Pay'
+      : 'Match Sub'
 
   const postsPath =
     teamId
@@ -122,18 +136,6 @@ function BottomNav({
     return isActive
       ? 'bottom-nav-item active'
       : 'bottom-nav-item'
-  }
-
-  function DisabledItem({ icon, label }) {
-    return (
-      <span
-        className="bottom-nav-item disabled"
-        aria-disabled="true"
-      >
-        {icon}
-        <small>{label}</small>
-      </span>
-    )
   }
 
   return (
@@ -204,7 +206,7 @@ function BottomNav({
             <NavLink
               className={({ isActive }) =>
                 isActive ||
-                location.pathname.includes('/payments')
+                location.pathname.includes('/match-subs')
                   ? 'bottom-nav-item active'
                   : 'bottom-nav-item'
               }

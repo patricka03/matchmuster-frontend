@@ -7,7 +7,7 @@ android {
         applicationId "uk.matchmuster.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 2
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -16,8 +16,25 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            def storePath = project.findProperty("MATCHMUSTER_UPLOAD_STORE_FILE")
+            def aliasName = project.findProperty("MATCHMUSTER_UPLOAD_KEY_ALIAS")
+            def storePass = project.findProperty("MATCHMUSTER_UPLOAD_STORE_PASSWORD")
+            def keyPass = project.findProperty("MATCHMUSTER_UPLOAD_KEY_PASSWORD")
+
+            if (storePath && aliasName && storePass && keyPass) {
+                storeFile file(storePath)
+                storePassword storePass
+                keyAlias aliasName
+                keyPassword keyPass
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

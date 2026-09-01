@@ -36,6 +36,9 @@ function pushNotificationRoute(
   const matchId =
     data.match_id
 
+  const paymentType =
+    data.payment_type
+
   const postId =
     data.post_id
 
@@ -107,12 +110,19 @@ function pushNotificationRoute(
       'match_payment_reminder',
       'match_payment_paid',
       'match_payment_waived',
+      'payment_cash_confirmation_requested',
+      'match_payment_cancelled',
+      'match_payment_refunded',
+      'disciplinary_recorded',
     ].includes(type) &&
-    teamId &&
-    matchId
+    teamId
   ) {
+    if (paymentType === 'match_sub' && matchId) {
+      return `/teams/${teamId}/matches/${matchId}/payments`
+    }
+
     return (
-      `/teams/${teamId}/matches/${matchId}/payments`
+      `/teams/${teamId}/payments`
     )
   }
 
@@ -173,6 +183,12 @@ function pushNotificationRoute(
     return (
       `/teams/${teamId}/squad`
     )
+  }
+
+  if (
+    type === 'account_welcome'
+  ) {
+    return '/teams/join'
   }
 
   if (

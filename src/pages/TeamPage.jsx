@@ -5,7 +5,6 @@ import {
 } from 'react-router-dom'
 import {
   Lock,
-  Plus,
   X,
 } from 'lucide-react'
 
@@ -809,10 +808,7 @@ function TeamPage() {
                 }`}>
                   <div className="matchmuster-add-team-icon">
                     {canCreateAdditionalTeam ? (
-                      <Plus
-                        size={24}
-                        aria-hidden="true"
-                      />
+                      
                     ) : (
                       <Lock
                         size={22}

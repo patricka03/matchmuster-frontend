@@ -12,7 +12,36 @@
           "package_name": "uk.matchmuster.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "847249809330-cngfmnucl4ba4ce194jqqc6p469b6jvj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uk.matchmuster.app",
+            "certificate_hash": "a47c93ba95e50f3c5dfd1050df943a6161965b16"
+          }
+        },
+        {
+          "client_id": "847249809330-j1c08j7h11g26tdugma6ntks5r8e0aj2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uk.matchmuster.app",
+            "certificate_hash": "6a43907cbb8611a51b17e9c142b62a2e36784e43"
+          }
+        },
+        {
+          "client_id": "847249809330-ssvc2kuo4lj3u25i9t1jsbjdporotmqv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uk.matchmuster.app",
+            "certificate_hash": "e46b659cf3aacc4017179c3821250efe2876b77d"
+          }
+        },
+        {
+          "client_id": "847249809330-ic3djuivnsg44um6dkk9ccj3nj5i7fqr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDGAe0_Nok6qZIUDUefyCkA9BNt17GwUVw"
@@ -20,7 +49,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "847249809330-ic3djuivnsg44um6dkk9ccj3nj5i7fqr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "847249809330-sia28lousqrl4kg4e0tou9i9tsfcrqm6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "uk.matchmuster.mobile"
+              }
+            }
+          ]
         }
       }
     }

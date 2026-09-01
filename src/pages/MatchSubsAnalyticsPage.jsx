@@ -47,15 +47,17 @@ function statusLabel(status) {
 }
 
 function paymentMethod(payment) {
-  if (payment.status !== 'paid') return 'Not paid'
-  return payment.stripe_payment_intent_id ? 'Stripe' : 'Cash'
+  if (Number(payment.amount_paid_pence || 0) <= 0) return 'Not paid'
+  if (payment.payment_method === 'stripe' || payment.stripe_payment_intent_id) return 'Stripe'
+  if (payment.payment_method === 'cash') return 'Cash'
+  return 'Other'
 }
 
 function escapeCsv(value) {
   return `"${String(value ?? '').replaceAll('"', '""')}"`
 }
 
-function MatchSubsAnalyticsPage() {
+function MatchSubsAnalyticsPage({ paymentScope = 'all' }) {
   const navigate = useNavigate()
   const { teamId } = useParams()
   const [currentUser, setCurrentUser] = useState(null)
@@ -89,22 +91,27 @@ function MatchSubsAnalyticsPage() {
 
       const headers = { Accept: 'application/json', Authorization: token }
       try {
-        const [userResponse, teamResponse, matchesResponse, plusResponse] = await Promise.all([
+        const [userResponse, teamResponse, paymentsResponse, plusResponse] = await Promise.all([
           fetch(`${API_URL}/users/me`, { headers }),
           fetch(`${API_URL}/teams/${teamId}`, { headers }),
-          fetch(`${API_URL}/teams/${teamId}/matches`, { headers }),
-          fetch(`${API_URL}/teams/${teamId}/finance`, { headers }),
+          fetch(
+            `${API_URL}/teams/${teamId}/payments${
+              paymentScope === 'match_sub' ? '?payment_type=match_sub' : ''
+            }`,
+            { headers },
+          ),
+          fetch(`${API_URL}/teams/${teamId}/payments/summary`, { headers }),
         ])
 
-        if ([userResponse, teamResponse, matchesResponse, plusResponse].some((response) => response.status === 401)) {
+        if ([userResponse, teamResponse, paymentsResponse, plusResponse].some((response) => response.status === 401)) {
           await redirectToLogin()
           return
         }
 
-        const [userData, teamData, matchesData, plusData] = await Promise.all([
+        const [userData, teamData, paymentsData, plusData] = await Promise.all([
           userResponse.json().catch(() => ({})),
           teamResponse.json().catch(() => ({})),
-          matchesResponse.json().catch(() => ([])),
+          paymentsResponse.json().catch(() => ({ payments: [] })),
           plusResponse.json().catch(() => ({})),
         ])
         const user = userData.user || userData
@@ -120,32 +127,21 @@ function MatchSubsAnalyticsPage() {
           return
         }
 
-        if (!matchesResponse.ok) {
-          throw new Error(matchesData.error || 'Unable to load Match Subs analytics.')
+        if (!paymentsResponse.ok) {
+          throw new Error(paymentsData.error || 'Unable to load payment analytics.')
         }
 
-        const matches = Array.isArray(matchesData) ? matchesData : matchesData.matches || []
-        const fixturePayments = await Promise.all(
-          matches.map(async (match) => {
-            const response = await fetch(
-              `${API_URL}/teams/${teamId}/matches/${match.id}/match_payments`,
-              { headers },
-            )
-            if (!response.ok) return []
-            const data = await response.json().catch(() => ([]))
-            const payments = Array.isArray(data) ? data : data.match_payments || []
-            return payments.map((payment) => ({
-              ...payment,
-              match_id: match.id,
-              opponent: match.opponent,
-              kickoff_time: match.kickoff_time,
-            }))
-          }),
-        )
+        const teamPayments = paymentsData.payments || []
+        const fixturePayments = teamPayments.map((payment) => ({
+          ...payment,
+          match_id: payment.match_id || payment.match?.id,
+          opponent: payment.match?.opponent || payment.title,
+          kickoff_time: payment.match?.kickoff_time || payment.created_at,
+        }))
 
         if (!cancelled) {
           setLocked(false)
-          setRows(fixturePayments.flat())
+          setRows(fixturePayments)
         }
       } catch (requestError) {
         if (!cancelled) setError(requestError.message || 'Unable to load Match Subs analytics.')
@@ -156,13 +152,15 @@ function MatchSubsAnalyticsPage() {
 
     void loadAnalytics()
     return () => { cancelled = true }
-  }, [redirectToLogin, teamId])
+  }, [paymentScope, redirectToLogin, teamId])
 
   const filteredRows = useMemo(() => {
     const needle = query.trim().toLowerCase()
     const matches = rows.filter((row) => {
       const searchable = [
         playerName(row),
+        row.type_label,
+        row.title,
         row.opponent,
         statusLabel(row.status),
         paymentMethod(row),
@@ -187,12 +185,15 @@ function MatchSubsAnalyticsPage() {
   const totals = useMemo(() => rows.reduce((result, row) => {
     const amount = Number(row.amount_pence || 0)
     result.requested += amount
-    if (row.status === 'paid') {
-      result.collected += amount
-      if (paymentMethod(row) === 'Cash') result.cash += amount
-      if (paymentMethod(row) === 'Stripe') result.stripe += amount
+    const paidAmount = Math.max(0, Number(row.amount_paid_pence || 0) - Number(row.refunded_amount_pence || 0))
+    if (paidAmount > 0) {
+      result.collected += paidAmount
+      if (paymentMethod(row) === 'Cash') result.cash += paidAmount
+      if (paymentMethod(row) === 'Stripe') result.stripe += paidAmount
     }
-    if (row.status === 'pending') result.outstanding += amount
+    if (['pending', 'cash_pending', 'partially_paid'].includes(row.status)) {
+      result.outstanding += Number(row.amount_outstanding_pence || amount)
+    }
     if (row.status === 'waived') result.waived += amount
     return result
   }, { requested: 0, collected: 0, outstanding: 0, waived: 0, cash: 0, stripe: 0 }), [rows])
@@ -210,7 +211,7 @@ function MatchSubsAnalyticsPage() {
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
         const label = new Intl.DateTimeFormat('en-GB', { month: 'short', year: '2-digit' }).format(date)
         result[key] ||= { key, label, amount: 0 }
-        result[key].amount += Number(row.amount_pence || 0)
+        result[key].amount += Math.max(0, Number(row.amount_paid_pence || 0) - Number(row.refunded_amount_pence || 0))
         return result
       }, {})
     return Object.values(values).sort((a, b) => a.key.localeCompare(b.key)).slice(-6)
@@ -219,11 +220,11 @@ function MatchSubsAnalyticsPage() {
 
   const outstandingPlayers = useMemo(() => {
     const values = rows
-      .filter((row) => row.status === 'pending')
+      .filter((row) => ['pending', 'cash_pending', 'partially_paid'].includes(row.status))
       .reduce((result, row) => {
         const name = playerName(row)
         result[name] ||= { name, amount: 0, count: 0 }
-        result[name].amount += Number(row.amount_pence || 0)
+        result[name].amount += Number(row.amount_outstanding_pence || row.amount_pence || 0)
         result[name].count += 1
         return result
       }, {})
@@ -232,9 +233,11 @@ function MatchSubsAnalyticsPage() {
 
   async function exportCsv() {
     const csvRows = [
-      ['Fixture date', 'Opponent', 'Player', 'Status', 'Method', 'Amount GBP', 'Paid date'],
+      ['Date', 'Category', 'Payment', 'Fixture', 'Player', 'Status', 'Method', 'Amount GBP', 'Paid date'],
       ...filteredRows.map((row) => [
         row.kickoff_time,
+        row.type_label,
+        row.title,
         row.opponent,
         playerName(row),
         statusLabel(row.status),
@@ -244,12 +247,14 @@ function MatchSubsAnalyticsPage() {
       ]),
     ]
     const csv = csvRows.map((row) => row.map(escapeCsv).join(',')).join('\n')
-    const fileName = `${team?.name || 'club'}-match-subs.csv`
+    const fileName = `${team?.name || 'club'}-${
+      paymentScope === 'match_sub' ? 'match-subs' : 'payments'
+    }.csv`
     const file = new File([csv], fileName, { type: 'text/csv;charset=utf-8' })
 
     if (navigator.canShare?.({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], title: `${team?.name || 'Club'} Match Subs statement` })
+        await navigator.share({ files: [file], title: `${team?.name || 'Club'} payment statement` })
       } catch (shareError) {
         if (shareError.name !== 'AbortError') setError('The payment statement could not be shared.')
       }
@@ -277,8 +282,13 @@ function MatchSubsAnalyticsPage() {
             <section className="match-subs-analytics-lock">
               <LockKeyhole size={29} aria-hidden="true" />
               <span>MATCHMUSTER PLUS</span>
-              <h1 className="mm-page-title">Payment analytics</h1>
-              <p>Understand collections, outstanding balances and payment methods across every fixture.</p>
+              <h1 className="mm-page-title">
+                {paymentScope === 'match_sub' ? 'Match Subs analytics' : 'Payment analytics'}
+              </h1>
+              <p>
+                Understand collections, outstanding balances and payment methods
+                {paymentScope === 'match_sub' ? ' across every fixture.' : ' across every team request.'}
+              </p>
               {ownerCanUpgrade && <button type="button" onClick={() => navigate(`/teams/${teamId}/subscription`)}>View MatchMuster Plus</button>}
             </section>
           </section>
@@ -293,7 +303,12 @@ function MatchSubsAnalyticsPage() {
       <main className="match-subs-analytics-page">
         <section className="match-subs-analytics-shell">
           <header className="match-subs-analytics-heading">
-            <div><span>PLUS • PAYMENT CONTROL</span><h1 className="mm-page-title">Match Subs analytics</h1></div>
+            <div>
+              <span>PLUS • PAYMENT CONTROL</span>
+              <h1 className="mm-page-title">
+                {paymentScope === 'match_sub' ? 'Match Subs analytics' : 'Payment analytics'}
+              </h1>
+            </div>
             <button type="button" onClick={exportCsv} disabled={filteredRows.length === 0}><Download size={18} aria-hidden="true" />Export statement</button>
           </header>
 
@@ -305,7 +320,7 @@ function MatchSubsAnalyticsPage() {
           </section>
 
           <section className="match-subs-analytics-metrics" aria-label="Payment totals">
-            <article><span>Collected</span><strong>{currency(totals.collected)}</strong><small>Paid Match Subs</small></article>
+            <article><span>Collected</span><strong>{currency(totals.collected)}</strong><small>All paid team requests</small></article>
             <article className="outstanding"><span>Outstanding</span><strong>{currency(totals.outstanding)}</strong><small>{rows.filter((row) => row.status === 'pending').length} unpaid requests</small></article>
             <article><span>Cash</span><strong>{currency(totals.cash)}</strong><small>Recorded as cash paid</small></article>
             <article><span>Stripe</span><strong>{currency(totals.stripe)}</strong><small>Confirmed online</small></article>
@@ -316,7 +331,7 @@ function MatchSubsAnalyticsPage() {
               <header><div><span>COLLECTION TREND</span><h2>Last six months</h2></div><TrendingUp size={22} aria-hidden="true" /></header>
               {monthlyCollections.length > 0 ? <div className="match-subs-month-chart">
                 {monthlyCollections.map((item) => <div key={item.key}><strong>{currency(item.amount)}</strong><span><i style={{ height: `${Math.max(8, (item.amount / highestMonth) * 100)}%` }} /></span><small>{item.label}</small></div>)}
-              </div> : <p className="match-subs-analytics-empty">Paid Match Subs will appear here.</p>}
+              </div> : <p className="match-subs-analytics-empty">Paid team payments will appear here.</p>}
             </article>
 
             <article className="match-subs-outstanding-card">
@@ -330,16 +345,16 @@ function MatchSubsAnalyticsPage() {
           <section className="match-subs-statement-card">
             <div className="match-subs-section-title"><div><span>STATEMENT</span><h2>Payment history</h2></div><strong>{filteredRows.length}</strong></div>
             <div className="match-subs-analytics-filters">
-              <label className="match-subs-analytics-search"><Search size={18} aria-hidden="true" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search player, opponent, amount or date" aria-label="Search Match Subs" /></label>
+              <label className="match-subs-analytics-search"><Search size={18} aria-hidden="true" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search player, category, fixture or amount" aria-label="Search payments" /></label>
               <label><SlidersHorizontal size={17} aria-hidden="true" /><select value={status} onChange={(event) => setStatus(event.target.value)} aria-label="Filter by payment status"><option value="all">All statuses</option><option value="pending">Outstanding</option><option value="paid">Paid</option><option value="waived">Waived</option><option value="refunded">Refunded</option></select></label>
               <select value={method} onChange={(event) => setMethod(event.target.value)} aria-label="Filter by payment method"><option value="all">All methods</option><option value="cash">Cash</option><option value="stripe">Stripe</option><option value="not paid">Not paid</option></select>
               <select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort payments"><option value="newest">Newest fixture</option><option value="oldest">Oldest fixture</option><option value="highest">Highest amount</option><option value="lowest">Lowest amount</option></select>
             </div>
 
-            <div className="match-subs-statement" role="table" aria-label="Match Subs payment statement">
+            <div className="match-subs-statement" role="table" aria-label="Team payment statement">
               <div className="match-subs-statement-head" role="row"><span>Fixture</span><span>Player</span><span>Status</span><span>Method</span><span>Amount</span></div>
-              {filteredRows.map((row) => <article className="match-subs-statement-row" role="row" key={`${row.match_id}-${row.id}`}>
-                <span><strong>vs {row.opponent}</strong><small>{displayDate(row.kickoff_time)}</small></span>
+              {filteredRows.map((row) => <article className="match-subs-statement-row" role="row" key={`${row.match_id || 'team'}-${row.id}`}>
+                <span><strong>{row.match_id ? `vs ${row.opponent}` : row.title}</strong><small>{row.type_label} · {displayDate(row.kickoff_time)}</small></span>
                 <strong>{playerName(row)}</strong>
                 <span className={`match-subs-status ${row.status}`}>{statusLabel(row.status)}</span>
                 <span className="match-subs-method">{paymentMethod(row) === 'Cash' ? <Banknote size={16} aria-hidden="true" /> : <CreditCard size={16} aria-hidden="true" />}{paymentMethod(row)}</span>

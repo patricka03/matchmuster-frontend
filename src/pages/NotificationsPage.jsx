@@ -30,8 +30,7 @@ import {
   Star,
   Trophy,
   UserCheck,
-  UserPlus,
-  Users,
+  UserUsers,
   WalletCards,
   X,
 } from 'lucide-react'
@@ -211,7 +210,7 @@ const TYPE_META = {
     tone: 'pink',
     icon: CreditCard,
     defaultTitle:
-      'Match payment requested',
+      'Team payment requested',
     requiresAction: true,
   },
 
@@ -220,7 +219,7 @@ const TYPE_META = {
     tone: 'green',
     icon: CheckCheck,
     defaultTitle:
-      'Match payment received',
+      'Team payment received',
   },
 
   match_payment_waived: {
@@ -228,7 +227,7 @@ const TYPE_META = {
     tone: 'green',
     icon: WalletCards,
     defaultTitle:
-      'Match payment waived',
+      'Team payment waived',
   },
 
   match_payment_amount_changed: {
@@ -236,7 +235,7 @@ const TYPE_META = {
     tone: 'amber',
     icon: CreditCard,
     defaultTitle:
-      'Match payment updated',
+      'Team payment updated',
     requiresAction: true,
   },
 
@@ -245,15 +244,44 @@ const TYPE_META = {
     tone: 'amber',
     icon: CreditCard,
     defaultTitle:
-      'Match payment reminder',
+      'Team payment reminder',
+    requiresAction: true,
+  },
+
+  payment_cash_confirmation_requested: {
+    label: 'Cash confirmation',
+    tone: 'amber',
+    icon: WalletCards,
+    defaultTitle: 'Cash payment awaiting confirmation',
+    requiresAction: true,
+  },
+
+  match_payment_cancelled: {
+    label: 'Payment cancelled',
+    tone: 'red',
+    icon: CreditCard,
+    defaultTitle: 'Payment request cancelled',
+  },
+
+  match_payment_refunded: {
+    label: 'Payment refunded',
+    tone: 'green',
+    icon: WalletCards,
+    defaultTitle: 'Payment refunded',
+  },
+
+  disciplinary_recorded: {
+    label: 'Discipline',
+    tone: 'amber',
+    icon: ShieldCheck,
+    defaultTitle: 'Disciplinary record added',
     requiresAction: true,
   },
 
   join_request_received: {
     label: 'Join request',
     tone: 'pink',
-    icon: UserPlus,
-    defaultTitle:
+    icon: UserdefaultTitle:
       'New player join request',
     requiresAction: true,
   },
@@ -277,8 +305,7 @@ const TYPE_META = {
   player_joined: {
     label: 'Squad member',
     tone: 'green',
-    icon: UserPlus,
-    defaultTitle:
+    icon: UserdefaultTitle:
       'A player joined your squad',
   },
 
@@ -293,8 +320,7 @@ const TYPE_META = {
   team_join_requested: {
     label: 'Join request',
     tone: 'pink',
-    icon: UserPlus,
-    defaultTitle:
+    icon: UserdefaultTitle:
       'New player join request',
     requiresAction: true,
   },
@@ -406,6 +432,14 @@ const TYPE_META = {
       'Manager account update',
   },
 
+  account_welcome: {
+    label: 'Welcome',
+    tone: 'brand',
+    icon: Sparkles,
+    defaultTitle:
+      'Welcome to MatchMuster',
+  },
+
   app_update: {
     label: 'MatchMuster update',
     tone: 'brand',
@@ -466,6 +500,10 @@ const PAYMENT_NOTIFICATION_TYPES = [
   'match_payment_reminder',
   'match_payment_paid',
   'match_payment_waived',
+  'payment_cash_confirmation_requested',
+  'match_payment_cancelled',
+  'match_payment_refunded',
+  'disciplinary_recorded',
 ]
 
 const PAYMENT_ACTION_REQUEST_TYPES = [
@@ -1916,7 +1954,6 @@ function NotificationsPage() {
         type,
       ) &&
       notificationTeamId &&
-      matchId &&
       !paymentResolution(
         notification,
       )
@@ -1936,7 +1973,9 @@ function NotificationsPage() {
             : 'View payments',
 
         path:
-          `/teams/${notificationTeamId}/matches/${matchId}/payments`,
+          notification?.match_payment?.payment_type === 'match_sub' && matchId
+            ? `/teams/${notificationTeamId}/matches/${matchId}/payments`
+            : `/teams/${notificationTeamId}/payments`,
 
         icon:
           CreditCard,
@@ -2066,6 +2105,22 @@ function NotificationsPage() {
 
         icon:
           Trophy,
+      }
+    }
+
+    if (
+      type ===
+        'account_welcome'
+    ) {
+      return {
+        label:
+          'Join your team',
+
+        path:
+          '/teams/join',
+
+        icon:
+          Users,
       }
     }
 

@@ -288,8 +288,9 @@ function TeamMatchSubsPage() {
 
   const focusMatchId =
     useMemo(() => {
-      const now =
-        Date.now()
+      // This snapshot is used only to choose the current fixture for this render.
+      // eslint-disable-next-line react-hooks/purity
+      const now = Date.now()
 
       const latestStarted =
         sortedMatches.find(
@@ -366,16 +367,12 @@ function TeamMatchSubsPage() {
         <section className="dashboard-content">
           <header className="dashboard-welcome team-match-subs-heading">
             <p className="dashboard-label">
-              Manager • Plus
+              Manager • Match Subs
             </p>
 
             <h1 className="mm-page-title">
               Match Subs
             </h1>
-
-            <p>
-              Payment status by fixture.
-            </p>
           </header>
 
           <button
@@ -388,7 +385,7 @@ function TeamMatchSubsPage() {
             }
           >
             <BarChart3 aria-hidden="true" />
-            <span>Show payment analytics</span>
+            <span>Show match subs analytics</span>
             <small>PLUS</small>
           </button>
 

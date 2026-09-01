@@ -874,3 +874,236 @@
     padding-top: calc(6px + env(safe-area-inset-top, 0px));
   }
 }
+
+/* MATCHMUSTER: CONVERSATION BOTTOM NAV START */
+
+/*
+ * Inbox:
+ *   Keep normal MatchMuster bottom navigation.
+ *
+ * Conversation:
+ *   Hide bottom navigation for the entire conversation,
+ *   whether the keyboard is open or closed.
+ */
+body.mm-conversation-active .bottom-nav,
+body.mm-conversation-active .bottom-nav-sheet-backdrop {
+  display: none !important;
+}
+
+body.mm-conversation-active {
+  --mm-chat-bottom-navigation-height: 0px !important;
+}
+
+body.mm-conversation-active .mm-conversation-page {
+  bottom: 0 !important;
+}
+
+/* MATCHMUSTER: CONVERSATION BOTTOM NAV END */
+
+/* =========================================================
+   MATCHMUSTER — INSTAGRAM-STYLE CONVERSATION LAYOUT
+   ========================================================= */
+
+/*
+ * An open conversation owns the full space below the
+ * MatchMuster header. There is no bottom-navigation space.
+ */
+body.mm-conversation-active .bottom-nav,
+body.mm-conversation-active .bottom-nav-sheet-backdrop {
+  display: none !important;
+}
+
+body.mm-conversation-active {
+  --mm-chat-bottom-navigation-height: 0px !important;
+  overflow: hidden !important;
+}
+
+/*
+ * Remove the normal Messages-page bottom padding.
+ * That padding is useful for the inbox because of the navbar,
+ * but must not exist inside an actual conversation.
+ */
+body.mm-conversation-active .mm-messages-page.mm-conversation-page,
+body.mm-conversation-active .mm-conversation-page {
+  position: fixed !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  margin: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/*
+ * The thread fills the conversation viewport.
+ * Header = fixed row
+ * Messages = only scrollable area
+ * Composer = fixed bottom row
+ */
+body.mm-conversation-active .mm-message-thread-shell {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+
+  margin: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-radius: 0 !important;
+
+  overflow: hidden !important;
+}
+
+/* Only the actual messages move. */
+body.mm-conversation-active .mm-thread-messages {
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/*
+ * Instagram/iMessage behaviour:
+ * composer sits at the bottom of the conversation and,
+ * on iPhone, respects only the real safe-area inset.
+ */
+body.mm-conversation-active .mm-message-composer {
+  position: relative !important;
+  z-index: 20 !important;
+
+  margin: 0 !important;
+
+  padding:
+    10px
+    16px
+    max(10px, env(safe-area-inset-bottom, 0px))
+    16px !important;
+
+  background: #ffffff !important;
+}
+
+/*
+ * When iOS opens the keyboard the visual viewport becomes
+ * shorter. Do not reintroduce navbar/safe-area spacing between
+ * the keyboard and composer.
+ */
+body.mm-conversation-active.mm-chat-keyboard-open
+  .mm-message-composer {
+  padding-bottom: 10px !important;
+}
+
+
+/* =========================================================
+   MATCHMUSTER — INSTAGRAM-STYLE CONVERSATION LAYOUT
+   ========================================================= */
+
+/*
+ * An open conversation owns the full space below the
+ * MatchMuster header. There is no bottom-navigation space.
+ */
+body.mm-conversation-active .bottom-nav,
+body.mm-conversation-active .bottom-nav-sheet-backdrop {
+  display: none !important;
+}
+
+body.mm-conversation-active {
+  --mm-chat-bottom-navigation-height: 0px !important;
+  overflow: hidden !important;
+}
+
+/*
+ * Remove the normal Messages-page bottom padding.
+ * That padding is useful for the inbox because of the navbar,
+ * but must not exist inside an actual conversation.
+ */
+body.mm-conversation-active .mm-messages-page.mm-conversation-page,
+body.mm-conversation-active .mm-conversation-page {
+  position: fixed !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  margin: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/*
+ * The thread fills the conversation viewport.
+ * Header = fixed row
+ * Messages = only scrollable area
+ * Composer = fixed bottom row
+ */
+body.mm-conversation-active .mm-message-thread-shell {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+
+  margin: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-radius: 0 !important;
+
+  overflow: hidden !important;
+}
+
+/* Only the actual messages move. */
+body.mm-conversation-active .mm-thread-messages {
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/*
+ * Instagram/iMessage behaviour:
+ * composer sits at the bottom of the conversation and,
+ * on iPhone, respects only the real safe-area inset.
+ */
+body.mm-conversation-active .mm-message-composer {
+  position: relative !important;
+  z-index: 20 !important;
+
+  margin: 0 !important;
+
+  padding:
+    10px
+    16px
+    max(10px, env(safe-area-inset-bottom, 0px))
+    16px !important;
+
+  background: #ffffff !important;
+}
+
+/*
+ * When iOS opens the keyboard the visual viewport becomes
+ * shorter. Do not reintroduce navbar/safe-area spacing between
+ * the keyboard and composer.
+ */
+body.mm-conversation-active.mm-chat-keyboard-open
+  .mm-message-composer {
+  padding-bottom: 10px !important;
+}
+

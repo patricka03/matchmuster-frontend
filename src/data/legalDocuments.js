@@ -892,17 +892,17 @@ export const legalDocuments = {
   },
   payments: {
     title: 'Payments, Subscriptions & Refunds',
-    version: '1.0',
-    effectiveDate: '17 August 2026',
+    version: '1.1',
+    effectiveDate: '31 August 2026',
 
     sections: [
       {
         title: '1. Two Different Types of Payment',
         paragraphs: [
-          'MatchMuster supports two separate types of payment: MatchMuster subscriptions and team or match-sub payments.',
+          'MatchMuster supports two separate types of payment: MatchMuster subscriptions and team payments.',
           'MatchMuster subscriptions are payments made for access to paid MatchMuster functionality.',
-          'Match-sub payments are payments requested by football managers for legitimate team-related costs.',
-          'A match-sub payment is not payment for a MatchMuster subscription.'
+          'Team payments, including Match Subs and legitimate disciplinary fines, are requested by football managers for clearly identified team-related costs.',
+          'A team payment is not payment for a MatchMuster subscription.'
         ]
       },
 
@@ -1042,22 +1042,25 @@ export const legalDocuments = {
       },
 
       {
-        title: '16. What Are Match Subs?',
+        title: '16. What Are Team Payments?',
         paragraphs: [
           'Managers may use MatchMuster to request money from players for legitimate football-team costs.',
           'The payment request should clearly explain what the player is being asked to pay for.'
         ],
         items: [
           'Match subs',
+          'Training subs and membership fees',
+          'Kit, tournament and team-transport contributions',
           'Pitch fees',
           'Referee costs',
           'Competition-related team charges',
+          'Genuine yellow-card, red-card or disciplinary fines imposed under applicable team, competition or governing-body rules',
           'Other clearly identified legitimate team expenses supported by MatchMuster'
         ]
       },
 
       {
-        title: '17. MatchMuster’s Role in Match-Sub Payments',
+        title: '17. MatchMuster’s Role in Team Payments',
         paragraphs: [
           'MatchMuster provides technology that helps football teams request, process and track payments.',
           'The underlying football charge is created by the relevant team or manager.',
@@ -1078,7 +1081,8 @@ export const legalDocuments = {
       {
         title: '19. Manager Responsibility for Payment Requests',
         paragraphs: [
-          'Managers must ensure that team-payment requests are genuine, accurate, authorised and clearly related to a legitimate football purpose.'
+          'Managers must ensure that team-payment requests are genuine, accurate, authorised and clearly related to a legitimate football purpose.',
+          'A manager recording a card or disciplinary fine is responsible for checking the applicable competition or team rules, the correct amount and whether the player is responsible for payment.'
         ],
         items: [
           'Do not create fake payment requests',
@@ -1101,7 +1105,7 @@ export const legalDocuments = {
       {
         title: '21. Team-Payment Refunds',
         paragraphs: [
-          'Because the underlying match-sub charge belongs to the relevant football team, many refund decisions will need to be resolved with the relevant manager or team.',
+          'Because the underlying team charge belongs to the relevant football team, many refund decisions will need to be resolved with the relevant manager or team.',
           'MatchMuster may provide technical functionality allowing authorised managers to issue or initiate refunds through the applicable payment provider.'
         ]
       },
@@ -1109,7 +1113,7 @@ export const legalDocuments = {
       {
         title: '22. Match Cancellations',
         paragraphs: [
-          'MatchMuster does not automatically decide whether match subs must be refunded when a fixture is cancelled.',
+          'MatchMuster does not automatically decide whether Match Subs or other team payments must be refunded when a fixture or team activity is cancelled.',
           'Refund decisions may depend on costs already incurred by the team, including pitch fees, referee costs or competition charges.',
           'Managers should communicate clearly with players about money already collected.'
         ]

@@ -58,36 +58,6 @@ function extractIdToken(login) {
   )
 }
 
-function validateSocialSignup({
-  accountType,
-  firstName,
-  lastName,
-  ageConfirmed,
-  termsAccepted,
-}) {
-  if (!accountType) {
-    return 'Choose Manager or Player.'
-  }
-
-  if (!firstName.trim()) {
-    return 'Enter your first name.'
-  }
-
-  if (!lastName.trim()) {
-    return 'Enter your last name.'
-  }
-
-  if (!ageConfirmed) {
-    return 'Confirm that you are 18 or older.'
-  }
-
-  if (!termsAccepted) {
-    return 'Accept the Terms of Service and acknowledge the Privacy Policy.'
-  }
-
-  return ''
-}
-
 function SocialAuthButtons({
   mode = 'login',
   accountType = '',
@@ -118,22 +88,6 @@ function SocialAuthButtons({
   }, [native])
 
   async function authenticate(provider) {
-    if (mode === 'signup') {
-      const validationError =
-        validateSocialSignup({
-          accountType,
-          firstName,
-          lastName,
-          ageConfirmed,
-          termsAccepted,
-        })
-
-      if (validationError) {
-        onError?.(validationError)
-        return
-      }
-    }
-
     if (!native) {
       onError?.(
         `${providerLabel(provider)} sign-in is available in the MatchMuster mobile app.`,
@@ -184,9 +138,9 @@ function SocialAuthButtons({
         payload.account_type =
           accountType
         payload.first_name =
-          firstName.trim()
+          firstName
         payload.last_name =
-          lastName.trim()
+          lastName
         payload.age_confirmed =
           ageConfirmed
         payload.terms_accepted =

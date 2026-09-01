@@ -10,8 +10,9 @@ import {
   ArrowUpRight,
   BarChart3,
   CalendarDays,
+  CreditCard,
+  Download,
   LockKeyhole,
-  Plus,
   ReceiptText,
   Trash2,
   WalletCards,
@@ -68,7 +69,11 @@ function defaultDate() {
   ].join('-')
 }
 
-function FinancePage() {
+function escapeCsv(value) {
+  return `"${String(value ?? '').replaceAll('"', '""')}"`
+}
+
+function FinancePage({ analytics = false }) {
   const navigate = useNavigate()
   const { teamId } = useParams()
   const [currentUser, setCurrentUser] = useState(null)
@@ -120,7 +125,10 @@ function FinancePage() {
       const [userResponse, teamsResponse, financeResponse] = await Promise.all([
         fetch(`${API_URL}/users/me`, { headers }),
         fetch(`${API_URL}/teams`, { headers }),
-        fetch(`${API_URL}/teams/${teamId}/finance`, { headers }),
+        fetch(
+          `${API_URL}/teams/${teamId}/finance${analytics ? '/analytics' : ''}`,
+          { headers },
+        ),
       ])
 
       if (
@@ -164,9 +172,11 @@ function FinancePage() {
     } finally {
       setLoading(false)
     }
-  }, [authHeaders, navigate, redirectToLogin, teamId])
+  }, [analytics, authHeaders, navigate, redirectToLogin, teamId])
 
   useEffect(() => {
+    // The loader synchronises this route with the authenticated finance API.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadFinance()
   }, [loadFinance])
 
@@ -270,6 +280,54 @@ function FinancePage() {
     }
   }
 
+  async function exportCsv() {
+    const rows = [
+      ['Date', 'Type', 'Description', 'Category', 'Amount GBP'],
+      ...(finance?.match_subs || []).map((row) => [
+        row.occurred_on,
+        'Income',
+        `Match Subs vs ${row.opponent}`,
+        'Match Subs',
+        (Number(row.amount_pence || 0) / 100).toFixed(2),
+      ]),
+      ...(finance?.entries || []).map((entry) => [
+        entry.occurred_on,
+        entry.entry_type === 'income' ? 'Income' : 'Expense',
+        entry.description,
+        entry.category,
+        `${entry.entry_type === 'expense' ? '-' : ''}${(
+          Number(entry.amount_pence || 0) / 100
+        ).toFixed(2)}`,
+      ]),
+    ]
+    const csv = rows.map((row) => row.map(escapeCsv).join(',')).join('\n')
+    const fileName = `${team?.name || 'club'}-finance.csv`
+    const file = new File([csv], fileName, {
+      type: 'text/csv;charset=utf-8',
+    })
+
+    if (navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: `${team?.name || 'Club'} finance statement`,
+        })
+      } catch (shareError) {
+        if (shareError.name !== 'AbortError') {
+          setError('The finance statement could not be shared.')
+        }
+      }
+      return
+    }
+
+    const url = URL.createObjectURL(file)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = fileName
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   if (loading) {
     return <p className="dashboard-message">Loading club finances...</p>
   }
@@ -286,9 +344,9 @@ function FinancePage() {
             <section className="finance-locked-card">
               <span><LockKeyhole size={28} aria-hidden="true" /></span>
               <p>MATCHMUSTER PLUS</p>
-              <h1 className="mm-page-title">Club Finance</h1>
+              <h1 className="mm-page-title">Finance analytics</h1>
               <p>
-                Track Match Subs, income, expenses and your club’s financial position.
+                Unlock charts, trends, payment analysis, statements and CSV exports.
               </p>
               {ownerCanUpgrade && (
                 <button
@@ -333,33 +391,59 @@ function FinancePage() {
         <section className="finance-shell">
           <header className="finance-heading">
             <div>
-              <span>MANAGER • PLUS</span>
-              <h1 className="mm-page-title">Club finances</h1>
-              <p>
-                Match Subs are added automatically when Stripe confirms them as paid.
-              </p>
+              <span>{analytics ? 'MANAGER • PLUS' : 'MANAGER • CLUB FINANCE'}</span>
+              <h1 className="mm-page-title">
+                {analytics ? 'Finance analytics' : 'Club finances'}
+              </h1>
+              {analytics && (
+                <p>
+                  Understand income, expenses and player payment collection in one place.
+                </p>
+              )}
             </div>
-            <div className="finance-heading-actions">
-              <button
-                className="finance-view-expenses-button"
-                type="button"
-                onClick={() => navigate(`/teams/${teamId}/finance/expenses`)}
-              >
-                <ReceiptText size={19} aria-hidden="true" />
-                Show expenses
-              </button>
-              <button
-                className="finance-add-entry-button"
-                type="button"
-                onClick={() => setShowForm((current) => !current)}
-              >
-                <Plus size={19} aria-hidden="true" />
-                Add entry
-              </button>
-            </div>
+            {analytics && (
+              <div className="finance-heading-actions">
+                <button
+                  className="finance-view-expenses-button"
+                  type="button"
+                  onClick={() => void exportCsv()}
+                >
+                  <Download size={19} aria-hidden="true" />
+                  Export CSV
+                </button>
+                <button
+                  className="finance-view-expenses-button"
+                  type="button"
+                  onClick={() => navigate(`/teams/${teamId}/finance/expenses`)}
+                >
+                  <ReceiptText size={19} aria-hidden="true" />
+                  Expenses
+                </button>
+                <button
+                  className="finance-view-expenses-button"
+                  type="button"
+                  onClick={() => navigate(`/teams/${teamId}/payments`)}
+                >
+                  <CreditCard size={19} aria-hidden="true" />
+                  Plus payments
+                </button>
+              </div>
+            )}
           </header>
 
           {error && <p className="finance-error" role="alert">{error}</p>}
+
+          {!analytics && (
+            <button
+              className="finance-analytics-button"
+              type="button"
+              onClick={() => navigate(`/teams/${teamId}/finance/analytics`)}
+            >
+              <BarChart3 aria-hidden="true" />
+              <span>Show Finance Analytics</span>
+              <small>PLUS</small>
+            </button>
+          )}
 
           <section className={`finance-position-card ${position}`}>
             <div>
@@ -400,7 +484,7 @@ function FinancePage() {
             </article>
           </section>
 
-          <section className="finance-insights-grid" aria-label="Finance insights">
+          {analytics && <section className="finance-insights-grid" aria-label="Finance insights">
             <article>
               <span className="finance-insight-icon"><CalendarDays size={20} aria-hidden="true" /></span>
               <div><small>Spent this month</small><strong>{currency(currentMonthSpent)}</strong><p>Recorded costs during the current calendar month.</p></div>
@@ -409,9 +493,9 @@ function FinancePage() {
               <span className="finance-insight-icon"><BarChart3 size={20} aria-hidden="true" /></span>
               <div><small>Biggest cost area</small><strong>{topExpenseCategory?.name || 'No costs yet'}</strong><p>{topExpenseCategory ? `${currency(topExpenseCategory.amount)} spent in this category.` : 'Record expenses to reveal spending patterns.'}</p></div>
             </article>
-          </section>
+          </section>}
 
-          <section className="finance-spending-overview">
+          {analytics && <section className="finance-spending-overview">
             <div className="finance-section-heading finance-spending-heading">
               <div>
                 <span>SPENDING INTELLIGENCE</span>
@@ -434,7 +518,15 @@ function FinancePage() {
             ) : (
               <p className="finance-overview-empty">Add an expense to start seeing where the club spends the most.</p>
             )}
-          </section>
+          </section>}
+
+          <button
+            className="finance-entry-button"
+            type="button"
+            onClick={() => setShowForm((current) => !current)}
+          >
+            Add entry
+          </button>
 
           {showForm && (
             <form className="finance-entry-form" onSubmit={createEntry}>
@@ -523,12 +615,12 @@ function FinancePage() {
             <div className="finance-section-heading">
               <div>
                 <span>LEDGER</span>
-                <h2>Income &amp; expenses</h2>
+                <h2>{analytics ? 'Income & expenses' : 'Recent activity'}</h2>
               </div>
             </div>
 
             <div className="finance-ledger">
-              {finance?.match_subs?.map((row) => (
+              {finance?.match_subs?.slice(0, analytics ? undefined : 3).map((row) => (
                 <article className="finance-ledger-row income automatic" key={`match-${row.match_id}`}>
                   <span className="finance-ledger-icon"><ArrowUpRight size={18} aria-hidden="true" /></span>
                   <span className="finance-ledger-copy">
@@ -539,7 +631,7 @@ function FinancePage() {
                 </article>
               ))}
 
-              {finance?.entries?.map((entry) => {
+              {finance?.entries?.slice(0, analytics ? undefined : 5).map((entry) => {
                 const income = entry.entry_type === 'income'
                 return (
                   <article className={`finance-ledger-row ${income ? 'income' : 'expense'}`} key={entry.id}>

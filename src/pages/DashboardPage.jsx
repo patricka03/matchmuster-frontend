@@ -1089,15 +1089,12 @@ function DashboardPage() {
   }
 
   function openNextTraining() {
-    if (
-      !teamId ||
-      !nextTraining
-    ) {
+    if (!teamId) {
       return
     }
 
     navigate(
-      `/teams/${teamId}/trainings/${nextTraining.id}`,
+      `/teams/${teamId}/schedule`,
     )
   }
 
@@ -1108,17 +1105,17 @@ function DashboardPage() {
       return
     }
 
-    if (nextMatch) {
-      navigate(
-        `/teams/${teamId}/matches/${nextMatch.id}/payments`,
-      )
-
+    if (isApprovedManager) {
+      navigate(`/teams/${teamId}/finance`)
       return
     }
 
-    navigate(
-      `/teams/${teamId}/schedule`,
-    )
+    if (nextMatch) {
+      navigate(`/teams/${teamId}/matches/${nextMatch.id}/payments`)
+      return
+    }
+
+    navigate(`/teams/${teamId}/schedule`)
   }
 
   function openRatings() {
@@ -1570,13 +1567,13 @@ function DashboardPage() {
                   </span>
 
                   <strong>
-                    Payments
+                    {isApprovedManager ? 'Club Finance' : 'Match Sub'}
                   </strong>
 
                   <small>
                     {isApprovedPlayer
                       ? paymentCardText()
-                      : 'Match subs & payments'}
+                      : 'Record income and expenses'}
                   </small>
                 </button>
 
@@ -1650,9 +1647,7 @@ function DashboardPage() {
                   onClick={
                     openNextTraining
                   }
-                  disabled={
-                    !nextTraining
-                  }
+                  aria-label="View team schedule"
                 >
                   <span className="home-dashboard-training-label">
                     Next training
