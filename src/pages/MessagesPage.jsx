@@ -248,7 +248,7 @@ function MessagesPage() {
               type="button"
               onClick={() => setShowNew(true)}
             >
-              
+
               New message
             </button>
           </header>

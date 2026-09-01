@@ -27,3 +27,9 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Local safety backups
+*.backup-*
+
+# Local temporary working files
+/tmp/

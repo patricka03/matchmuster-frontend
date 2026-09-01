@@ -948,7 +948,7 @@ function TeamMessagesV2Page() {
                   setShowNewMessage(true)
                 }
               >
-                
+
                 New message
               </button>
             </header>

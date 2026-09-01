@@ -808,7 +808,7 @@ function TeamPage() {
                 }`}>
                   <div className="matchmuster-add-team-icon">
                     {canCreateAdditionalTeam ? (
-                      
+
                     ) : (
                       <Lock
                         size={22}
