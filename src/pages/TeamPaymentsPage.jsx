@@ -505,9 +505,15 @@ function TeamPaymentsPage() {
 
   async function downloadReceipt(payment) {
     resetMessages()
+
     try {
       const data = await request(`/teams/${teamId}/payments/${payment.id}/receipt`)
       const receiptData = data.receipt
+
+      if (!receiptData?.reference) {
+        throw new Error('The receipt could not be prepared.')
+      }
+
       const text = [
         'MATCHMUSTER PAYMENT RECEIPT',
         `Reference: ${receiptData.reference}`,
@@ -518,15 +524,82 @@ function TeamPaymentsPage() {
         `Method: ${receiptData.payment_method || 'Recorded payment'}`,
         `Paid: ${displayDate(receiptData.paid_at, true)}`,
       ].join('\n')
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
+
+      const fileName = `${receiptData.reference}.txt`
+
+      if (
+        Capacitor.isNativePlatform() &&
+        typeof navigator.share === 'function'
+      ) {
+        try {
+          const canCreateFile =
+            typeof File === 'function'
+
+          const receiptFile = canCreateFile
+            ? new File(
+                [text],
+                fileName,
+                {
+                  type: 'text/plain;charset=utf-8',
+                },
+              )
+            : null
+
+          const canShareFile =
+            receiptFile &&
+            (
+              typeof navigator.canShare !== 'function' ||
+              navigator.canShare({
+                files: [receiptFile],
+              })
+            )
+
+          if (canShareFile) {
+            await navigator.share({
+              title: 'MatchMuster payment receipt',
+              text: `Receipt ${receiptData.reference}`,
+              files: [receiptFile],
+            })
+          } else {
+            await navigator.share({
+              title: 'MatchMuster payment receipt',
+              text,
+            })
+          }
+
+          return
+        } catch (shareError) {
+          if (shareError?.name === 'AbortError') {
+            return
+          }
+        }
+      }
+
+      const blob = new Blob(
+        [text],
+        {
+          type: 'text/plain;charset=utf-8',
+        },
+      )
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
+
       link.href = url
-      link.download = `${receiptData.reference}.txt`
+      link.download = fileName
+
+      document.body.appendChild(link)
       link.click()
-      URL.revokeObjectURL(url)
+      link.remove()
+
+      window.setTimeout(
+        () => URL.revokeObjectURL(url),
+        1000,
+      )
     } catch (receiptError) {
-      setError(receiptError.message)
+      setError(
+        receiptError.message ||
+          'Unable to prepare the receipt.',
+      )
     }
   }
 

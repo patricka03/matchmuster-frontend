@@ -24,6 +24,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>MatchMuster uses your camera so you can take a profile photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MatchMuster uses your photo library so you can choose a profile photo.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict/>
 	<key>UIApplicationSceneManifest</key>

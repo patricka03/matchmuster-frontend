@@ -1,9 +1,9 @@
 .team-payments-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 78px);
   background:
     radial-gradient(circle at 5% 0%, rgba(37, 99, 235, 0.1), transparent 28rem),
     #f4f7fb;
-  padding: 96px 20px 110px;
+  padding: 28px 20px 110px;
 }
 
 .team-payments-shell {
@@ -614,7 +614,7 @@
 }
 
 @media (max-width: 600px) {
-  .team-payments-page { padding: 80px 14px 105px; }
+  .team-payments-page { padding: 20px 14px 105px; }
   .team-payments-heading { align-items: flex-end; }
   .team-payments-heading > div { min-width: 0; }
   .team-payments-heading .team-payments-primary { width: auto; padding: 0 13px; white-space: nowrap; }
