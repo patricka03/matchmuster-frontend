@@ -668,8 +668,11 @@
   overscroll-behavior: contain;
 }
 
+/* ==========================================================
+   MATCHMUSTER FIXED MOBILE CONVERSATION
+   Single source of truth for the open-chat layout.
+========================================================== */
 
-/* MATCHMUSTER FIXED MOBILE CONVERSATION */
 @media (max-width: 820px) {
   html.mm-conversation-active,
   body.mm-conversation-active {
@@ -685,83 +688,99 @@
     overflow: hidden;
   }
 
+  /*
+   * A conversation owns the full screen below the top navbar.
+   * The normal bottom navigation is removed completely.
+   */
+  body.mm-conversation-active .bottom-nav,
+  body.mm-conversation-active .bottom-nav-sheet-backdrop {
+    display: none !important;
+  }
+
+  /*
+   * IMPORTANT:
+   * Do not use a calculated height here.
+   * Using both height and bottom caused iOS to preserve a
+   * phantom navbar-sized gap beneath the composer.
+   *
+   * top + bottom: 0 gives the conversation the exact remaining
+   * viewport beneath the fixed MatchMuster top navbar.
+   */
   main.mm-messages-page.mm-conversation-page {
     --mm-chat-top-navigation-height:
       calc(64px + env(safe-area-inset-top, 0px));
-    --mm-chat-bottom-navigation-height:
-      calc(70px + env(safe-area-inset-bottom, 0px));
 
     position: fixed !important;
     z-index: 900;
+
     top:
       calc(
         var(--mm-chat-viewport-top, 0px) +
         var(--mm-chat-top-navigation-height)
-      );
-    right: 0;
-    left: 0;
-    width: 100% !important;
-    height:
-      calc(
-        var(--mm-chat-viewport-height, 100dvh) -
-        var(--mm-chat-top-navigation-height) -
-        var(--mm-chat-bottom-navigation-height)
       ) !important;
+
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+
+    width: 100% !important;
+    height: auto !important;
     min-height: 0 !important;
+
+    margin: 0 !important;
     padding: 0 !important;
+
     overflow: hidden !important;
     background: #fff;
   }
 
-  html.mm-chat-keyboard-open .app-topbar,
-  html.mm-chat-keyboard-open .app-topbar-fixed-spacer,
-  html.mm-chat-keyboard-open .app-topbar-error,
-  html.mm-chat-keyboard-open .bottom-nav {
-    display: none !important;
-  }
-
-  html.mm-chat-keyboard-open
-    main.mm-messages-page.mm-conversation-page {
-    top: var(--mm-chat-viewport-top, 0px);
-    height: var(--mm-chat-viewport-height, 100dvh) !important;
-  }
-
-  .mm-conversation-page .mm-messages-error {
-    position: absolute;
-    z-index: 40;
-    top: calc(72px + env(safe-area-inset-top, 0px));
-    right: 12px;
-    left: 12px;
-    width: auto;
-    margin: 0;
-    box-shadow: 0 10px 28px rgba(127, 29, 29, 0.16);
-  }
-
+  /*
+   * The thread uses three rows:
+   * header / scrolling messages / composer.
+   * Only the middle row scrolls.
+   */
   .mm-conversation-page .mm-message-thread-shell {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
     min-height: 0 !important;
-    max-height: none;
-    margin: 0;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
+    max-height: none !important;
+
+    display: grid !important;
+    grid-template-rows:
+      auto
+      minmax(0, 1fr)
+      auto !important;
+
+    margin: 0 !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+    background: #fff;
   }
 
   .mm-thread-header {
-    grid-template-columns: 42px 40px minmax(0, 1fr) 42px;
+    position: relative;
+    z-index: 30;
+
+    grid-template-columns:
+      42px
+      40px
+      minmax(0, 1fr)
+      42px;
+
     gap: 8px;
     min-height: 62px;
+
     padding:
       9px
       max(10px, env(safe-area-inset-right, 0px))
       9px
       max(10px, env(safe-area-inset-left, 0px));
-  }
 
-  html.mm-chat-keyboard-open .mm-thread-header {
-    min-height: calc(62px + env(safe-area-inset-top, 0px));
-    padding-top: calc(9px + env(safe-area-inset-top, 0px));
+    background: #fff;
   }
 
   .mm-message-avatar.compact {
@@ -772,12 +791,15 @@
   }
 
   .mm-thread-messages {
-    min-height: 0;
+    min-height: 0 !important;
+
     padding: 12px 10px 14px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
     touch-action: pan-y;
     overflow-anchor: none;
     scrollbar-width: none;
@@ -791,26 +813,46 @@
     margin: 6px 0;
   }
 
-  .mm-message-composer {
-    position: relative;
-    z-index: 20;
-    grid-template-columns: minmax(0, 1fr) 44px;
+  /*
+   * Composer is the final grid row.
+   * No navbar offset, no margin, no transform.
+   */
+  .mm-conversation-page .mm-message-composer {
+    position: relative !important;
+    z-index: 40 !important;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      44px;
+
     gap: 8px;
+
+    margin: 0 !important;
+
     padding:
       8px
       max(9px, env(safe-area-inset-right, 0px))
       max(8px, env(safe-area-inset-bottom, 0px))
-      max(9px, env(safe-area-inset-left, 0px));
+      max(9px, env(safe-area-inset-left, 0px)) !important;
+
     border-top: 1px solid #e6edf5;
-    background: #fff;
+    background: #fff !important;
+
+    transform: none !important;
   }
 
   .mm-message-composer textarea {
     min-height: 44px;
     max-height: 104px;
+
     padding: 10px 12px;
+
     border-radius: 14px;
     overflow-y: auto;
+
     font-size: 16px;
   }
 
@@ -820,8 +862,73 @@
     border-radius: 14px;
   }
 
-  html.mm-chat-keyboard-open .mm-message-composer {
-    padding-bottom: 8px;
+  /*
+   * Error floats over the thread rather than taking up layout
+   * space and pushing the composer upward.
+   */
+  .mm-conversation-page .mm-messages-error {
+    position: absolute;
+    z-index: 60;
+
+    top: 74px;
+    right: 12px;
+    left: 12px;
+
+    width: auto;
+    margin: 0;
+
+    box-shadow:
+      0 10px 28px
+      rgba(127, 29, 29, 0.16);
+  }
+
+  /*
+   * iOS keyboard open:
+   * hide both app nav bars and explicitly size the chat to the
+   * visual viewport reported by TeamMessagesV2Page.jsx.
+   */
+  html.mm-chat-keyboard-open .app-topbar,
+  html.mm-chat-keyboard-open .app-topbar-fixed-spacer,
+  html.mm-chat-keyboard-open .app-topbar-error,
+  html.mm-chat-keyboard-open .bottom-nav {
+    display: none !important;
+  }
+
+  html.mm-chat-keyboard-open
+    main.mm-messages-page.mm-conversation-page {
+    top:
+      var(
+        --mm-chat-viewport-top,
+        0px
+      ) !important;
+
+    bottom: auto !important;
+
+    height:
+      var(
+        --mm-chat-viewport-height,
+        100dvh
+      ) !important;
+  }
+
+  html.mm-chat-keyboard-open .mm-thread-header {
+    min-height:
+      calc(
+        62px +
+        env(safe-area-inset-top, 0px)
+      );
+
+    padding-top:
+      calc(
+        9px +
+        env(safe-area-inset-top, 0px)
+      );
+  }
+
+  html.mm-chat-keyboard-open
+    .mm-conversation-page
+    .mm-message-composer {
+    padding-bottom: 8px !important;
   }
 }
 
@@ -834,10 +941,25 @@
 
 @media (max-width: 380px) {
   .mm-thread-header {
-    grid-template-columns: 40px 36px minmax(0, 1fr) 40px;
+    grid-template-columns:
+      40px
+      36px
+      minmax(0, 1fr)
+      40px;
+
     gap: 6px;
-    padding-right: max(8px, env(safe-area-inset-right, 0px));
-    padding-left: max(8px, env(safe-area-inset-left, 0px));
+
+    padding-right:
+      max(
+        8px,
+        env(safe-area-inset-right, 0px)
+      );
+
+    padding-left:
+      max(
+        8px,
+        env(safe-area-inset-left, 0px)
+      );
   }
 
   .mm-thread-back,
@@ -857,7 +979,10 @@
   }
 }
 
-@media (max-width: 820px) and (orientation: landscape) {
+@media
+  (max-width: 820px)
+  and (orientation: landscape) {
+
   main.mm-messages-page.mm-conversation-page {
     --mm-chat-top-navigation-height:
       calc(56px + env(safe-area-inset-top, 0px));
@@ -869,240 +994,45 @@
     padding-bottom: 6px;
   }
 
-  html.mm-chat-keyboard-open .mm-thread-header {
-    min-height: calc(54px + env(safe-area-inset-top, 0px));
-    padding-top: calc(6px + env(safe-area-inset-top, 0px));
+  html.mm-chat-keyboard-open
+    .mm-thread-header {
+    min-height:
+      calc(
+        54px +
+        env(safe-area-inset-top, 0px)
+      );
+
+    padding-top:
+      calc(
+        6px +
+        env(safe-area-inset-top, 0px)
+      );
   }
 }
-
-/* MATCHMUSTER: CONVERSATION BOTTOM NAV START */
-
-/*
- * Inbox:
- *   Keep normal MatchMuster bottom navigation.
- *
- * Conversation:
- *   Hide bottom navigation for the entire conversation,
- *   whether the keyboard is open or closed.
- */
-body.mm-conversation-active .bottom-nav,
-body.mm-conversation-active .bottom-nav-sheet-backdrop {
-  display: none !important;
+.mm-safety-message {
+  flex: 0 0 auto;
+  margin: 8px 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #e7f5ee;
+  color: #175b37;
+  font-size: 14px;
 }
 
-body.mm-conversation-active {
-  --mm-chat-bottom-navigation-height: 0px !important;
+.mm-message-actions .mm-report-message {
+  min-height: 44px;
+  min-width: 70px;
+  color: #475569;
 }
 
-body.mm-conversation-active .mm-conversation-page {
-  bottom: 0 !important;
-}
+@media (max-width: 820px) {
+  main.mm-messages-page.mm-conversation-page {
+    display: flex;
+    flex-direction: column;
+  }
 
-/* MATCHMUSTER: CONVERSATION BOTTOM NAV END */
-
-/* =========================================================
-   MATCHMUSTER — INSTAGRAM-STYLE CONVERSATION LAYOUT
-   ========================================================= */
-
-/*
- * An open conversation owns the full space below the
- * MatchMuster header. There is no bottom-navigation space.
- */
-body.mm-conversation-active .bottom-nav,
-body.mm-conversation-active .bottom-nav-sheet-backdrop {
-  display: none !important;
-}
-
-body.mm-conversation-active {
-  --mm-chat-bottom-navigation-height: 0px !important;
-  overflow: hidden !important;
-}
-
-/*
- * Remove the normal Messages-page bottom padding.
- * That padding is useful for the inbox because of the navbar,
- * but must not exist inside an actual conversation.
- */
-body.mm-conversation-active .mm-messages-page.mm-conversation-page,
-body.mm-conversation-active .mm-conversation-page {
-  position: fixed !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  left: 0 !important;
-
-  margin: 0 !important;
-  padding-right: 0 !important;
-  padding-bottom: 0 !important;
-  padding-left: 0 !important;
-
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-/*
- * The thread fills the conversation viewport.
- * Header = fixed row
- * Messages = only scrollable area
- * Composer = fixed bottom row
- */
-body.mm-conversation-active .mm-message-thread-shell {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: none !important;
-
-  display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) auto !important;
-
-  margin: 0 !important;
-  border-right: 0 !important;
-  border-bottom: 0 !important;
-  border-left: 0 !important;
-  border-radius: 0 !important;
-
-  overflow: hidden !important;
-}
-
-/* Only the actual messages move. */
-body.mm-conversation-active .mm-thread-messages {
-  min-height: 0 !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-}
-
-/*
- * Instagram/iMessage behaviour:
- * composer sits at the bottom of the conversation and,
- * on iPhone, respects only the real safe-area inset.
- */
-body.mm-conversation-active .mm-message-composer {
-  position: relative !important;
-  z-index: 20 !important;
-
-  margin: 0 !important;
-
-  padding:
-    10px
-    16px
-    max(10px, env(safe-area-inset-bottom, 0px))
-    16px !important;
-
-  background: #ffffff !important;
-}
-
-/*
- * When iOS opens the keyboard the visual viewport becomes
- * shorter. Do not reintroduce navbar/safe-area spacing between
- * the keyboard and composer.
- */
-body.mm-conversation-active.mm-chat-keyboard-open
-  .mm-message-composer {
-  padding-bottom: 10px !important;
-}
-
-
-/* =========================================================
-   MATCHMUSTER — INSTAGRAM-STYLE CONVERSATION LAYOUT
-   ========================================================= */
-
-/*
- * An open conversation owns the full space below the
- * MatchMuster header. There is no bottom-navigation space.
- */
-body.mm-conversation-active .bottom-nav,
-body.mm-conversation-active .bottom-nav-sheet-backdrop {
-  display: none !important;
-}
-
-body.mm-conversation-active {
-  --mm-chat-bottom-navigation-height: 0px !important;
-  overflow: hidden !important;
-}
-
-/*
- * Remove the normal Messages-page bottom padding.
- * That padding is useful for the inbox because of the navbar,
- * but must not exist inside an actual conversation.
- */
-body.mm-conversation-active .mm-messages-page.mm-conversation-page,
-body.mm-conversation-active .mm-conversation-page {
-  position: fixed !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  left: 0 !important;
-
-  margin: 0 !important;
-  padding-right: 0 !important;
-  padding-bottom: 0 !important;
-  padding-left: 0 !important;
-
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-/*
- * The thread fills the conversation viewport.
- * Header = fixed row
- * Messages = only scrollable area
- * Composer = fixed bottom row
- */
-body.mm-conversation-active .mm-message-thread-shell {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: none !important;
-
-  display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) auto !important;
-
-  margin: 0 !important;
-  border-right: 0 !important;
-  border-bottom: 0 !important;
-  border-left: 0 !important;
-  border-radius: 0 !important;
-
-  overflow: hidden !important;
-}
-
-/* Only the actual messages move. */
-body.mm-conversation-active .mm-thread-messages {
-  min-height: 0 !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-}
-
-/*
- * Instagram/iMessage behaviour:
- * composer sits at the bottom of the conversation and,
- * on iPhone, respects only the real safe-area inset.
- */
-body.mm-conversation-active .mm-message-composer {
-  position: relative !important;
-  z-index: 20 !important;
-
-  margin: 0 !important;
-
-  padding:
-    10px
-    16px
-    max(10px, env(safe-area-inset-bottom, 0px))
-    16px !important;
-
-  background: #ffffff !important;
-}
-
-/*
- * When iOS opens the keyboard the visual viewport becomes
- * shorter. Do not reintroduce navbar/safe-area spacing between
- * the keyboard and composer.
- */
-body.mm-conversation-active.mm-chat-keyboard-open
-  .mm-message-composer {
-  padding-bottom: 10px !important;
+  main.mm-conversation-page .mm-message-thread-shell {
+    flex: 1;
+    height: auto !important;
+  }
 }

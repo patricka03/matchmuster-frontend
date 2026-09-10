@@ -313,7 +313,7 @@ function PostPage() {
 
     const confirmed =
       window.confirm(
-        `Block ${authorName}? Their posts and activity will be hidden from you.`,
+        `Block ${authorName}? Their posts and conversations will be hidden from you, and messages between you will be stopped. MatchMuster will receive a safety report including this post.`,
       )
 
     if (!confirmed) {
@@ -355,6 +355,8 @@ function PostPage() {
                 user_block: {
                   blocked_user_id:
                     authorId,
+                  reportable_type: 'Post',
+                  reportable_id: post.id,
                 },
               }),
           },
@@ -384,6 +386,10 @@ function PostPage() {
       setSafetyMessage(
         `${authorName} has been blocked. You can manage blocked accounts from your profile.`,
       )
+      setPost(null)
+      setPostReads([])
+      setIsReportModalOpen(false)
+      navigate(`/teams/${teamId}/posts`, { replace: true })
     } catch (error) {
       setErrorMessage(
         error.message ||

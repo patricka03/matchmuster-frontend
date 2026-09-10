@@ -348,6 +348,16 @@ function DeveloperModerationPanel() {
                   </div>
                 )}
 
+                {report.content_snapshot?.captured_at && (
+                  <div className="moderation-reported-content">
+                    <span>Evidence saved when reported</span>
+                    <p>{reportableContent(report.content_snapshot)}</p>
+                    {report.content_snapshot.trigger === 'user_block' && (
+                      <p>This review was created by a member blocking another member.</p>
+                    )}
+                  </div>
+                )}
+
                 {report.moderation_notes && (
                   <div className="moderation-existing-notes">
                     <span>Latest moderation notes</span>
@@ -567,11 +577,11 @@ function countStatus(reports, status) {
 }
 
 function canRemoveContent(report) {
-  return ['Post', 'MatchRating'].includes(report.reportable?.type)
+  return ['Post', 'MatchRating', 'Message'].includes(report.reportable?.type)
 }
 
 function reportTitle(report) {
-  const type = formatLabel(report.reportable?.type || 'account')
+  const type = formatLabel(report.reportable?.type || report.content_snapshot?.type || 'account')
   const reportedName = displayName(report.reported_user)
 
   return `${type} reported for ${formatLabel(report.reason)} — ${reportedName}`
@@ -580,6 +590,7 @@ function reportTitle(report) {
 function reportableContent(reportable) {
   return (
     reportable.content ||
+    reportable.body ||
     reportable.comment ||
     reportable.title ||
     'No content is available.'

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import BlockedUsersModal from '../components/BlockedUsersModal'
+import SocialAuthButtons from '../components/SocialAuthButtons'
 import './EditProfilePage.css'
 import './EditProfilePage.mobile.css'
 import API_URL from '../config/api'
@@ -29,6 +30,9 @@ function EditProfilePage() {
 
   const [currentUser, setCurrentUser] =
     useState(null)
+
+  const linkedProviders = currentUser?.social_providers || []
+  const needsAppleDeletion = linkedProviders.includes('apple')
 
   const [activeModal, setActiveModal] =
     useState(null)
@@ -910,6 +914,7 @@ function EditProfilePage() {
 
   async function handleDeleteAccount(
     event,
+    socialProof = null,
   ) {
     event.preventDefault()
 
@@ -917,7 +922,7 @@ function EditProfilePage() {
     setSuccessMessage('')
 
     if (
-      !deletePassword.trim()
+      !socialProof && !deletePassword.trim()
     ) {
       setErrorMessage(
         'Enter your current password to delete your account.',
@@ -960,7 +965,7 @@ function EditProfilePage() {
               token,
           },
 
-          body: JSON.stringify({
+          body: JSON.stringify(socialProof || {
             current_password:
               deletePassword,
           }),
@@ -1978,6 +1983,12 @@ function EditProfilePage() {
                     records may be retained
                     where required.
                   </li>
+                  <li>
+                    Deleting your account does not cancel an Apple subscription.{' '}
+                    <a href="https://apps.apple.com/account/subscriptions" target="_blank" rel="noreferrer">
+                      Manage or cancel your Apple subscription
+                    </a> before continuing.
+                  </li>
                 </ul>
               </div>
 
@@ -2009,7 +2020,7 @@ function EditProfilePage() {
                   handleDeleteAccount
                 }
               >
-                <div className="profile-form-group">
+                {!needsAppleDeletion && <div className="profile-form-group">
                   <label htmlFor="delete-account-password">
                     Current password
                   </label>
@@ -2038,7 +2049,7 @@ function EditProfilePage() {
                     password to make sure
                     it is really you.
                   </small>
-                </div>
+                </div>}
 
                 <label className="profile-delete-confirmation">
                   <input
@@ -2079,7 +2090,7 @@ function EditProfilePage() {
                     Keep my account
                   </button>
 
-                  <button
+                  {!needsAppleDeletion && <button
                     type="submit"
                     className="profile-delete-confirm-button"
                     disabled={
@@ -2091,8 +2102,20 @@ function EditProfilePage() {
                     {isDeletingAccount
                       ? 'Deleting account...'
                       : 'Delete my account'}
-                  </button>
+                  </button>}
                 </div>
+                {linkedProviders.length > 0 && (
+                  <>
+                    <p>Confirm deletion using your linked sign-in account. No MatchMuster password is needed for this option.</p>
+                    <SocialAuthButtons
+                      mode="verify-deletion"
+                      providers={needsAppleDeletion ? ['apple'] : linkedProviders}
+                      disabled={!deleteConfirmed || isDeletingAccount}
+                      onError={setErrorMessage}
+                      onVerified={(proof) => handleDeleteAccount({ preventDefault() {} }, proof)}
+                    />
+                  </>
+                )}
               </form>
             </section>
           </div>

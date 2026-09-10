@@ -91,3 +91,15 @@
     margin: 0 auto;
   }
 }
+.login-legal-links {
+  margin: 18px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+  color: #475569;
+}
+
+.login-legal-links a {
+  color: #1d4ed8;
+  text-decoration: underline;
+}

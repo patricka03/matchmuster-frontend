@@ -28,7 +28,7 @@ const REPORT_REASONS = [
   },
 
   {
-    value: 'hate_speech',
+    value: 'discrimination',
     label: 'Hate speech',
   },
 
@@ -39,7 +39,7 @@ const REPORT_REASONS = [
   },
 
   {
-    value: 'sexual_content',
+    value: 'inappropriate_content',
     label:
       'Sexual or inappropriate content',
   },
@@ -181,6 +181,11 @@ function ReportModal({
         'Please choose a reason for the report.',
       )
 
+      return
+    }
+
+    if (reason === 'other' && !details.trim()) {
+      setErrorMessage('Please describe what happened.')
       return
     }
 

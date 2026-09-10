@@ -66,6 +66,9 @@ function SocialAuthButtons({
   ageConfirmed = false,
   termsAccepted = false,
   onError,
+  onVerified,
+  providers = ['apple', 'google'],
+  disabled = false,
 }) {
   const navigate = useNavigate()
 
@@ -132,6 +135,17 @@ function SocialAuthButtons({
       const payload = {
         provider,
         id_token: idToken,
+      }
+
+      if (mode === 'verify-deletion') {
+        if (provider === 'apple') {
+          // The existing SDK configuration uses legacy mode: accessToken.token
+          // contains Apple's one-use authorization code, not an access token.
+          payload.authorization_code = login?.result?.authorizationCode ||
+            login?.result?.accessToken?.token || login?.authorizationCode || login?.accessToken?.token
+        }
+        await onVerified?.(payload)
+        return
       }
 
       if (mode === 'signup') {
@@ -225,7 +239,9 @@ function SocialAuthButtons({
     <div
       className="social-auth"
       aria-label={
-        mode === 'signup'
+        mode === 'verify-deletion'
+          ? 'Confirm account deletion'
+        : mode === 'signup'
           ? 'Create account with another provider'
           : 'Sign in with another provider'
       }
@@ -234,13 +250,13 @@ function SocialAuthButtons({
         className="social-auth-divider"
         aria-hidden="true"
       >
-        <span>or</span>
+        <span>{mode === 'verify-deletion' ? 'confirm identity' : 'or'}</span>
       </div>
 
-      <button
+      {providers.includes('apple') && <button
         className="social-auth-button social-auth-apple"
         type="button"
-        disabled={Boolean(busyProvider)}
+        disabled={disabled || Boolean(busyProvider)}
         onClick={() =>
           authenticate('apple')
         }
@@ -254,15 +270,17 @@ function SocialAuthButtons({
 
         {busyProvider === 'apple'
           ? 'Connecting...'
+          : mode === 'verify-deletion'
+            ? 'Confirm with Apple and delete'
           : mode === 'signup'
             ? 'Sign up with Apple'
             : 'Sign in with Apple'}
-      </button>
+      </button>}
 
-      <button
+      {providers.includes('google') && <button
         className="social-auth-button social-auth-google"
         type="button"
-        disabled={Boolean(busyProvider)}
+        disabled={disabled || Boolean(busyProvider)}
         onClick={() =>
           authenticate('google')
         }
@@ -276,10 +294,12 @@ function SocialAuthButtons({
 
         {busyProvider === 'google'
           ? 'Connecting...'
+          : mode === 'verify-deletion'
+            ? 'Confirm with Google and delete'
           : mode === 'signup'
             ? 'Sign up with Google'
             : 'Sign in with Google'}
-      </button>
+      </button>}
     </div>
   )
 }

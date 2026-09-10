@@ -227,6 +227,12 @@ function LoginPage() {
           onError={setErrorMessage}
         />
 
+        <p className="login-legal-links">
+          Read our <Link to="/legal/terms">Terms of Service</Link>,{' '}
+          <Link to="/legal/privacy">Privacy Notice</Link> and{' '}
+          <Link to="/legal/community-guidelines">Community Guidelines</Link>.
+        </p>
+
         <div className="login-secondary-actions">
           <Link
             className="login-help-link"

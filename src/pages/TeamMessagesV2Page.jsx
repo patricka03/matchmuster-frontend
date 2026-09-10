@@ -14,15 +14,18 @@ import {
   Check,
   ChevronLeft,
   Edit3,
+  Flag,
   MessageCircle,
   MoreVertical,
   Search,
   Send,
+  ShieldBan,
   Trash2,
   X,
 } from 'lucide-react'
 
 import Navbar from '../components/Navbar'
+import ReportModal from '../components/ReportModal'
 import API_URL from '../config/api'
 import {
   clearAuthToken,
@@ -168,11 +171,16 @@ function TeamMessagesV2Page() {
     useState('')
   const [savingEdit, setSavingEdit] =
     useState(false)
+  const [reportTarget, setReportTarget] = useState(null)
+  const [blocking, setBlocking] = useState(false)
+  const [safetyMessage, setSafetyMessage] = useState('')
 
   const messagesEndRef = useRef(null)
   const messagesThreadRef = useRef(null)
   const messageInputRef = useRef(null)
   const directRecipientHandled = useRef(false)
+  const threadRequestRef = useRef(0)
+  const stickToBottomRef = useRef(true)
 
   useEffect(() => {
     if (!conversationId) {
@@ -380,12 +388,15 @@ function TeamMessagesV2Page() {
         }
 
         if (!response.ok) {
-          throw new Error(
+          const error = new Error(
             data.error ||
               data.errors?.join?.(', ') ||
               data.message ||
               'Unable to complete that request.',
           )
+          error.status = response.status
+          error.code = data.code
+          throw error
         }
 
         return data
@@ -419,35 +430,44 @@ function TeamMessagesV2Page() {
 
   const loadThread =
     useCallback(async () => {
+      const request = ++threadRequestRef.current
       if (!conversationId) {
         setConversation(null)
         setMessages([])
         return
       }
 
-      const [
-        conversationData,
-        messagesData,
-      ] = await Promise.all([
-        apiFetch(
-          `/teams/${teamId}/conversations/${conversationId}`,
-        ),
-        apiFetch(
-          `/teams/${teamId}/conversations/${conversationId}/messages`,
-        ),
-      ])
+      try {
+        const [conversationData, messagesData] = await Promise.all([
+          apiFetch(`/teams/${teamId}/conversations/${conversationId}`),
+          apiFetch(`/teams/${teamId}/conversations/${conversationId}/messages`),
+        ])
 
-      setConversation(
-        conversationData.conversation ||
-          null,
-      )
-      setMessages(
-        messagesData.messages || [],
-      )
+        if (request !== threadRequestRef.current) return
+
+        setConversation(conversationData.conversation || null)
+        setMessages((current) => {
+          const next = messagesData.messages || []
+          return JSON.stringify(current) === JSON.stringify(next) ? current : next
+        })
+      } catch (error) {
+        if (request !== threadRequestRef.current) return
+        if (error.status === 403 || error.status === 404) {
+          setConversation(null)
+          setMessages([])
+          setMessageBody('')
+          setReportTarget(null)
+          setSafetyMessage('This conversation is no longer available.')
+          navigate(`/teams/${teamId}/messages`, { replace: true })
+          return
+        }
+        throw error
+      }
     }, [
       apiFetch,
       teamId,
       conversationId,
+      navigate,
     ])
 
   useEffect(() => {
@@ -464,6 +484,7 @@ function TeamMessagesV2Page() {
 
       try {
         await loadCurrentUser()
+        if (cancelled) return
 
         if (conversationId) {
           await loadThread()
@@ -488,6 +509,7 @@ function TeamMessagesV2Page() {
 
     return () => {
       cancelled = true
+      threadRequestRef.current += 1
     }
   }, [
     token,
@@ -503,7 +525,7 @@ function TeamMessagesV2Page() {
 
     const thread = messagesThreadRef.current
 
-    if (!thread) return
+    if (!thread || !stickToBottomRef.current) return
 
     thread.scrollTo({
       top: thread.scrollHeight,
@@ -511,9 +533,38 @@ function TeamMessagesV2Page() {
     })
   }, [messages, conversationId])
 
+  useEffect(() => {
+    if (!conversationId || loading || blocking || sending || savingEdit || reportTarget) return undefined
+    let active = true
+    let refreshing = false
+    async function refresh() {
+      if (!active || refreshing || document.visibilityState === 'hidden') return
+      refreshing = true
+      try {
+        await loadThread()
+      } catch {
+        // Keep the last successful view during a temporary network outage.
+      } finally {
+        refreshing = false
+      }
+    }
+    const timer = window.setInterval(refresh, 10000)
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      active = false
+      threadRequestRef.current += 1
+      window.clearInterval(timer)
+      window.removeEventListener('focus', refresh)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [conversationId, loading, blocking, sending, savingEdit, reportTarget, loadThread])
+
   const createConversation =
     useCallback(
       async (recipientId) => {
+        setSafetyMessage('')
+        stickToBottomRef.current = true
         setStartingRecipientId(
           recipientId,
         )
@@ -680,6 +731,7 @@ function TeamMessagesV2Page() {
 
       setSending(true)
       setErrorMessage('')
+      threadRequestRef.current += 1
 
       try {
         const data =
@@ -695,6 +747,7 @@ function TeamMessagesV2Page() {
             },
           )
 
+        stickToBottomRef.current = true
         setMessages(
           (current) => [
             ...current,
@@ -840,6 +893,47 @@ function TeamMessagesV2Page() {
   const otherUser =
     conversation?.other_user
 
+  function reportMessage(message) {
+    setSafetyMessage('')
+    messageInputRef.current?.blur()
+    setShowChatMenu(false)
+    setReportTarget({ id: message.id, userId: message.sender_id, label: 'this message' })
+  }
+
+  async function blockOtherUser() {
+    if (!otherUser?.id || blocking || sending || savingEdit) return
+    messageInputRef.current?.blur()
+    setShowChatMenu(false)
+    if (!window.confirm(`Block ${getUserName(otherUser)}? Their posts and this conversation will be hidden, and messages between you will be stopped. MatchMuster will receive a safety report. You can unblock them in Profile → Blocked users.`)) return
+
+    const lastReceived = [...messages].reverse().find((message) => Number(message.sender_id) === Number(otherUser.id))
+    setBlocking(true)
+    threadRequestRef.current += 1
+    setErrorMessage('')
+    try {
+      await apiFetch('/user_blocks', {
+        method: 'POST',
+        body: JSON.stringify({ user_block: {
+          blocked_user_id: otherUser.id,
+          ...(lastReceived ? { reportable_type: 'Message', reportable_id: lastReceived.id } : {}),
+        } }),
+      })
+      threadRequestRef.current += 1
+      setMessages([])
+      setConversation(null)
+      setMessageBody('')
+      setReportTarget(null)
+      setEditingMessageId(null)
+      setConversations((current) => current.filter((item) => Number(item.id) !== Number(conversationId)))
+      setSafetyMessage('Member blocked. Their content is hidden and a safety report has been sent to MatchMuster.')
+      navigate(`/teams/${teamId}/messages`, { replace: true })
+    } catch (error) {
+      setErrorMessage(error.message || 'Unable to block this member. Please try again.')
+    } finally {
+      setBlocking(false)
+    }
+  }
+
   const filteredRecipients =
     useMemo(() => {
       const query =
@@ -916,11 +1010,21 @@ function TeamMessagesV2Page() {
       <Navbar
         teamId={teamId}
         currentUser={currentUser}
+        hideBottomNav={Boolean(conversationId)}
       />
 
       <main
         className={`mm-messages-page ${conversationId ? 'mm-conversation-page' : ''}`}
+        style={
+          conversationId
+            ? {
+                '--mm-chat-bottom-navigation-height':
+                  '0px',
+              }
+            : undefined
+        }
       >
+        {safetyMessage && <p className="mm-safety-message" role="status">{safetyMessage}</p>}
         {errorMessage && (
           <div
             className="mm-messages-error"
@@ -1061,6 +1165,7 @@ function TeamMessagesV2Page() {
                   className="mm-thread-menu-button"
                   type="button"
                   aria-label="Conversation options"
+                  aria-expanded={showChatMenu}
                   onClick={() =>
                     setShowChatMenu(
                       (current) => !current,
@@ -1072,6 +1177,16 @@ function TeamMessagesV2Page() {
 
                 {showChatMenu && (
                   <div className="mm-thread-menu">
+                    <button type="button" disabled={!otherUser?.id || blocking} onClick={() => {
+                      messageInputRef.current?.blur()
+                      setShowChatMenu(false)
+                      setReportTarget({ userId: otherUser.id, label: 'this member' })
+                    }}>
+                      <Flag size={17} /> Report member
+                    </button>
+                    <button type="button" disabled={!otherUser?.id || blocking || sending || savingEdit} onClick={blockOtherUser}>
+                      <ShieldBan size={17} /> {blocking ? 'Blocking...' : 'Block member'}
+                    </button>
                     <button
                       type="button"
                       onClick={deleteChat}
@@ -1087,6 +1202,10 @@ function TeamMessagesV2Page() {
             <div
               className="mm-thread-messages"
               ref={messagesThreadRef}
+              onScroll={(event) => {
+                const thread = event.currentTarget
+                stickToBottomRef.current = thread.scrollHeight - thread.scrollTop - thread.clientHeight < 100
+              }}
             >
               {messages.length === 0 ? (
                 <div className="mm-thread-empty">
@@ -1193,6 +1312,13 @@ function TeamMessagesV2Page() {
                                     >
                                       <Trash2 size={13} />
                                       Delete
+                                    </button>
+                                  </span>
+                                )}
+                                {!mine && (
+                                  <span className="mm-message-actions">
+                                    <button type="button" className="mm-report-message" onClick={() => reportMessage(message)}>
+                                      <Flag size={14} /> Report
                                     </button>
                                   </span>
                                 )}
@@ -1376,6 +1502,15 @@ function TeamMessagesV2Page() {
           </section>
         </div>
       )}
+      <ReportModal
+        isOpen={Boolean(reportTarget)}
+        onClose={() => setReportTarget(null)}
+        reportableType={reportTarget?.id ? 'Message' : undefined}
+        reportableId={reportTarget?.id}
+        reportedUserId={reportTarget?.userId}
+        targetLabel={reportTarget?.label}
+        onReported={() => setSafetyMessage('Your report has been sent to MatchMuster for review.')}
+      />
     </>
   )
 }
