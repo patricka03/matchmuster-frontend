@@ -36,6 +36,14 @@ import {
   purchaseAppleSubscription,
   restoreAppleSubscription,
 } from '../utils/appleSubscriptions'
+import {
+  GOOGLE_PLAY_BASE_PLANS,
+  GOOGLE_PLAY_PRODUCT_ID,
+  isGooglePlaySubscriptionPlatform,
+  loadGooglePlaySubscriptionProducts,
+  purchaseGooglePlaySubscription,
+  restoreGooglePlaySubscription,
+} from '../utils/googlePlaySubscriptions'
 
 import './SubscriptionPage.css'
 import './SubscriptionPage.mobile.css'
@@ -119,6 +127,8 @@ function SubscriptionPage() {
 
   const isAppleNative =
     isAppleSubscriptionPlatform()
+  const isGooglePlayNative =
+    isGooglePlaySubscriptionPlatform()
 
   const subscription =
     subscriptionData
@@ -274,12 +284,7 @@ function SubscriptionPage() {
     let cancelled = false
 
     async function loadStoreProducts() {
-      if (
-        !subscriptionData ||
-        !isAppleNative ||
-        appleProductIds.length ===
-          0
-      ) {
+      if (!subscriptionData || (!isAppleNative && !isGooglePlayNative)) {
         setStoreProducts([])
         return
       }
@@ -287,10 +292,9 @@ function SubscriptionPage() {
       setStoreLoading(true)
 
       try {
-        const products =
-          await loadAppleSubscriptionProducts(
-            appleProductIds,
-          )
+        const products = isGooglePlayNative
+          ? await loadGooglePlaySubscriptionProducts()
+          : await loadAppleSubscriptionProducts(appleProductIds)
 
         if (!cancelled) {
           setStoreProducts(
@@ -302,8 +306,7 @@ function SubscriptionPage() {
           setStoreProducts([])
 
           setErrorMessage(
-            error.message ||
-              'Unable to load App Store plans.',
+            error.message || 'Unable to load subscription plans.',
           )
         }
       } finally {
@@ -321,6 +324,7 @@ function SubscriptionPage() {
   }, [
     appleProductIds,
     isAppleNative,
+    isGooglePlayNative,
     subscriptionData,
   ])
 
@@ -350,6 +354,7 @@ function SubscriptionPage() {
   function productIdFor(
     period,
   ) {
+    if (isGooglePlayNative) return GOOGLE_PLAY_PRODUCT_ID
     return appleCatalogue
       ?.[period]
       ?.apple
@@ -360,7 +365,7 @@ function SubscriptionPage() {
   function productFor(
     period,
   ) {
-    const productId =
+      const productId =
       productIdFor(
         period,
       )
@@ -636,6 +641,23 @@ function SubscriptionPage() {
     return data
   }
 
+  async function claimGooglePlayPurchase(purchaseToken, restore = false) {
+    const token = getAuthToken()
+    if (!token) { await clearSubscriptionSession(); return null }
+    const endpoint = restore
+      ? `${API_URL}/teams/${teamId}/subscription/restore`
+      : `${API_URL}/teams/${teamId}/subscription/google_play/claim`
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: token },
+      body: JSON.stringify(restore ? { provider: 'google_play', purchase_token: purchaseToken } : { purchase_token: purchaseToken }),
+    })
+    if (response.status === 401) { await clearSubscriptionSession(); return null }
+    const data = await response.json().catch(() => ({}))
+    if (!response.ok) throw new Error(data.error || 'Google Play could not verify this subscription.')
+    return data
+  }
+
   async function handlePurchase(
     period,
   ) {
@@ -663,21 +685,16 @@ function SubscriptionPage() {
     setSuccessMessage('')
 
     try {
-      const {
-        signedTransaction,
-      } =
-        await purchaseAppleSubscription({
-          productIdentifier:
-            productId,
-
-          appAccountToken:
-            subscriptionData
-              .billing_account_token,
+      if (isGooglePlayNative) {
+        const { purchaseToken } = await purchaseGooglePlaySubscription({
+          basePlanId: GOOGLE_PLAY_BASE_PLANS[period],
+          appAccountToken: subscriptionData.billing_account_token,
         })
-
-      await claimAppleTransaction(
-        signedTransaction,
-      )
+        await claimGooglePlayPurchase(purchaseToken)
+      } else {
+        const { signedTransaction } = await purchaseAppleSubscription({ productIdentifier: productId, appAccountToken: subscriptionData.billing_account_token })
+        await claimAppleTransaction(signedTransaction)
+      }
 
       setSuccessMessage(
         'MatchMuster Plus is now active.',
@@ -685,11 +702,7 @@ function SubscriptionPage() {
 
       await loadSubscription()
     } catch (error) {
-      if (
-        !isApplePurchaseCancelled(
-          error,
-        )
-      ) {
+      if (!isAppleNative || !isApplePurchaseCancelled(error)) {
         setErrorMessage(
           error.message ||
             'Unable to complete the purchase.',
@@ -701,10 +714,7 @@ function SubscriptionPage() {
   }
 
   async function handleRestore() {
-    if (
-      appleProductIds.length ===
-      0
-    ) {
+    if (!isGooglePlayNative && appleProductIds.length === 0) {
       setErrorMessage(
         'No Apple subscription products are configured.',
       )
@@ -716,19 +726,13 @@ function SubscriptionPage() {
     setSuccessMessage('')
 
     try {
-      const {
-        signedTransaction,
-      } =
-        await restoreAppleSubscription(
-          appleProductIds,
-          subscriptionData
-            ?.billing_account_token,
-        )
-
-      await claimAppleTransaction(
-        signedTransaction,
-        true,
-      )
+      if (isGooglePlayNative) {
+        const { purchaseToken } = await restoreGooglePlaySubscription(subscriptionData?.billing_account_token)
+        await claimGooglePlayPurchase(purchaseToken, true)
+      } else {
+        const { signedTransaction } = await restoreAppleSubscription(appleProductIds, subscriptionData?.billing_account_token)
+        await claimAppleTransaction(signedTransaction, true)
+      }
 
       setSuccessMessage(
         'Your MatchMuster Plus purchase was restored.',
@@ -973,7 +977,7 @@ function SubscriptionPage() {
                       another app store.
                     </span>
                   </article>
-                ) : !isAppleNative ? (
+                ) : !isAppleNative && !isGooglePlayNative ? (
                   <article className="subscription-store-note">
                     <strong>
                       iPhone purchase
@@ -1081,7 +1085,7 @@ function SubscriptionPage() {
                   </div>
                 )}
 
-                {isAppleNative &&
+                {(isAppleNative || isGooglePlayNative) &&
                   !paidThroughAnotherStore && (
                     <div className="subscription-store-actions">
                       <button
