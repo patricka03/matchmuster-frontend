@@ -347,7 +347,7 @@ function WelcomePage() {
           </span>
 
           <span>
-            8 Cancell Road, London, SW9 6HN
+            128 City Road, London, EC1V 2NX
           </span>
 
         </div>

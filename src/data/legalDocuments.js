@@ -263,7 +263,7 @@ export const legalDocuments = {
           'MatchMuster is operated by MATCHMUSTER LTD.',
           'Company number: 17400982.',
           'Registered in England and Wales.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Questions about these Terms or MatchMuster can be sent to matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.'
         ]
@@ -292,7 +292,7 @@ export const legalDocuments = {
           'MATCHMUSTER LTD is the controller responsible for personal information processed through MatchMuster, except where another organisation acts as an independent controller.',
           'Company number: 17400982.',
           'Registered in England and Wales.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Privacy and support email: matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.'
         ]
@@ -608,7 +608,7 @@ export const legalDocuments = {
         paragraphs: [
           'MatchMuster is operated by MATCHMUSTER LTD.',
           'Company number: 17400982.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Privacy and support requests: matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.'
         ]
@@ -883,7 +883,7 @@ export const legalDocuments = {
         title: '24. Contact MatchMuster',
         paragraphs: [
           'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Questions or reports concerning these Guidelines can be sent to matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.'
         ]
@@ -1196,7 +1196,7 @@ export const legalDocuments = {
         title: '31. Contact MatchMuster About Payments',
         paragraphs: [
           'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Questions about subscription billing, refunds or payment functionality can be sent to matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.',
           'Users should never send their full card number or card security code by email.'
@@ -1429,7 +1429,7 @@ export const legalDocuments = {
         title: '24. Contact MatchMuster',
         paragraphs: [
           'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Questions about location or ETA privacy can be sent to matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.'
         ]
@@ -1629,7 +1629,7 @@ export const legalDocuments = {
         title: '21. Contact MatchMuster',
         paragraphs: [
           'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Questions or concerns regarding age eligibility can be sent to matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.'
         ]
@@ -2001,7 +2001,7 @@ export const legalDocuments = {
         title: '39. Contact MatchMuster',
         paragraphs: [
           'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Questions about account deletion or retention can be sent to matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.'
         ]
@@ -2462,7 +2462,7 @@ export const legalDocuments = {
         paragraphs: [
           'Reports, appeals or complaints can be sent to MatchMuster through the reporting tools and support channels made available in the Service.',
           'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Support email: matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.',
           'Where someone is in immediate danger, contact the appropriate emergency services rather than relying solely on MatchMuster.'
@@ -2718,7 +2718,7 @@ export const legalDocuments = {
         title: '25. Contact MatchMuster',
         paragraphs: [
           'MatchMuster is operated by MATCHMUSTER LTD, company number 17400982.',
-          'Registered office: 8 Cancell Road, London, SW9 6HN.',
+          'Registered office: 128 City Road, London, EC1V 2NX.',
           'Questions about cookies or similar technologies can be sent to matchmuster.dev@gmail.com.',
           'Website: https://www.matchmuster.uk.'
         ]
