@@ -154,6 +154,142 @@ function ConversationPage() {
     listRef.current.scrollTop = listRef.current.scrollHeight
   }, [messages.length])
 
+  // MATCHMUSTER_CONVERSATION_VIEWPORT_FIX
+  useEffect(() => {
+    const root = document.documentElement
+    const viewport = window.visualViewport
+
+    let baselineHeight =
+      viewport?.height || window.innerHeight
+
+    let focusTimer = null
+    let orientationTimer = null
+
+    const composerIsFocused = () =>
+      Boolean(
+        document.activeElement?.closest?.(
+          '.conversation-composer',
+        ),
+      )
+
+    const syncViewport = () => {
+      const height =
+        viewport?.height || window.innerHeight
+
+      const composerFocused =
+        composerIsFocused()
+
+      const keyboardOpen =
+        composerFocused &&
+        baselineHeight - height > 120
+
+      root.style.setProperty(
+        '--conversation-viewport-height',
+        `${Math.round(height)}px`,
+      )
+
+      root.classList.toggle(
+        'conversation-keyboard-open',
+        keyboardOpen,
+      )
+
+      if (!composerFocused || !keyboardOpen) {
+        baselineHeight = Math.max(
+          baselineHeight,
+          height,
+        )
+      }
+    }
+
+    const handleFocusChange = () => {
+      window.clearTimeout(focusTimer)
+
+      focusTimer = window.setTimeout(
+        syncViewport,
+        0,
+      )
+    }
+
+    const handleOrientationChange = () => {
+      window.clearTimeout(orientationTimer)
+
+      orientationTimer = window.setTimeout(
+        () => {
+          baselineHeight =
+            viewport?.height || window.innerHeight
+
+          syncViewport()
+        },
+        250,
+      )
+    }
+
+    syncViewport()
+
+    viewport?.addEventListener(
+      'resize',
+      syncViewport,
+    )
+
+    window.addEventListener(
+      'resize',
+      syncViewport,
+    )
+
+    window.addEventListener(
+      'orientationchange',
+      handleOrientationChange,
+    )
+
+    document.addEventListener(
+      'focusin',
+      handleFocusChange,
+    )
+
+    document.addEventListener(
+      'focusout',
+      handleFocusChange,
+    )
+
+    return () => {
+      viewport?.removeEventListener(
+        'resize',
+        syncViewport,
+      )
+
+      window.removeEventListener(
+        'resize',
+        syncViewport,
+      )
+
+      window.removeEventListener(
+        'orientationchange',
+        handleOrientationChange,
+      )
+
+      document.removeEventListener(
+        'focusin',
+        handleFocusChange,
+      )
+
+      document.removeEventListener(
+        'focusout',
+        handleFocusChange,
+      )
+
+      window.clearTimeout(focusTimer)
+      window.clearTimeout(orientationTimer)
+
+      root.classList.remove(
+        'conversation-keyboard-open',
+      )
+
+      root.style.removeProperty(
+        '--conversation-viewport-height',
+      )
+    }
+  }, [])
+
   const otherUser = conversation?.other_user
   const title = fullName(otherUser)
 

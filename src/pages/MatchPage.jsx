@@ -674,7 +674,7 @@ function MatchPage() {
                           Final result
                         </p>
 
-                        <div className="match-result-display-score">
+                        <div className="match-result-score-box">
                           <div className="match-result-side">
                             <span className="match-result-team-name">
                               {teamName}
@@ -686,10 +686,6 @@ function MatchPage() {
                               }
                             </strong>
                           </div>
-
-                          <span className="match-result-display-divider">
-                            -
-                          </span>
 
                           <div className="match-result-side">
                             <span className="match-result-team-name">

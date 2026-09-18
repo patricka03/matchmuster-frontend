@@ -9,3 +9,181 @@
 .conversation-thread{overflow-y:auto;padding:18px 16px;background:linear-gradient(180deg,#f9fbff 0%,#fff 100%)}.conversation-start{padding:60px 20px;text-align:center}.conversation-start h2{margin:0 0 7px}.conversation-start p{margin:0;color:var(--color-text-muted)}.message-bubble-row{display:flex;justify-content:flex-start;margin:7px 0}.message-bubble-row.mine{justify-content:flex-end}.message-bubble{max-width:min(74%,560px);padding:10px 12px 7px;border-radius:17px 17px 17px 5px;background:#e9eef6;color:var(--color-text)}.message-bubble-row.mine .message-bubble{border-radius:17px 17px 5px 17px;background:var(--color-primary);color:#fff}.message-bubble p{margin:0;white-space:pre-wrap;word-break:break-word}.message-bubble small{display:block;margin-top:4px;color:#64748b;font-size:10px;text-align:right}.message-bubble-row.mine .message-bubble small{color:rgba(255,255,255,.74)}.conversation-composer{display:flex;gap:9px;align-items:flex-end;padding:11px 13px;border-top:1px solid var(--color-border);background:#fff}.conversation-composer textarea{width:100%;min-height:46px;max-height:126px;resize:vertical;padding:12px 14px;border:1px solid #cbd5e1;border-radius:17px;background:#f8fafc;outline:none}.conversation-composer textarea:focus{border-color:var(--color-brand-blue);box-shadow:0 0 0 3px rgba(79,156,255,.13)}.conversation-composer button{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--color-primary);color:#fff;cursor:pointer}.conversation-composer button:disabled{opacity:.45;cursor:default}.conversation-error{position:absolute;z-index:10;left:14px;right:14px;top:108px}
 .message-report-sheet{padding-bottom:18px}.message-report-sheet>label{display:flex;flex-direction:column;gap:7px;margin:0 20px 13px;color:var(--color-text);font-size:13px;font-weight:800}.message-report-sheet select,.message-report-sheet textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;outline:none}.message-report-sheet textarea{resize:vertical}.message-report-submit{min-height:44px;margin:0 20px;padding:0 16px;border:0;border-radius:11px;background:var(--color-primary);color:#fff;font-weight:800;cursor:pointer}
 @media(max-width:640px){.messages-page,.conversation-page{padding:20px 12px 108px}.messages-heading{align-items:stretch;flex-direction:column}.messages-new-button{width:100%}.messages-row{padding:12px 13px}.messages-avatar{width:44px;height:44px;flex-basis:44px}.message-picker-backdrop{padding:0}.message-picker,.message-report-sheet{width:100%;max-height:82vh;border-radius:22px 22px 0 0}.conversation-page{padding:0 0 92px;background:#fff}.conversation-shell{width:100%;height:calc(100vh - 170px);min-height:480px;border:0;border-radius:0;box-shadow:none}.message-bubble{max-width:84%}}
+
+
+/* ==========================================================
+   MATCHMUSTER CONVERSATION NAV + KEYBOARD FIX 2026-09-03
+
+   Closed keyboard:
+   - top navigation visible
+   - bottom navigation visible
+   - composer sits directly above bottom navigation
+   - only message history scrolls
+
+   Open keyboard:
+   - top navigation hidden
+   - bottom navigation hidden
+   - conversation header remains fixed
+   - composer sits directly above keyboard
+   - only message history scrolls
+========================================================== */
+
+@media (max-width: 640px) {
+  /*
+   * Cancel the global fixedNavigation.css rule which adds
+   * another 112px+ of bottom padding to every authenticated
+   * <main>. The conversation owns its viewport itself.
+   */
+  .bottom-nav ~ main.conversation-page {
+    padding: 0 !important;
+  }
+
+  .conversation-page {
+    box-sizing: border-box;
+
+    width: 100%;
+
+    height: calc(
+      var(--conversation-viewport-height, 100dvh)
+      - 64px
+      - env(safe-area-inset-top, 0px)
+      - 70px
+      - env(safe-area-inset-bottom, 0px)
+    );
+
+    min-height: 0 !important;
+
+    padding: 0 !important;
+
+    overflow: hidden;
+
+    background: #ffffff;
+  }
+
+  .conversation-shell {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+
+    display: grid;
+    grid-template-rows:
+      auto
+      minmax(0, 1fr)
+      auto;
+
+    overflow: hidden;
+
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .conversation-heading {
+    position: relative;
+    z-index: 6;
+
+    flex: 0 0 auto;
+  }
+
+  .conversation-thread {
+    min-height: 0;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .conversation-composer {
+    position: relative;
+    z-index: 7;
+
+    flex: 0 0 auto;
+
+    margin: 0;
+
+    padding:
+      10px
+      12px;
+
+    background: #ffffff;
+  }
+
+  .conversation-composer textarea {
+    resize: none;
+  }
+
+  /*
+   * Instagram/iMessage-style keyboard behaviour.
+   * The conversation itself now owns the reduced
+   * visualViewport while the keyboard is visible.
+   */
+  html.conversation-keyboard-open .app-topbar,
+  html.conversation-keyboard-open
+    .app-topbar-fixed-spacer,
+  html.conversation-keyboard-open .bottom-nav {
+    display: none !important;
+  }
+
+  html.conversation-keyboard-open
+    .conversation-page {
+    box-sizing: border-box;
+
+    height:
+      var(
+        --conversation-viewport-height,
+        100dvh
+      ) !important;
+
+    min-height: 0 !important;
+
+    padding:
+      env(safe-area-inset-top, 0px)
+      0
+      0 !important;
+
+    overflow: hidden;
+  }
+
+  html.conversation-keyboard-open
+    .conversation-shell {
+    height: 100%;
+    min-height: 0;
+  }
+
+  html.conversation-keyboard-open
+    .conversation-composer {
+    margin: 0;
+
+    padding:
+      8px
+      12px
+      10px;
+  }
+}
+
+/*
+ * The fixed top bar is 60px rather than 64px
+ * on normal portrait-size phones.
+ */
+@media (max-width: 520px) {
+  .conversation-page {
+    height: calc(
+      var(--conversation-viewport-height, 100dvh)
+      - 60px
+      - env(safe-area-inset-top, 0px)
+      - 70px
+      - env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  html.conversation-keyboard-open
+    .conversation-page {
+    height:
+      var(
+        --conversation-viewport-height,
+        100dvh
+      ) !important;
+  }
+}

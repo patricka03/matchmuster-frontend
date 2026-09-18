@@ -89,6 +89,50 @@
   color: #ff0a78;
 }
 
+/* ========================================
+   USER PROFILE PHOTO
+======================================== */
+
+.app-topbar-profile-action {
+  overflow: hidden;
+  padding: 0;
+}
+
+.app-topbar-profile-fallback {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      145deg,
+      #ff0a78,
+      #4f9cff
+    );
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.app-topbar-profile-image {
+  position: absolute;
+  inset: 3px;
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  display: block;
+  border-radius: 50%;
+  background: #ffffff;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ========================================
+   NOTIFICATIONS
+======================================== */
+
 .app-topbar-notification-badge {
   position: absolute;
   top: -5px;
@@ -160,5 +204,10 @@
 
   .app-topbar-actions {
     gap: 7px;
+  }
+
+  .app-topbar-profile-fallback {
+    width: 32px;
+    height: 32px;
   }
 }

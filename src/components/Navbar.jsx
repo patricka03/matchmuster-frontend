@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Bell, Settings } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import matchMusterLogo from '../assets/matchmuster-logo.png'
 import API_URL from '../config/api'
 import BottomNav from './BottomNav'
@@ -42,6 +42,7 @@ function Navbar({
   teamId: suppliedTeamId,
   teamName: suppliedTeamName,
   currentUser: suppliedCurrentUser,
+  hideBottomNav = false,
 }) {
   const navigate = useNavigate()
   const params = useParams()
@@ -774,6 +775,28 @@ function Navbar({
     return 'MatchMuster'
   }, [resolvedTeamName])
 
+  const profileInitials = useMemo(() => {
+    const value = [
+      currentUser?.first_name?.trim()?.[0],
+      currentUser?.last_name?.trim()?.[0],
+    ]
+      .filter(Boolean)
+      .join('')
+      .toUpperCase()
+
+    if (value) {
+      return value
+    }
+
+    return (
+      currentUser?.email
+        ?.trim()
+        ?.[0]
+        ?.toUpperCase() ||
+      'U'
+    )
+  }, [currentUser])
+
   return (
     <>
       <header className="app-topbar">
@@ -828,15 +851,30 @@ function Navbar({
             </Link>
 
             <Link
-              className="app-topbar-action"
+              className="app-topbar-action app-topbar-profile-action"
               to="/profile/edit"
-              aria-label="Open settings"
-              title="Settings"
+              aria-label="Open profile"
+              title="Profile"
             >
-              <Settings
-                size={22}
+              <span
+                className="app-topbar-profile-fallback"
                 aria-hidden="true"
-              />
+              >
+                {profileInitials}
+              </span>
+
+              {currentUser?.avatar_url && (
+                <img
+                  className="app-topbar-profile-image"
+                  src={currentUser.avatar_url}
+                  alt=""
+                  aria-hidden="true"
+                  onError={(event) => {
+                    event.currentTarget.style.display =
+                      'none'
+                  }}
+                />
+              )}
             </Link>
           </div>
         </div>
@@ -866,38 +904,40 @@ function Navbar({
         </div>
       )}
 
-      <BottomNav
-        teamId={resolvedTeamId}
-        teams={teams}
-        latestPlayedMatchId={
-          latestPlayedMatchId
-        }
-        playerPaymentMatchId={
-          playerPaymentMatchId
-        }
-        canUseTeamNavigation={
-          canUseTeamNavigation
-        }
-        isApprovedManager={
-          isApprovedManager
-        }
-        isApprovedPlayer={
-          isApprovedPlayer
-        }
-        onTeamSwitch={
-          handleTeamSwitch
-        }
-        onSignOut={
-          handleSignOut
-        }
-        signingOut={signingOut}
-        onStripeAction={
-          handleStripeAction
-        }
-        openingStripe={
-          openingStripe
-        }
-      />
+      {!hideBottomNav && (
+        <BottomNav
+          teamId={resolvedTeamId}
+          teams={teams}
+          latestPlayedMatchId={
+            latestPlayedMatchId
+          }
+          playerPaymentMatchId={
+            playerPaymentMatchId
+          }
+          canUseTeamNavigation={
+            canUseTeamNavigation
+          }
+          isApprovedManager={
+            isApprovedManager
+          }
+          isApprovedPlayer={
+            isApprovedPlayer
+          }
+          onTeamSwitch={
+            handleTeamSwitch
+          }
+          onSignOut={
+            handleSignOut
+          }
+          signingOut={signingOut}
+          onStripeAction={
+            handleStripeAction
+          }
+          openingStripe={
+            openingStripe
+          }
+        />
+      )}
     </>
   )
 }
