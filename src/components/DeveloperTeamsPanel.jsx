@@ -172,8 +172,8 @@ function DeveloperTeamsPanel() {
           method,
           body: JSON.stringify({
             ...body,
-            action: {
-              ...(body.action || {}),
+            developer_action: {
+              ...(body.developer_action || {}),
               notes: notes.trim(),
             },
           }),
@@ -229,7 +229,7 @@ function DeveloperTeamsPanel() {
               name: name.trim(),
               description: description.trim(),
             },
-            action: {
+            developer_action: {
               notes: notes.trim(),
             },
           }),
@@ -259,7 +259,7 @@ function DeveloperTeamsPanel() {
       'POST',
       'Grant complimentary Plus',
       {
-        action: {
+        developer_action: {
           days,
         },
       },
@@ -279,7 +279,7 @@ function DeveloperTeamsPanel() {
       'PATCH',
       'Extend Plus',
       {
-        action: {
+        developer_action: {
           days,
         },
       },
@@ -319,7 +319,7 @@ function DeveloperTeamsPanel() {
       'PATCH',
       'Transfer team ownership',
       {
-        action: {
+        developer_action: {
           user_id: userId,
         },
       },
@@ -352,7 +352,7 @@ function DeveloperTeamsPanel() {
         {
           method: 'DELETE',
           body: JSON.stringify({
-            action: {
+            developer_action: {
               notes: notes.trim(),
               confirmation,
             },
@@ -411,7 +411,7 @@ function DeveloperTeamsPanel() {
               status: status.trim().toLowerCase(),
               preferred_position: preferredPosition.trim().toUpperCase(),
             },
-            action: {
+            developer_action: {
               notes: notes.trim(),
             },
           }),
@@ -443,7 +443,7 @@ function DeveloperTeamsPanel() {
           method: 'PATCH',
           body: JSON.stringify({
             membership: changes,
-            action: {
+            developer_action: {
               notes: notes.trim(),
             },
           }),
@@ -479,7 +479,7 @@ function DeveloperTeamsPanel() {
         {
           method: 'DELETE',
           body: JSON.stringify({
-            action: {
+            developer_action: {
               notes: notes.trim(),
             },
           }),
