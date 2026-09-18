@@ -30,7 +30,8 @@ import {
   Star,
   Trophy,
   UserCheck,
-  UserUsers,
+  UserPlus,
+  Users,
   WalletCards,
   X,
 } from 'lucide-react'
@@ -281,7 +282,8 @@ const TYPE_META = {
   join_request_received: {
     label: 'Join request',
     tone: 'pink',
-    icon: UserdefaultTitle:
+    icon: UserPlus,
+    defaultTitle:
       'New player join request',
     requiresAction: true,
   },
@@ -305,7 +307,8 @@ const TYPE_META = {
   player_joined: {
     label: 'Squad member',
     tone: 'green',
-    icon: UserdefaultTitle:
+    icon: UserPlus,
+    defaultTitle:
       'A player joined your squad',
   },
 
@@ -320,7 +323,8 @@ const TYPE_META = {
   team_join_requested: {
     label: 'Join request',
     tone: 'pink',
-    icon: UserdefaultTitle:
+    icon: UserPlus,
+    defaultTitle:
       'New player join request',
     requiresAction: true,
   },
