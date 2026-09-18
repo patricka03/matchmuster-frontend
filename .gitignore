@@ -33,3 +33,4 @@ dist-ssr
 
 # Local temporary working files
 /tmp/
+.vercel
