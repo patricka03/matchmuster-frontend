@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DeveloperModerationPanel from '../components/DeveloperModerationPanel'
 import DeveloperAccountManagementPanel from '../components/DeveloperAccountManagementPanel'
+import DeveloperTeamsPanel from '../components/DeveloperTeamsPanel'
+import DeveloperSubscriptionsPanel from '../components/DeveloperSubscriptionsPanel'
+import DeveloperCommunicationsPanel from '../components/DeveloperCommunicationsPanel'
+import DeveloperAuditPanel from '../components/DeveloperAuditPanel'
+import DeveloperSystemPanel from '../components/DeveloperSystemPanel'
 import './DeveloperDashboardPage.css'
 import './DeveloperDashboardPage.mobile.css'
 import API_URL from '../config/api'
@@ -44,7 +49,7 @@ function DeveloperDashboardPage() {
 
       try {
         const response = await fetch(
-          `${API_URL}/developer/dashboard`,
+          `${API_URL}/developer/control_center`,
           {
             headers: {
               Accept: 'application/json',
@@ -424,6 +429,24 @@ function DeveloperDashboardPage() {
 
             <button
               className={
+                activeSection === 'teams' ? 'active' : ''
+              }
+              onClick={() => setActiveSection('teams')}
+            >
+              Teams & access
+            </button>
+
+            <button
+              className={
+                activeSection === 'subscriptions' ? 'active' : ''
+              }
+              onClick={() => setActiveSection('subscriptions')}
+            >
+              Plus & subscriptions
+            </button>
+
+            <button
+              className={
                 activeSection === 'moderation' ? 'active' : ''
               }
               onClick={() => setActiveSection('moderation')}
@@ -470,6 +493,33 @@ function DeveloperDashboardPage() {
 
             <button
               className={
+                activeSection === 'communications' ? 'active' : ''
+              }
+              onClick={() => setActiveSection('communications')}
+            >
+              Notifications
+            </button>
+
+            <button
+              className={
+                activeSection === 'audit' ? 'active' : ''
+              }
+              onClick={() => setActiveSection('audit')}
+            >
+              Audit log
+            </button>
+
+            <button
+              className={
+                activeSection === 'system' ? 'active' : ''
+              }
+              onClick={() => setActiveSection('system')}
+            >
+              System health
+            </button>
+
+            <button
+              className={
                 activeSection === 'updates' ? 'active' : ''
               }
               onClick={() => {
@@ -478,7 +528,7 @@ function DeveloperDashboardPage() {
                 setAppUpdateResult(null)
               }}
             >
-              App updates
+              Legacy manager update
             </button>
             <button
               className={
@@ -507,7 +557,7 @@ function DeveloperDashboardPage() {
               <div>
                 <p>PRIVATE CONTROL CENTRE</p>
                 <h1 className="mm-page-title">Developer dashboard</h1>
-                <span>Monitor the MatchMuster platform.</span>
+                <span>MatchMuster brain station — monitor, intervene and control the platform.</span>
               </div>
 
               <div className="developer-live-status">
@@ -552,6 +602,26 @@ function DeveloperDashboardPage() {
                 <article>
                   <span>Teams</span>
                   <strong>{overview.total_teams}</strong>
+                </article>
+
+                <article>
+                  <span>Plus teams</span>
+                  <strong>{overview.plus_teams ?? 0}</strong>
+                </article>
+
+                <article>
+                  <span>Paid Plus</span>
+                  <strong>{overview.paid_plus_teams ?? 0}</strong>
+                </article>
+
+                <article>
+                  <span>Founder clubs</span>
+                  <strong>{overview.founder_clubs ?? 0}</strong>
+                </article>
+
+                <article>
+                  <span>Open reports</span>
+                  <strong>{overview.open_reports ?? 0}</strong>
                 </article>
 
                 <article>
@@ -636,7 +706,7 @@ function DeveloperDashboardPage() {
                         </h2>
                         <p>{manager.email}</p>
                         <span>
-                          Applied {formatDate(manager.created_at)}
+                          Applied {formatDate(manager.applied_at || manager.created_at)}
                         </span>
                       </div>
                     </div>
@@ -755,6 +825,26 @@ function DeveloperDashboardPage() {
               </form>
             </section>
           </>
+        )}
+
+        {activeSection === 'teams' && (
+          <DeveloperTeamsPanel />
+        )}
+
+        {activeSection === 'subscriptions' && (
+          <DeveloperSubscriptionsPanel />
+        )}
+
+        {activeSection === 'communications' && (
+          <DeveloperCommunicationsPanel />
+        )}
+
+        {activeSection === 'audit' && (
+          <DeveloperAuditPanel />
+        )}
+
+        {activeSection === 'system' && (
+          <DeveloperSystemPanel />
         )}
 
         {activeSection === 'moderation' && (

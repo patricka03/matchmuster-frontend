@@ -215,6 +215,61 @@ function DeveloperAccountManagementPanel() {
     }
   }
 
+  async function sendPasswordReset(user) {
+    const notes = window.prompt(
+      `Why are you sending a password reset to ${user.email}?`,
+    )
+
+    if (notes === null || !notes.trim()) {
+      return
+    }
+
+    const developerToken = localStorage.getItem('developerToken')
+
+    setActionUserId(user.id)
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    try {
+      const response = await fetch(
+        `${API_URL}/developer/users/${user.id}/send_password_reset`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${developerToken}`,
+          },
+          body: JSON.stringify({
+            user: {
+              notes: notes.trim(),
+            },
+          }),
+        },
+      )
+
+      const data = await response.json().catch(() => ({}))
+
+      if (response.status === 401) {
+        localStorage.removeItem('developerToken')
+        navigate('/developer/login', { replace: true })
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Unable to send password reset.')
+      }
+
+      setSuccessMessage(
+        `Password reset instructions were sent to ${user.email}.`,
+      )
+    } catch (error) {
+      setErrorMessage(error.message)
+    } finally {
+      setActionUserId(null)
+    }
+  }
+
   function formatDate(date) {
     if (!date) return 'Not available'
 
@@ -391,6 +446,16 @@ function DeveloperAccountManagementPanel() {
               </div>
 
               <div className="developer-account-actions">
+                {user.status !== 'deleted' && (
+                  <button
+                    type="button"
+                    onClick={() => sendPasswordReset(user)}
+                    disabled={actionUserId === user.id}
+                  >
+                    Password reset
+                  </button>
+                )}
+
                 {user.status === 'active' && (
                   <>
                     <button
