@@ -40,15 +40,15 @@ export async function initialiseAuthStorage() {
 
     /*
      * On iOS the JWT can only be accessed
-     * while the device is unlocked and it
+     * after the device has been unlocked once and it
      * will not migrate to another device.
      */
     await SecureStorage.setDefaultKeychainAccess(
-      KeychainAccess.whenUnlockedThisDeviceOnly,
+      KeychainAccess.afterFirstUnlockThisDeviceOnly,
     )
 
     let storedToken =
-      await SecureStorage.get(TOKEN_KEY)
+      await SecureStorage.getItem(TOKEN_KEY)
 
     if (typeof storedToken !== 'string') {
       storedToken = null
@@ -65,7 +65,7 @@ export async function initialiseAuthStorage() {
       localStorage.getItem('token')
 
     if (!storedToken && legacyToken) {
-      await SecureStorage.set(
+      await SecureStorage.setItem(
         TOKEN_KEY,
         legacyToken,
       )
@@ -100,7 +100,7 @@ export async function setAuthToken(token) {
   cachedToken = token
 
   if (Capacitor.isNativePlatform()) {
-    await SecureStorage.set(
+    await SecureStorage.setItem(
       TOKEN_KEY,
       token,
     )
@@ -124,7 +124,7 @@ export async function clearAuthToken() {
   cachedToken = null
 
   if (Capacitor.isNativePlatform()) {
-    await SecureStorage.remove(
+    await SecureStorage.removeItem(
       TOKEN_KEY,
     )
 

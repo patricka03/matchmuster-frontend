@@ -12,6 +12,7 @@ import AppUrlListener from './components/AppUrlListener'
 import PushNotificationManager from './components/PushNotificationManager'
 import NetworkStatusBanner from './components/NetworkStatusBanner'
 import NotificationPermissionPrompt from './components/NotificationPermissionPrompt'
+import AuthSessionGate from './components/AuthSessionGate'
 
 import WelcomePage from './pages/WelcomePage'
 import LoginPage from './pages/LoginPage'
@@ -71,8 +72,9 @@ import './AppConsistency.css'
 
 function App() {
   return (
-    <>
-      <AppUrlListener />
+    <AuthSessionGate>
+      <>
+        <AppUrlListener />
       <PushNotificationManager />
       <NetworkStatusBanner />
       <NotificationPermissionPrompt />
@@ -362,8 +364,9 @@ function App() {
           path="/teams/:teamId/schedule"
           element={<SchedulePage />}
         />
-      </Routes>
-    </>
+        </Routes>
+      </>
+    </AuthSessionGate>
   )
 }
 

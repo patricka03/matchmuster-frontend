@@ -98,7 +98,9 @@ function LoginPage() {
        */
       await setAuthToken(token)
 
-      navigate('/dashboard')
+      navigate('/dashboard', {
+        replace: true,
+      })
     } catch (error) {
       setErrorMessage(
         error.message ||
